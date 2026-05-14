@@ -190,7 +190,8 @@ function defaultDB() {
         {id:'i6',name:'Спортни съоражения',subObjects:[]}
       ],
       entries:[]
-    }
+    },
+    resetTokens:[]
   };
 }
 
@@ -245,7 +246,7 @@ function login(email, password){
   const u = db.users.find(u=>u.email.toLowerCase()===email.toLowerCase() && u.password===password);
   if(!u) return {ok:false, msg:'Грешен имейл или парола'};
   if(!u.confirmed) return {ok:false, msg:'Акаунтът не е потвърден'};
-  session = {userId:u.id, email:u.email, name:u.name, role:u.role, company:u.company};
+  session = {userId:u.id, email:u.email, name:u.name, role:u.role, company:u.company||[]};
   saveSession();
   return {ok:true};
 }
@@ -260,14 +261,86 @@ function logout(){
 function register(email, password, name, company){
   if(db.users.find(u=>u.email.toLowerCase()===email.toLowerCase()))
     return {ok:false, msg:'Имейлът вече е регистриран'};
-  const u = {id:genId(), email, password, name, role:'user', confirmed:false, company, createdAt:new Date().toISOString()};
+  // company is always stored as array
+  const compArr = Array.isArray(company) ? company : (company ? [company] : []);
+  const u = {id:genId(), email, password, name, role:'user', confirmed:false, company:compArr, createdAt:new Date().toISOString()};
   db.users.push(u);
   saveDB();
   return {ok:true};
 }
 
 function isAdmin(){ return session && session.role==='admin'; }
-function canView(comp){ return isAdmin() || (session && (session.company===comp||session.company==='all')); }
+function canView(comp){
+  if(isAdmin()) return true;
+  if(!session) return false;
+  const c = session.company;
+  if(!c) return false;
+  if(c==='all') return true;
+  if(c===comp) return true; // legacy single string
+  if(Array.isArray(c)) return c.includes('all') || c.includes(comp);
+  return false;
+}
+
+// ================== RESET TOKEN URL CHECK ==================
+const _urlReset = new URLSearchParams(window.location.search).get('reset');
+
+// ================== PASSWORD / COMPANY HELPERS ==================
+function togglePwd(inputId, iconEl){
+  const inp = document.getElementById(inputId);
+  if(!inp) return;
+  if(inp.type==='password'){ inp.type='text'; iconEl.className='fa fa-eye-slash'; }
+  else { inp.type='password'; iconEl.className='fa fa-eye'; }
+}
+
+function toggleAllCompanies(el){
+  document.querySelectorAll('input[name="companies"]').forEach(cb=>{ if(cb.value!=='all') cb.checked=el.checked; });
+}
+
+function updateAllCheckbox(){
+  const cbs = Array.from(document.querySelectorAll('input[name="companies"]:not([value="all"])'));
+  const allCb = document.getElementById('fc-all');
+  if(allCb) allCb.checked = cbs.length>0 && cbs.every(cb=>cb.checked);
+}
+
+function getSelectedCompanies(){
+  const allCb = document.getElementById('fc-all');
+  if(allCb?.checked) return ['all'];
+  return Array.from(document.querySelectorAll('input[name="companies"]:not([value="all"])')).filter(cb=>cb.checked).map(cb=>cb.value);
+}
+
+function companiesLabel(company){
+  const map = {all:'Всички',meta8:'Мета 8',liderStroy:'Лидерстрой',bso:'БСО',metaPlan:'Мета План',investments:'Инвестиции',kasaVarna:'Каса Варна',kasaPavlikeni:'Каса Павликени'};
+  if(!company) return '—';
+  if(company==='all') return 'Всички';
+  if(typeof company==='string') return map[company]||company;
+  if(Array.isArray(company)){
+    if(company.includes('all')) return 'Всички';
+    return company.map(c=>map[c]||c).join(', ');
+  }
+  return '—';
+}
+
+function companyCheckboxes(selected){
+  const list=[
+    {v:'all',   l:'Всички'},
+    {v:'meta8', l:'Мета 8'},
+    {v:'liderStroy', l:'Лидерстрой'},
+    {v:'bso',   l:'БСО'},
+    {v:'metaPlan', l:'Мета План'},
+    {v:'investments',l:'Инвестиции'},
+    {v:'kasaVarna', l:'Каса Варна'},
+    {v:'kasaPavlikeni',l:'Каса Павликени'},
+  ];
+  const isAll = Array.isArray(selected)?selected.includes('all'):selected==='all';
+  return list.map(item=>{
+    const checked = isAll || (Array.isArray(selected)?selected.includes(item.v):selected===item.v);
+    const extra = item.v==='all' ? `id="fc-all" onchange="toggleAllCompanies(this)"` : `onchange="updateAllCheckbox()"`;
+    return `<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#ccc;padding:4px 0">
+      <input type="checkbox" ${extra} name="companies" value="${item.v}" ${checked?'checked':''} style="width:14px;height:14px;accent-color:#c00;cursor:pointer">
+      ${item.l}
+    </label>`;
+  }).join('');
+}
 
 // ================== CALCULATIONS ==================
 function getEntries(company, entityId, year, month){
@@ -339,8 +412,14 @@ function getInvEntriesBySubObj(objId, subObjId, year, month){
 // ================== RENDERING ==================
 function render(){
   const app=document.getElementById('app');
-  if(!session){ app.innerHTML = S.view==='register' ? renderRegister() : renderLogin(); }
-  else { app.innerHTML = renderApp(); }
+  if(!session){
+    if(_urlReset) app.innerHTML = renderResetPassword(_urlReset);
+    else if(S.view==='register') app.innerHTML = renderRegister();
+    else if(S.view==='forgotPassword') app.innerHTML = renderForgotPassword();
+    else app.innerHTML = renderLogin();
+  } else {
+    app.innerHTML = renderApp();
+  }
   bindEvents();
   renderCharts();
 }
@@ -367,9 +446,15 @@ function renderLogin(){
         </div>
         <div class="fgroup">
           <label class="lbl">Парола</label>
-          <input type="password" id="l-pass" class="input input-lg" placeholder="••••••••" required>
+          <div style="position:relative">
+            <input type="password" id="l-pass" class="input input-lg" placeholder="••••••••" required style="padding-right:44px">
+            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer;font-size:15px" onclick="togglePwd('l-pass',this)"></i>
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:6px;justify-content:center">
+        <div style="text-align:right;margin-bottom:10px">
+          <span style="font-size:12px;color:#555;cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="S.view='forgotPassword';render()">Забравена парола?</span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">
           <i class="fa fa-sign-in-alt"></i> Вход
         </button>
       </form>
@@ -388,7 +473,7 @@ function renderLogin(){
 function renderRegister(){
   return `
   <div class="auth-wrap">
-    <div class="auth-card">
+    <div class="auth-card" style="max-width:460px">
       <div style="text-align:center;margin-bottom:24px">
         <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:16px">
           <div class="logo-icon">FP</div>
@@ -411,18 +496,23 @@ function renderRegister(){
         </div>
         <div class="fgroup">
           <label class="lbl">Парола</label>
-          <input type="password" id="r-pass" class="input" placeholder="Минимум 6 символа" required minlength="6">
+          <div style="position:relative">
+            <input type="password" id="r-pass" class="input" placeholder="Минимум 6 символа" required minlength="6" style="padding-right:40px">
+            <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer" onclick="togglePwd('r-pass',this)"></i>
+          </div>
         </div>
         <div class="fgroup">
-          <label class="lbl">Фирма</label>
-          <select id="r-company" class="input" required>
-            <option value="">-- Изберете фирма --</option>
-            <option value="meta8">Мета 8</option>
-            <option value="liderStroy">Лидерстрой Монтаж</option>
-            <option value="bso">Българска Строителна Организация</option>
-            <option value="metaPlan">Мета План</option>
-            <option value="investments">Инвестиции</option>
-          </select>
+          <label class="lbl">Повтори парола</label>
+          <div style="position:relative">
+            <input type="password" id="r-pass2" class="input" placeholder="Повторете паролата" required style="padding-right:40px">
+            <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer" onclick="togglePwd('r-pass2',this)"></i>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Достъп до фирми</label>
+          <div style="padding:10px 14px;background:#151515;border:1px solid #222;border-radius:7px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
+            ${companyCheckboxes([])}
+          </div>
         </div>
         <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:4px;justify-content:center">
           <i class="fa fa-paper-plane"></i> Изпрати заявка
@@ -433,6 +523,84 @@ function renderRegister(){
           <i class="fa fa-arrow-left"></i> Обратно към вход
         </button>
       </div>
+    </div>
+  </div>`;
+}
+
+function renderForgotPassword(){
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div class="logo-icon">FP</div>
+          <div style="text-align:left">
+            <div style="font-size:16px;font-weight:800;color:#fff">Finance Pro</div>
+            <div style="font-size:10px;color:#555">HOLDING PORTAL</div>
+          </div>
+        </div>
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:5px">Забравена парола</h2>
+        <p style="color:#555;font-size:13px">Въведете имейла си за да получите линк за възстановяване</p>
+      </div>
+      <form id="forgot-form">
+        <div class="fgroup">
+          <label class="lbl">Имейл адрес</label>
+          <input type="email" id="fp-email" class="input input-lg" placeholder="name@company.bg" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">
+          <i class="fa fa-paper-plane"></i> Изпрати линк
+        </button>
+      </form>
+      <div id="fp-result" style="margin-top:14px"></div>
+      <div style="margin-top:14px;text-align:center">
+        <button class="btn btn-secondary btn-sm" onclick="S.view='login';render()">
+          <i class="fa fa-arrow-left"></i> Обратно към вход
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderResetPassword(token){
+  const rec = (db.resetTokens||[]).find(t=>t.token===token && new Date(t.expiresAt)>new Date());
+  if(!rec){
+    return `
+    <div class="auth-wrap"><div class="auth-card" style="text-align:center">
+      <div class="logo-icon" style="margin:0 auto 20px;width:52px;height:52px;font-size:22px">FP</div>
+      <h2 style="font-size:20px;font-weight:700;color:#ef4444;margin-bottom:10px"><i class="fa fa-times-circle"></i> Невалиден линк</h2>
+      <p style="color:#555;font-size:13px;margin-bottom:20px">Линкът е изтекъл или вече е използван. Моля поискайте нов.</p>
+      <button class="btn btn-secondary" onclick="window.location.href=window.location.pathname">
+        <i class="fa fa-arrow-left"></i> Към вход
+      </button>
+    </div></div>`;
+  }
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:24px">
+        <div class="logo-icon" style="margin:0 auto 16px;width:52px;height:52px;font-size:22px">FP</div>
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:5px">Нова парола</h2>
+        <p style="color:#555;font-size:13px">Въведете и потвърдете новата си парола</p>
+      </div>
+      <form id="reset-form" data-token="${token}">
+        <div class="fgroup">
+          <label class="lbl">Нова парола</label>
+          <div style="position:relative">
+            <input type="password" id="rp-pass" class="input input-lg" placeholder="Минимум 6 символа" required minlength="6" style="padding-right:44px">
+            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer;font-size:15px" onclick="togglePwd('rp-pass',this)"></i>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Повтори новата парола</label>
+          <div style="position:relative">
+            <input type="password" id="rp-pass2" class="input input-lg" placeholder="Повторете паролата" required style="padding-right:44px">
+            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer;font-size:15px" onclick="togglePwd('rp-pass2',this)"></i>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">
+          <i class="fa fa-save"></i> Запази новата парола
+        </button>
+      </form>
     </div>
   </div>`;
 }
@@ -1294,7 +1462,6 @@ function renderKasa(company, title, icon){
 // =================== ПОТРЕБИТЕЛИ ===================
 function renderUsers(){
   if(!isAdmin()) return noAccess();
-  const companyLabel = {all:'Всички',meta8:'Мета 8',liderStroy:'Лидерстрой Монтаж',bso:'БСО',metaPlan:'Мета План',investments:'Инвестиции'};
 
   const rows = db.users.map(u=>`
     <tr>
@@ -1306,11 +1473,11 @@ function renderUsers(){
         </div>
       </div></td>
       <td><span class="badge ${u.role==='admin'?'badge-red2':'badge-blue'}">${u.role==='admin'?'Администратор':'Потребител'}</span></td>
-      <td>${companyLabel[u.company]||u.company}</td>
+      <td style="font-size:12px;color:#aaa;max-width:200px;white-space:normal;line-height:1.5">${companiesLabel(u.company)}</td>
       <td><span class="badge ${u.confirmed?'badge-green':'badge-yellow'}">${u.confirmed?'Потвърден':'Чакащ'}</span></td>
       <td>${new Date(u.createdAt).toLocaleDateString('bg-BG')}</td>
       <td>
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           ${!u.confirmed?`<button class="btn btn-success btn-sm" onclick="confirmUser('${u.id}')"><i class="fa fa-check"></i> Потвърди</button>`:''}
           ${u.id!=='u_admin'?`<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')"><i class="fa fa-trash"></i></button>`:''}
         </div>
@@ -1538,12 +1705,30 @@ function renderModal(){
     content = `
     <div class="modal-hd"><span class="modal-title"><i class="fa fa-user-plus text-red" style="margin-right:8px"></i>Нов потребител</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
-      <div class="fgroup"><label class="lbl">Пълно ime</label><input id="f-name" class="input" placeholder="Иван Иванов" required></div>
-      <div class="fgroup"><label class="lbl">Имейл</label><input id="f-email" type="email" class="input" placeholder="name@company.bg" required></div>
-      <div class="fgroup"><label class="lbl">Парола</label><input id="f-pass" type="password" class="input" placeholder="Минимум 6 символа" required minlength="6"></div>
       <div class="frow">
+        <div class="fgroup"><label class="lbl">Пълно ime</label><input id="f-name" class="input" placeholder="Иван Иванов" required></div>
         <div class="fgroup"><label class="lbl">Роля</label><select id="f-role" class="input"><option value="user">Потребител</option><option value="admin">Администратор</option></select></div>
-        <div class="fgroup"><label class="lbl">Фирма</label><select id="f-company" class="input"><option value="all">Всички</option><option value="meta8">Мета 8</option><option value="liderStroy">Лидерстрой Монтаж</option><option value="bso">БСО</option><option value="metaPlan">Мета План</option><option value="investments">Инвестиции</option></select></div>
+      </div>
+      <div class="fgroup"><label class="lbl">Имейл</label><input id="f-email" type="email" class="input" placeholder="name@company.bg" required></div>
+      <div class="fgroup">
+        <label class="lbl">Парола</label>
+        <div style="position:relative">
+          <input type="password" id="f-pass" class="input" placeholder="Минимум 6 символа" required minlength="6" style="padding-right:40px">
+          <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer" onclick="togglePwd('f-pass',this)"></i>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Повтори парола</label>
+        <div style="position:relative">
+          <input type="password" id="f-pass2" class="input" placeholder="Повторете паролата" required style="padding-right:40px">
+          <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer" onclick="togglePwd('f-pass2',this)"></i>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Достъп до фирми</label>
+        <div style="padding:10px 14px;background:#151515;border:1px solid #222;border-radius:7px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
+          ${companyCheckboxes(['all'])}
+        </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Създай</button>
@@ -1722,11 +1907,48 @@ function bindEvents(){
     const name=document.getElementById('r-name').value.trim();
     const email=document.getElementById('r-email').value.trim();
     const pass=document.getElementById('r-pass').value;
-    const company=document.getElementById('r-company').value;
-    if(!company){ notify('Изберете фирма','err'); return; }
-    const r=register(email,pass,name,company);
+    const pass2=document.getElementById('r-pass2').value;
+    if(pass!==pass2){ notify('Паролите не съвпадат','err'); return; }
+    const companies=getSelectedCompanies();
+    if(companies.length===0){ notify('Изберете поне една фирма','err'); return; }
+    const r=register(email,pass,name,companies);
     if(r.ok){ notify('Заявката е изпратена! Изчакайте потвърждение от администратор.','ok'); setTimeout(()=>{S.view='login';render();},2200); }
     else notify(r.msg,'err');
+  });
+
+  document.getElementById('forgot-form')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    const email=document.getElementById('fp-email').value.trim();
+    const result=handleForgotPassword(email);
+    const div=document.getElementById('fp-result');
+    if(!div) return;
+    if(result.ok){
+      div.innerHTML=`
+        <div style="background:#0d0d0d;border:1px solid #22c55e44;border-radius:8px;padding:14px">
+          <div style="font-size:12px;color:#22c55e;font-weight:700;margin-bottom:8px"><i class="fa fa-check-circle"></i> Линкът е генериран</div>
+          <p style="font-size:11px;color:#666;margin-bottom:10px">Тъй като приложението работи без сървър, копирайте линка по-долу и го изпратете на потребителя:</p>
+          <div style="background:#111;border:1px solid #2a2a2a;border-radius:6px;padding:8px 10px;font-size:11px;font-family:monospace;color:#aaa;word-break:break-all;margin-bottom:8px">${result.resetUrl}</div>
+          <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('${result.resetUrl}').then(()=>notify('Копирано!','ok'))"><i class="fa fa-copy"></i> Копирай линка</button>
+        </div>`;
+    } else {
+      div.innerHTML=`<div style="color:#ef4444;font-size:13px;padding:10px"><i class="fa fa-times-circle"></i> ${result.msg}</div>`;
+    }
+  });
+
+  document.getElementById('reset-form')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    const token=e.target.dataset.token;
+    const pass=document.getElementById('rp-pass').value;
+    const pass2=document.getElementById('rp-pass2').value;
+    if(pass!==pass2){ notify('Паролите не съвпадат','err'); return; }
+    if(pass.length<6){ notify('Паролата трябва да е поне 6 символа','err'); return; }
+    const result=doResetPassword(token,pass);
+    if(result.ok){
+      notify('Паролата е променена успешно!','ok');
+      setTimeout(()=>{ window.location.href=window.location.pathname; },2000);
+    } else {
+      notify(result.msg,'err');
+    }
   });
 
   document.getElementById('m-form')?.addEventListener('submit',e=>{
@@ -1861,12 +2083,43 @@ function handleModalSubmit(){
     const name=document.getElementById('f-name').value.trim();
     const email=document.getElementById('f-email').value.trim();
     const pass=document.getElementById('f-pass').value;
+    const pass2=document.getElementById('f-pass2').value;
     const role=document.getElementById('f-role').value;
-    const company=document.getElementById('f-company').value;
+    if(pass!==pass2){ notify('Паролите не съвпадат','err'); return; }
+    if(pass.length<6){ notify('Паролата трябва да е поне 6 символа','err'); return; }
+    const companies=getSelectedCompanies();
+    if(companies.length===0){ notify('Изберете поне една фирма','err'); return; }
     if(db.users.find(u=>u.email.toLowerCase()===email.toLowerCase())){ notify('Имейлът вече съществува','err'); return; }
-    db.users.push({id:genId(),email,password:pass,role,name,confirmed:true,company,createdAt:new Date().toISOString()});
+    db.users.push({id:genId(),email,password:pass,role,name,confirmed:true,company:companies,createdAt:new Date().toISOString()});
     saveDB(); closeModal(); notify('Потребителят е създаден','ok');
   }
+}
+
+// =================== FORGOT / RESET PASSWORD ===================
+function handleForgotPassword(email){
+  const u=db.users.find(u=>u.email.toLowerCase()===email.toLowerCase());
+  if(!u) return {ok:false, msg:'Имейлът не е намерен в системата'};
+  if(!db.resetTokens) db.resetTokens=[];
+  // Remove old tokens for this user
+  db.resetTokens=db.resetTokens.filter(t=>t.userId!==u.id);
+  const token=genId()+genId()+genId();
+  const expiresAt=new Date(Date.now()+24*60*60*1000).toISOString();
+  db.resetTokens.push({token,userId:u.id,expiresAt});
+  saveDB();
+  const resetUrl=window.location.href.split('?')[0]+'?reset='+token;
+  return {ok:true, resetUrl, email:u.email};
+}
+
+function doResetPassword(token, newPass){
+  if(!db.resetTokens) return {ok:false,msg:'Невалиден токен'};
+  const rec=db.resetTokens.find(t=>t.token===token && new Date(t.expiresAt)>new Date());
+  if(!rec) return {ok:false,msg:'Линкът е изтекъл или вече е използван'};
+  const u=db.users.find(u=>u.id===rec.userId);
+  if(!u) return {ok:false,msg:'Потребителят не е намерен'};
+  u.password=newPass;
+  db.resetTokens=db.resetTokens.filter(t=>t.token!==token);
+  saveDB();
+  return {ok:true};
 }
 
 // =================== INIT ===================
