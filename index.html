@@ -159,7 +159,7 @@ function defaultDB() {
       entries:[]
     },
     liderStroy: {
-      objects:[{id:'lo1', name:'Обект 1', budget:500000}],
+      objects:[{id:'lo1', name:'Обект 1', budget:500000, subObjects:[]}],
       entries:[]
     },
     bso: {
@@ -178,6 +178,8 @@ function defaultDB() {
       entries:[]
     },
     metaPlan:{ entries:[] },
+    kasaVarna:{ entries:[] },
+    kasaPavlikeni:{ entries:[] },
     investments:{
       objects:[
         {id:'i1',name:'Радиозавод'},
@@ -202,8 +204,9 @@ function saveSession(){ if(session) localStorage.setItem(SES_KEY, JSON.stringify
 // ================== STATE ==================
 let S = {
   view: session ? 'dashboard' : 'login',
-  company: null,   // active company section
-  selEntity: null, // selected production/object/subcategory id
+  company: null,
+  selEntity: null,
+  selSubEntity: null, // selected sub-object id (LiderStroy)
   month: new Date().getMonth()+1,
   year: new Date().getFullYear(),
   sidebarOpen: false,
@@ -307,7 +310,7 @@ function getCompanyMonthTotals(company, year, month){
 }
 
 function getHoldingTotals(year, month){
-  const comps = ['meta8','liderStroy','bso','metaPlan','investments'];
+  const comps = ['meta8','liderStroy','bso','metaPlan','investments','kasaVarna','kasaPavlikeni'];
   return comps.reduce((a,c)=>{
     const t=getCompanyMonthTotals(c,year,month);
     return {income:a.income+t.income, expenses:a.expenses+t.expenses};
@@ -429,6 +432,8 @@ function renderApp(){
     {id:'bso', label:'БСО', icon:'fa-city', comp:true},
     {id:'metaPlan', label:'Мета План', icon:'fa-chart-line', comp:true},
     {id:'investments', label:'Инвестиции', icon:'fa-coins', comp:true},
+    {id:'kasaVarna', label:'Каса Варна', icon:'fa-cash-register', comp:true},
+    {id:'kasaPavlikeni', label:'Каса Павликени', icon:'fa-cash-register', comp:true},
   ];
   const adminItems = [
     {id:'users', label:'Потребители', icon:'fa-users'},
@@ -495,7 +500,7 @@ function renderApp(){
 }
 
 function viewTitle(){
-  const map = {dashboard:'Главно Табло',meta8:'Мета 8',liderStroy:'Лидерстрой Монтаж',bso:'БСО',metaPlan:'Мета План',investments:'Инвестиции',users:'Управление на потребители'};
+  const map = {dashboard:'Главно Табло',meta8:'Мета 8',liderStroy:'Лидерстрой Монтаж',bso:'БСО',metaPlan:'Мета План',investments:'Инвестиции',kasaVarna:'Каса Варна',kasaPavlikeni:'Каса Павликени',users:'Управление на потребители'};
   return map[S.view]||'Табло';
 }
 
@@ -519,6 +524,8 @@ function renderView(){
     case 'bso':         return renderBSO();
     case 'metaPlan':    return renderMetaPlan();
     case 'investments': return renderInvestments();
+    case 'kasaVarna':   return renderKasa('kasaVarna','Каса Варна','fa-cash-register');
+    case 'kasaPavlikeni': return renderKasa('kasaPavlikeni','Каса Павликени','fa-cash-register');
     case 'users':       return renderUsers();
     default:            return renderDashboard();
   }
@@ -534,6 +541,8 @@ function renderDashboard(){
     {id:'bso', label:'БСО', icon:'fa-city', color:'#8e44ad'},
     {id:'metaPlan', label:'Мета План', icon:'fa-chart-line', color:'#27ae60'},
     {id:'investments', label:'Инвестиции', icon:'fa-coins', color:'#2980b9'},
+    {id:'kasaVarna', label:'Каса Варна', icon:'fa-cash-register', color:'#0891b2'},
+    {id:'kasaPavlikeni', label:'Каса Павликени', icon:'fa-cash-register', color:'#059669'},
   ];
   const compRows = comps.map(c=>{
     const t=getCompanyMonthTotals(c.id, S.year, S.month);
@@ -642,16 +651,19 @@ function renderMeta8(){
   const prodResult = prodData ? prodData.income - prodData.expenses : 0;
   const totalExp = prodData ? prodData.expWorkers + prodData.expAdditional : 0;
 
-  const entryRows = entries.length ? entries.map(e=>`
-    <tr>
+  const entryRows = entries.length ? entries.map(e=>{
+    const avgP = (e.tonnage||0)>0 ? (e.income||0)/(e.tonnage||1) : (e.avgPrice||0);
+    return `<tr>
       <td>${e.description||'—'}</td>
       <td><span class="badge badge-blue">${fmt(e.tonnage||0)} т</span></td>
+      <td style="color:#a78bfa;font-weight:600">${avgP>0?fmt(avgP)+' лв./т':'—'}</td>
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expWorkers||0)}</td>
       <td class="text-neg">-${fmt(e.expAdditional||0)}</td>
       <td class="${resultClass(e.income-(e.expWorkers||0)-(e.expAdditional||0))}">${fmt(e.income-(e.expWorkers||0)-(e.expAdditional||0))}</td>
       ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('meta8','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
-    </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state"><i class="fa fa-inbox"></i><p>Няма записи за ${MONTHS[S.month-1]} ${S.year}</p></div></td></tr>`;
+    </tr>`;
+  }).join('') : `<tr><td colspan="8"><div class="empty-state"><i class="fa fa-inbox"></i><p>Няма записи за ${MONTHS[S.month-1]} ${S.year}</p></div></td></tr>`;
 
   // YTD trend
   const ytdData = [];
@@ -685,6 +697,7 @@ function renderMeta8(){
     ${selProd ? `
     <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px">
       <div class="summary-box"><i class="fa fa-weight-hanging" style="color:#60a5fa;width:20px"></i><div><div style="font-size:11px;color:#555">Тонаж</div><div style="font-weight:700;color:#60a5fa">${fmt(prodData?.tonnage||0)} т.</div></div></div>
+      <div class="summary-box"><i class="fa fa-tag" style="color:#a78bfa;width:20px"></i><div><div style="font-size:11px;color:#555">Ср. продажна цена</div><div style="font-weight:700;color:#a78bfa">${prodData?.tonnage>0?fmt((prodData.income||0)/(prodData.tonnage||1)):'—'} лв./т.</div></div></div>
       <div class="summary-box"><i class="fa fa-arrow-up" style="color:#22c55e;width:20px"></i><div><div style="font-size:11px;color:#555">Приходи</div><div style="font-weight:700;color:#22c55e">+${fmt(prodData?.income||0)} лв.</div></div></div>
       <div class="summary-box"><i class="fa fa-user-hard-hat" style="color:#ef4444;width:20px"></i><div><div style="font-size:11px;color:#555">Работници</div><div style="font-weight:700;color:#ef4444">-${fmt(prodData?.expWorkers||0)} лв.</div></div></div>
       <div class="summary-box"><i class="fa fa-plus-circle" style="color:#f59e0b;width:20px"></i><div><div style="font-size:11px;color:#555">Допълнителни</div><div style="font-weight:700;color:#f59e0b">-${fmt(prodData?.expAdditional||0)} лв.</div></div></div>
@@ -694,7 +707,7 @@ function renderMeta8(){
     <div class="table-wrap">
       <table class="tbl">
         <thead><tr>
-          <th>Описание</th><th>Тонаж</th><th>Приходи</th><th>Работници</th><th>Допълнителни</th><th>Резултат</th>
+          <th>Описание</th><th>Тонаж</th><th>Ср. продажна цена</th><th>Приходи</th><th>Работници</th><th>Допълнителни</th><th>Резултат</th>
           ${isAdmin()?'<th></th>':''}
         </tr></thead>
         <tbody>${entryRows}</tbody>
@@ -710,21 +723,31 @@ function renderMeta8(){
 }
 
 // =================== ЛИДЕРСТРОЙ ===================
+function getLSEntriesBySubObj(objId, subObjId, year, month){
+  return (db.liderStroy.entries||[]).filter(e=>
+    e.entityId===objId && e.year===year && e.month===month &&
+    (subObjId ? e.subEntityId===subObjId : true)
+  );
+}
+
 function renderLiderStroy(){
   if(!canView('liderStroy')) return noAccess();
   const objects = db.liderStroy.objects;
   const selObj = S.selEntity || (objects[0]?.id||null);
   const obj = selObj ? objects.find(o=>o.id===selObj) : null;
+  const subObjects = obj?.subObjects || [];
+  const selSub = S.selSubEntity;
+  const selSubObj = selSub ? subObjects.find(s=>s.id===selSub) : null;
 
-  const entries = selObj ? getEntries('liderStroy', selObj, S.year, S.month) : [];
-  const monthTotals = selObj ? getMonthTotals('liderStroy', selObj, S.year, S.month) : {income:0,expenses:0};
-  const allTotals = selObj ? sumEntries(getAllEntries('liderStroy', selObj)) : {income:0,expenses:0};
+  // If sub-object selected, show its data; else show object totals
+  const activeEntries = selObj ? getLSEntriesBySubObj(selObj, selSub||undefined, S.year, S.month) : [];
+  const monthTotals = sumEntries(activeEntries);
   const remainder = selObj ? getLSRemainder(selObj) : 0;
   const result = monthTotals.income - monthTotals.expenses;
 
-  // Month summary table
   const monthRows = MONTHS.map((mn,i)=>{
-    const t = selObj ? getMonthTotals('liderStroy',selObj,S.year,i+1) : {income:0,expenses:0};
+    const ents = selObj ? getLSEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
+    const t = sumEntries(ents);
     const r = t.income-t.expenses;
     return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
       <td style="color:${i+1===S.month?'#fff':'#888'};font-weight:${i+1===S.month?700:400}">${mn}</td>
@@ -734,36 +757,51 @@ function renderLiderStroy(){
     </tr>`;
   }).join('');
 
-  const entryRows = entries.length ? entries.map(e=>`
+  const entryRows = activeEntries.length ? activeEntries.map(e=>`
     <tr>
-      <td>${e.description||'—'}</td>
+      <td>${e.description||'—'}${e.subEntityId&&!selSub?`<span class="badge badge-gray" style="margin-left:6px;font-size:10px">${subObjects.find(s=>s.id===e.subEntityId)?.name||''}</span>`:''}</td>
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
       ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('liderStroy','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
+  // Sub-objects summary table
+  const subObjRows = subObjects.map(s=>{
+    const ents = selObj ? getLSEntriesBySubObj(selObj, s.id, S.year, S.month) : [];
+    const t=sumEntries(ents); const r=t.income-t.expenses;
+    return `<tr onclick="S.selSubEntity='${s.id}';render()" style="cursor:pointer;${selSub===s.id?'background:rgba(204,0,0,.06)':''}">
+      <td style="font-weight:600;color:${selSub===s.id?'#ff4444':'#ddd'}">${s.name}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLSSubObj('${selObj}','${s.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+    </tr>`;
+  }).join('');
+
   return `
   <div class="section-hd">
     <h2>Лидерстрой Монтаж</h2>
-    <p>Управление на обекти и финансови резултати</p>
+    <p>Управление на обекти, подобекти и финансови резултати</p>
   </div>
 
   <div style="display:flex;gap:16px;flex-wrap:wrap">
     <!-- Object list -->
-    <div style="width:220px;flex-shrink:0">
+    <div style="width:230px;flex-shrink:0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <span style="font-size:12px;color:#555;font-weight:700;text-transform:uppercase">Обекти</span>
         ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSObject')"><i class="fa fa-plus"></i></button>`:''}
       </div>
       ${objects.map(o=>{
-        const t=sumEntries(getAllEntries('liderStroy',o.id));
+        const allEnts=getAllEntries('liderStroy',o.id);
         const rem=getLSRemainder(o.id);
-        return `<div class="obj-card ${selObj===o.id?'sel':''}" style="margin-bottom:8px" onclick="S.selEntity='${o.id}';render()">
+        const subCount=(o.subObjects||[]).length;
+        return `<div class="obj-card ${selObj===o.id?'sel':''}" style="margin-bottom:8px" onclick="S.selEntity='${o.id}';S.selSubEntity=null;render()">
           <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:5px">${o.name}</div>
           <div style="font-size:11px;color:#555">Бюджет: <span style="color:#ddd">${fmtShort(o.budget)} лв.</span></div>
           <div style="font-size:11px;margin-top:2px;color:${rem>=0?'#22c55e':'#ef4444'}">Остатък: ${fmtShort(rem)} лв.</div>
-          ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px">
+          ${subCount>0?`<div style="font-size:10px;color:#555;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
+          ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
             <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editLSBudget','${o.id}')"><i class="fa fa-edit"></i> Бюджет</button>
             <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLSObject('${o.id}')"><i class="fa fa-trash"></i></button>
           </div>`:''}
@@ -774,18 +812,38 @@ function renderLiderStroy(){
     <!-- Object detail -->
     <div style="flex:1;min-width:0">
       ${obj ? `
-      <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px">
+      <!-- KPI row -->
+      <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
         <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#ddd">${fmtShort(obj.budget)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
         <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(remainder)}">${fmtShort(remainder)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи (месец)</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи (месец)</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат (месец)</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
       </div>
+
+      <!-- Sub-objects panel -->
+      ${subObjects.length>0||isAdmin() ? `
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:13px;font-weight:700;color:#ddd"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
+            ${selSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
+          </div>
+          ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSSubObj','${selObj}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
+        </div>
+        ${subObjects.length>0?`
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+            <tbody>${subObjRows}</tbody>
+          </table>
+        </div>`:`<div style="color:#555;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
+      </div>` : ''}
 
       <div class="grid-2">
         <div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <span style="font-size:13px;font-weight:700;color:#ddd">Записи — ${MONTHS[S.month-1]}</span>
+            <span style="font-size:13px;font-weight:700;color:#ddd">${selSubObj?selSubObj.name+' — ':''}Записи — ${MONTHS[S.month-1]}</span>
             ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
           </div>
           <div class="table-wrap">
@@ -1087,6 +1145,82 @@ function renderInvestments(){
   </div>`;
 }
 
+// =================== КАСА ===================
+function renderKasa(company, title, icon){
+  if(!canView(company)) return noAccess();
+  const mt = getCompanyMonthTotals(company, S.year, S.month);
+  const result = mt.income - mt.expenses;
+  const entries = getEntries(company, null, S.year, S.month);
+
+  const entryRows = entries.length ? entries.map(e=>`
+    <tr>
+      <td>${e.description||'—'}</td>
+      <td class="text-pos">+${fmt(e.income||0)}</td>
+      <td class="text-neg">-${fmt(e.expenses||0)}</td>
+      <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
+      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${company}','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+    </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
+
+  const monthRows = MONTHS.map((mn,i)=>{
+    const t=getCompanyMonthTotals(company,S.year,i+1);
+    const r=t.income-t.expenses;
+    return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
+      <td style="color:${i+1===S.month?'#fff':'#888'}">${mn}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const ytdData = MONTHS.map((mn,i)=>{
+    const t=getCompanyMonthTotals(company,S.year,i+1);
+    return {label:mn.slice(0,3),income:t.income,expenses:t.expenses};
+  });
+  const chartId = 'chart-'+company;
+
+  return `
+  <div class="section-hd">
+    <h2><i class="fa ${icon} text-red" style="margin-right:8px"></i>${title}</h2>
+    <p>Приходи, разходи и финансов резултат</p>
+  </div>
+
+  <div class="grid-stats">
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#555"> лв.</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#555"> лв.</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#555"> лв.</span></div></div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span style="font-size:13px;font-weight:700;color:#ddd">Записи — ${MONTHS[S.month-1]} ${S.year}</span>
+        ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addKasaEntry',null,'${company}','${title}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+          <tbody>${entryRows}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:12px">По месеци — ${S.year}</div>
+      <div class="table-wrap" style="max-height:340px;overflow-y:auto">
+        <table class="tbl">
+          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
+          <tbody>${monthRows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:14px"><i class="fa fa-chart-area text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
+    <div class="chart-wrap"><canvas id="${chartId}"></canvas></div>
+  </div>
+  <script type="app/data" id="${chartId}-data">${JSON.stringify(ytdData)}<\/script>`;
+}
+
 // =================== ПОТРЕБИТЕЛИ ===================
 function renderUsers(){
   if(!isAdmin()) return noAccess();
@@ -1188,6 +1322,17 @@ function renderModal(){
       </div>
     </form>`;
   }
+  else if(modal==='addLSSubObj'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование на подобекта</label><input id="f-name" class="input" placeholder="Напр. Блок А, Етаж 1..." required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
   else if(modal==='editLSBudget'){
     const obj = db.liderStroy.objects.find(o=>o.id===mdata.entityId);
     content = `
@@ -1201,14 +1346,46 @@ function renderModal(){
       </div>
     </form>`;
   }
-  else if(modal==='addLSEntry'||modal==='addBSOEntry'||modal==='addMetaPlanEntry'||modal==='addInvEntry'){
-    const labels = {addLSEntry:'Лидерстрой Монтаж',addBSOEntry:'БСО',addMetaPlanEntry:'Мета План',addInvEntry:'Инвестиции'};
+  else if(modal==='addLSEntry'){
+    const lsObj = db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    const lsSubObjs = lsObj?.subObjects||[];
+    const subObjOpts = lsSubObjs.map(s=>`<option value="${s.id}" ${S.selSubEntity===s.id?'selected':''}>${s.name}</option>`).join('');
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${lsObj?.name||''}</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
+      ${lsSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${subObjOpts}</select></div>`:''}
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Приходи (лв.)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (лв.)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addBSOEntry'||modal==='addMetaPlanEntry'||modal==='addInvEntry'){
     let entityName = '';
     if(modal==='addBSOEntry') entityName = db.bso.subcategories.find(s=>s.id===mdata.entityId)?.name||'';
-    if(modal==='addLSEntry') entityName = db.liderStroy.objects.find(o=>o.id===mdata.entityId)?.name||'';
     if(modal==='addInvEntry') entityName = db.investments.objects.find(o=>o.id===mdata.entityId)?.name||'';
     content = `
     <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис${entityName?' — '+entityName:''}</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Приходи (лв.)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (лв.)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addKasaEntry'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${mdata.label||''}</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       <div class="frow">
@@ -1253,6 +1430,8 @@ function renderCharts(){
     {id:'chart-pie', dataId:'pie-data', type:'pie'},
     {id:'chart-meta8', dataId:'meta8-trend', type:'trend'},
     {id:'chart-metaplan', dataId:'metaplan-trend', type:'trend'},
+    {id:'chart-kasaVarna', dataId:'chart-kasaVarna-data', type:'trend'},
+    {id:'chart-kasaPavlikeni', dataId:'chart-kasaPavlikeni-data', type:'trend'},
   ];
 
   chartDefs.forEach(({id,dataId,type})=>{
@@ -1310,9 +1489,9 @@ function createPieChart(id, data, canvas){
 }
 
 // =================== ACTIONS ===================
-function openModal(type, entityId){
+function openModal(type, entityId, company, label){
   S.modal = type;
-  S.mdata = {entityId};
+  S.mdata = {entityId, company, label};
   render();
 }
 
@@ -1325,6 +1504,7 @@ function closeModal(){
 function nav(view){
   S.view = view;
   S.selEntity = null;
+  S.selSubEntity = null;
   S.sidebarOpen = false;
   render();
 }
@@ -1352,8 +1532,17 @@ function deleteLSObject(id){
   if(!confirm('Изтриване на обекта и всички негови записи?')) return;
   db.liderStroy.objects = db.liderStroy.objects.filter(o=>o.id!==id);
   db.liderStroy.entries = db.liderStroy.entries.filter(e=>e.entityId!==id);
-  if(S.selEntity===id) S.selEntity=null;
+  if(S.selEntity===id){ S.selEntity=null; S.selSubEntity=null; }
   saveDB(); notify('Обектът е изтрит','ok'); render();
+}
+
+function deleteLSSubObj(objId, subId){
+  if(!confirm('Изтриване на подобекта и всички негови записи?')) return;
+  const obj=db.liderStroy.objects.find(o=>o.id===objId);
+  if(obj) obj.subObjects=(obj.subObjects||[]).filter(s=>s.id!==subId);
+  db.liderStroy.entries=db.liderStroy.entries.filter(e=>!(e.entityId===objId&&e.subEntityId===subId));
+  if(S.selSubEntity===subId) S.selSubEntity=null;
+  saveDB(); notify('Подобектът е изтрит','ok'); render();
 }
 
 // =================== EVENTS ===================
@@ -1415,20 +1604,44 @@ function handleModalSubmit(){
     const name=document.getElementById('f-name').value.trim();
     const budget=parseFloat(document.getElementById('f-budget').value)||0;
     if(!name) return;
-    const obj={id:genId(),name,budget};
+    const obj={id:genId(),name,budget,subObjects:[]};
     db.liderStroy.objects.push(obj);
     S.selEntity=obj.id;
     saveDB(); closeModal(); notify('Обектът е добавен','ok');
+  }
+  else if(modal==='addLSSubObj'){
+    const name=document.getElementById('f-name').value.trim();
+    if(!name) return;
+    const obj=db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    if(!obj.subObjects) obj.subObjects=[];
+    const sub={id:genId(),name};
+    obj.subObjects.push(sub);
+    S.selSubEntity=sub.id;
+    saveDB(); closeModal(); notify('Подобектът е добавен','ok');
   }
   else if(modal==='editLSBudget'){
     const obj=db.liderStroy.objects.find(o=>o.id===mdata.entityId);
     if(obj){ obj.budget=parseFloat(document.getElementById('f-budget').value)||0; saveDB(); closeModal(); notify('Бюджетът е актуализиран','ok'); }
   }
-  else if(modal==='addLSEntry'||modal==='addBSOEntry'||modal==='addMetaPlanEntry'||modal==='addInvEntry'){
-    const compMap = {addLSEntry:'liderStroy',addBSOEntry:'bso',addMetaPlanEntry:'metaPlan',addInvEntry:'investments'};
+  else if(modal==='addLSEntry'){
+    const subObjEl = document.getElementById('f-subobj');
+    const entry = {
+      id:genId(), entityId:mdata.entityId,
+      subEntityId: subObjEl?.value || null,
+      year:S.year, month:S.month,
+      description:document.getElementById('f-desc').value.trim(),
+      income:parseFloat(document.getElementById('f-inc').value)||0,
+      expenses:parseFloat(document.getElementById('f-exp').value)||0,
+      createdBy:session.email, createdAt:new Date().toISOString()
+    };
+    db.liderStroy.entries.push(entry);
+    saveDB(); closeModal(); notify('Записът е запазен','ok');
+  }
+  else if(modal==='addBSOEntry'||modal==='addMetaPlanEntry'||modal==='addInvEntry'||modal==='addKasaEntry'){
+    const compMap = {addBSOEntry:'bso',addMetaPlanEntry:'metaPlan',addInvEntry:'investments',addKasaEntry:mdata.company};
     const company = compMap[modal];
     const entry = {
-      id:genId(), entityId:mdata.entityId, year:S.year, month:S.month,
+      id:genId(), entityId:mdata.entityId||null, year:S.year, month:S.month,
       description:document.getElementById('f-desc').value.trim(),
       income:parseFloat(document.getElementById('f-inc').value)||0,
       expenses:parseFloat(document.getElementById('f-exp').value)||0,
