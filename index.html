@@ -142,9 +142,11 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:#555;margin-bottom:
 
 <script>
 // ================== CONSTANTS ==================
-const MONTHS = ['Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'];
-const DB_KEY = 'fph_db_v2';
+const MONTHS = ['Јануари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'];
+const DB_KEY  = 'fph_db_v2';
 const SES_KEY = 'fph_ses_v2';
+const FIREBASE_URL = 'https://finance-pro-holding-default-rtdb.firebaseio.com';
+const FB_NODE      = 'fph_v1'; // path in Firebase Realtime Database
 
 // ================== DEFAULT DATA ==================
 function defaultDB() {
@@ -196,10 +198,81 @@ function defaultDB() {
 }
 
 // ================== DB & SESSION ==================
+// Start with localStorage cache immediately (instant UI), then sync from Firebase
 let db = (()=>{ try{ const s=localStorage.getItem(DB_KEY); return s ? JSON.parse(s) : defaultDB(); }catch(e){ return defaultDB(); }})();
 let session = (()=>{ try{ const s=localStorage.getItem(SES_KEY); return s ? JSON.parse(s) : null; }catch(e){ return null; }})();
 
-function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+let _fbEvtSrc  = null;   // SSE EventSource for real-time sync
+let _fbOnline  = false;  // is Firebase reachable?
+let _ownSaveTs = 0;      // timestamp of our last save (to suppress echo)
+
+// ---- saveDB: write to localStorage cache AND Firebase ----
+function saveDB(){
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+  _ownSaveTs = Date.now();
+  fetch(`${FIREBASE_URL}/${FB_NODE}.json`, {
+    method : 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body   : JSON.stringify(db)
+  })
+  .then(()=>{ _fbOnline=true; })
+  .catch(e=>{ console.warn('Firebase write failed:', e); });
+}
+
+// ---- Merge helper: fill any missing top-level keys after loading from FB ----
+function _mergeDefaults(remote){
+  const d = defaultDB();
+  Object.keys(d).forEach(k=>{ if(remote[k]===undefined) remote[k]=d[k]; });
+  return remote;
+}
+
+// ---- initDB: load latest data from Firebase on startup ----
+async function initDB(){
+  try {
+    const res = await fetch(`${FIREBASE_URL}/${FB_NODE}.json`);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    if(data && data.users){
+      db = _mergeDefaults(data);
+      localStorage.setItem(DB_KEY, JSON.stringify(db));
+      _fbOnline = true;
+    } else {
+      // Firebase is empty → push our local/default data up
+      saveDB();
+    }
+  } catch(e){
+    console.warn('Firebase init failed, using local cache:', e);
+    _fbOnline = false;
+  }
+}
+
+// ---- startRealtimeSync: SSE listener — fires whenever any device saves ----
+function startRealtimeSync(){
+  if(_fbEvtSrc){ _fbEvtSrc.close(); }
+  _fbEvtSrc = new EventSource(`${FIREBASE_URL}/${FB_NODE}.json`);
+
+  _fbEvtSrc.addEventListener('put', evt=>{
+    // Suppress echo from our own saves (within 3 s)
+    if(Date.now() - _ownSaveTs < 3000) return;
+    try {
+      const pl = JSON.parse(evt.data);
+      const incoming = pl.data;
+      if(incoming && incoming.users){
+        db = _mergeDefaults(incoming);
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+        _fbOnline = true;
+        render();        // refresh UI with data from other device
+      }
+    } catch(_){}
+  });
+
+  _fbEvtSrc.addEventListener('error', ()=>{
+    _fbOnline = false;
+    _fbEvtSrc.close();
+    setTimeout(startRealtimeSync, 10000); // reconnect after 10 s
+  });
+}
+
 function saveSession(){ if(session) localStorage.setItem(SES_KEY, JSON.stringify(session)); else localStorage.removeItem(SES_KEY); }
 
 // ================== STATE ==================
@@ -670,6 +743,10 @@ function renderApp(){
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
+        <div title="${_fbOnline?'Firebase: свързано':'Firebase: без връзка'}" style="display:flex;align-items:center;gap:5px;font-size:10px;color:#444;background:#0d0d0d;border:1px solid #1c1c1c;border-radius:6px;padding:4px 8px">
+          <div style="width:7px;height:7px;border-radius:50%;background:${_fbOnline?'#22c55e':'#ef4444'};box-shadow:0 0 6px ${_fbOnline?'#22c55e':'#ef4444'}44"></div>
+          <span class="hide-mob">${_fbOnline?'Онлайн':'Офлайн'}</span>
+        </div>
         ${renderMonthNav()}
       </div>
     </div>
@@ -2123,7 +2200,13 @@ function doResetPassword(token, newPass){
 }
 
 // =================== INIT ===================
+// 1. Render immediately with cached/local data (no delay for user)
 render();
+// 2. Fetch latest from Firebase, then re-render and start live sync
+initDB().then(()=>{
+  render();
+  startRealtimeSync();
+});
 </script>
 </body>
 </html>
