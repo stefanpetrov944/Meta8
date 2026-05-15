@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="bg">
 <head>
 <meta charset="UTF-8">
@@ -881,8 +881,8 @@ function renderDashboard(){
       <div style="display:flex;align-items:center;gap:12px">
         <div class="icon-box" style="background:rgba(255,255,255,.05);color:${c.color}"><i class="fa ${c.icon}"></i></div>
         <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#ddd">${c.label}</div>
-        <div style="font-size:11px;color:#555">Приходи: <span style="color:#22c55e">${fmt(t.income)} лв.</span></div></div>
-        <span class="badge ${resultBadge(p)}">${fmtShort(p)} лв.</span>
+        <div style="font-size:11px;color:#555">Приходи: <span style="color:#22c55e">${fmt(t.income)} €</span></div></div>
+        <span class="badge ${resultBadge(p)}">${fmtShort(p)} €</span>
       </div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${c.color};opacity:.6"></div></div>
     </div>`;
@@ -910,7 +910,7 @@ function renderDashboard(){
         <div class="icon-box" style="width:36px;height:36px;background:rgba(34,197,94,.1);color:#22c55e;font-size:14px"><i class="fa fa-arrow-trend-up"></i></div>
       </div>
       <div style="font-size:26px;font-weight:800;color:#22c55e;font-family:'SF Mono',monospace">${fmtShort(ht.income)}</div>
-      <div style="font-size:11px;color:#444;margin-top:2px">лева</div>
+      <div style="font-size:11px;color:#444;margin-top:2px">евро</div>
     </div>
     <div class="stat-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -918,7 +918,7 @@ function renderDashboard(){
         <div class="icon-box" style="width:36px;height:36px;background:rgba(239,68,68,.1);color:#ef4444;font-size:14px"><i class="fa fa-arrow-trend-down"></i></div>
       </div>
       <div style="font-size:26px;font-weight:800;color:#ef4444;font-family:'SF Mono',monospace">${fmtShort(ht.expenses)}</div>
-      <div style="font-size:11px;color:#444;margin-top:2px">лева</div>
+      <div style="font-size:11px;color:#444;margin-top:2px">евро</div>
     </div>
     <div class="stat-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -926,7 +926,7 @@ function renderDashboard(){
         <div class="icon-box" style="width:36px;height:36px;background:rgba(204,0,0,.1);color:#c00;font-size:14px"><i class="fa fa-scale-balanced"></i></div>
       </div>
       <div style="font-size:26px;font-weight:800;font-family:'SF Mono',monospace" class="${resultClass(profit)}">${fmtShort(profit)}</div>
-      <div style="font-size:11px;color:#444;margin-top:2px">лева</div>
+      <div style="font-size:11px;color:#444;margin-top:2px">евро</div>
     </div>
     <div class="stat-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -985,7 +985,7 @@ function renderMeta8(){
     return `<tr>
       <td>${e.description||'—'}</td>
       <td><span class="badge badge-blue">${fmt(e.tonnage||0)} т</span></td>
-      <td style="color:#a78bfa;font-weight:600">${avgP>0?fmt(avgP)+' лв./т':'—'}</td>
+      <td style="color:#a78bfa;font-weight:600">${avgP>0?fmt(avgP)+' €/т':'—'}</td>
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expWorkers||0)}</td>
       <td class="text-neg">-${fmt(e.expAdditional||0)}</td>
@@ -1008,9 +1008,9 @@ function renderMeta8(){
   </div>
 
   <div class="grid-stats">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overall.income)}<span style="font-size:12px;font-weight:400;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overall.expenses)}<span style="font-size:12px;font-weight:400;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallResult)}">${fmtShort(overallResult)}<span style="font-size:12px;font-weight:400;color:#555"> лв.</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overall.income)}<span style="font-size:12px;font-weight:400;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overall.expenses)}<span style="font-size:12px;font-weight:400;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallResult)}">${fmtShort(overallResult)}<span style="font-size:12px;font-weight:400;color:#555"> €</span></div></div>
     <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Тонаж</div><div style="font-size:22px;font-weight:800;color:#60a5fa">${fmtShort(overall.tonnage)}<span style="font-size:12px;font-weight:400;color:#555"> т.</span></div></div>
   </div>
 
@@ -1026,11 +1026,11 @@ function renderMeta8(){
     ${selProd ? `
     <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px">
       <div class="summary-box"><i class="fa fa-weight-hanging" style="color:#60a5fa;width:20px"></i><div><div style="font-size:11px;color:#555">Тонаж</div><div style="font-weight:700;color:#60a5fa">${fmt(prodData?.tonnage||0)} т.</div></div></div>
-      <div class="summary-box"><i class="fa fa-tag" style="color:#a78bfa;width:20px"></i><div><div style="font-size:11px;color:#555">Ср. продажна цена</div><div style="font-weight:700;color:#a78bfa">${prodData?.tonnage>0?fmt((prodData.income||0)/(prodData.tonnage||1)):'—'} лв./т.</div></div></div>
-      <div class="summary-box"><i class="fa fa-arrow-up" style="color:#22c55e;width:20px"></i><div><div style="font-size:11px;color:#555">Приходи</div><div style="font-weight:700;color:#22c55e">+${fmt(prodData?.income||0)} лв.</div></div></div>
-      <div class="summary-box"><i class="fa fa-user-hard-hat" style="color:#ef4444;width:20px"></i><div><div style="font-size:11px;color:#555">Работници</div><div style="font-weight:700;color:#ef4444">-${fmt(prodData?.expWorkers||0)} лв.</div></div></div>
-      <div class="summary-box"><i class="fa fa-plus-circle" style="color:#f59e0b;width:20px"></i><div><div style="font-size:11px;color:#555">Допълнителни</div><div style="font-weight:700;color:#f59e0b">-${fmt(prodData?.expAdditional||0)} лв.</div></div></div>
-      <div class="summary-box"><i class="fa fa-balance-scale" style="color:${prodResult>=0?'#22c55e':'#ef4444'};width:20px"></i><div><div style="font-size:11px;color:#555">Резултат</div><div style="font-weight:700" class="${resultClass(prodResult)}">${fmt(prodResult)} лв.</div></div></div>
+      <div class="summary-box"><i class="fa fa-tag" style="color:#a78bfa;width:20px"></i><div><div style="font-size:11px;color:#555">Ср. продажна цена</div><div style="font-weight:700;color:#a78bfa">${prodData?.tonnage>0?fmt((prodData.income||0)/(prodData.tonnage||1)):'—'} €/т.</div></div></div>
+      <div class="summary-box"><i class="fa fa-arrow-up" style="color:#22c55e;width:20px"></i><div><div style="font-size:11px;color:#555">Приходи</div><div style="font-weight:700;color:#22c55e">+${fmt(prodData?.income||0)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-user-hard-hat" style="color:#ef4444;width:20px"></i><div><div style="font-size:11px;color:#555">Работници</div><div style="font-weight:700;color:#ef4444">-${fmt(prodData?.expWorkers||0)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-plus-circle" style="color:#f59e0b;width:20px"></i><div><div style="font-size:11px;color:#555">Допълнителни</div><div style="font-weight:700;color:#f59e0b">-${fmt(prodData?.expAdditional||0)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-balance-scale" style="color:${prodResult>=0?'#22c55e':'#ef4444'};width:20px"></i><div><div style="font-size:11px;color:#555">Резултат</div><div style="font-weight:700" class="${resultClass(prodResult)}">${fmt(prodResult)} €</div></div></div>
     </div>
 
     <div class="table-wrap">
@@ -1127,8 +1127,8 @@ function renderLiderStroy(){
         const subCount=(o.subObjects||[]).length;
         return `<div class="obj-card ${selObj===o.id?'sel':''}" style="margin-bottom:8px" onclick="S.selEntity='${o.id}';S.selSubEntity=null;render()">
           <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:5px">${o.name}</div>
-          <div style="font-size:11px;color:#555">Бюджет: <span style="color:#ddd">${fmtShort(o.budget)} лв.</span></div>
-          <div style="font-size:11px;margin-top:2px;color:${rem>=0?'#22c55e':'#ef4444'}">Остатък: ${fmtShort(rem)} лв.</div>
+          <div style="font-size:11px;color:#555">Бюджет: <span style="color:#ddd">${fmtShort(o.budget)} €</span></div>
+          <div style="font-size:11px;margin-top:2px;color:${rem>=0?'#22c55e':'#ef4444'}">Остатък: ${fmtShort(rem)} €</div>
           ${subCount>0?`<div style="font-size:10px;color:#555;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
           ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
             <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editLSBudget','${o.id}')"><i class="fa fa-edit"></i> Бюджет</button>
@@ -1143,11 +1143,11 @@ function renderLiderStroy(){
       ${obj ? `
       <!-- KPI row -->
       <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#ddd">${fmtShort(obj.budget)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(remainder)}">${fmtShort(remainder)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#ddd">${fmtShort(obj.budget)}<span style="font-size:11px;color:#555"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(remainder)}">${fmtShort(remainder)}<span style="font-size:11px;color:#555"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> €</span></div></div>
       </div>
 
       <!-- Sub-objects panel -->
@@ -1236,8 +1236,8 @@ function renderBSO(){
     const rem=getBSORemainder(s.id);
     return `<tr onclick="S.selEntity='${s.id}';render()" style="cursor:pointer;${selSub===s.id?'background:rgba(204,0,0,.06)':''}">
       <td style="font-weight:600;color:${selSub===s.id?'#ff4444':'#ddd'}">${s.name}</td>
-      <td style="color:#9ca3af">${(s.budget||0)>0?fmtShort(s.budget)+' лв.':'—'}</td>
-      <td style="color:${rem>=0?'#22c55e':'#ef4444'};font-weight:600">${(s.budget||0)>0?fmtShort(rem)+' лв.':'—'}</td>
+      <td style="color:#9ca3af">${(s.budget||0)>0?fmtShort(s.budget)+' €':'—'}</td>
+      <td style="color:${rem>=0?'#22c55e':'#ef4444'};font-weight:600">${(s.budget||0)>0?fmtShort(rem)+' €':'—'}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
@@ -1255,9 +1255,9 @@ function renderBSO(){
   </div>
 
   <div class="grid-stats" style="margin-bottom:16px">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
   </div>
 
   <div class="card" style="margin-bottom:16px">
@@ -1290,11 +1290,11 @@ function renderBSO(){
         ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSOEntry','${selSub}')"><i class="fa fa-plus"></i> Добави</button>`:''}
       </div>
       <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr));margin-bottom:12px">
-        <div class="summary-box"><i class="fa fa-file-invoice-dollar" style="color:#9ca3af;width:18px"></i><div><div style="font-size:10px;color:#555">Бюджет</div><div style="font-size:13px;font-weight:700;color:#9ca3af">${bsoBudget>0?fmt(bsoBudget)+' лв.':'—'}</div></div></div>
-        <div class="summary-box"><i class="fa fa-wallet" style="color:${bsoRemainder>=0?'#22c55e':'#ef4444'};width:18px"></i><div><div style="font-size:10px;color:#555">Остатък</div><div style="font-size:13px;font-weight:700" class="${resultClass(bsoRemainder)}">${bsoBudget>0?fmt(bsoRemainder)+' лв.':'—'}</div></div></div>
-        <div class="summary-box"><i class="fa fa-arrow-up" style="color:#22c55e;width:18px"></i><div><div style="font-size:10px;color:#555">Приходи</div><div style="font-size:13px;font-weight:700;color:#22c55e">${fmt(mt.income)} лв.</div></div></div>
-        <div class="summary-box"><i class="fa fa-arrow-down" style="color:#ef4444;width:18px"></i><div><div style="font-size:10px;color:#555">Разходи</div><div style="font-size:13px;font-weight:700;color:#ef4444">${fmt(mt.expenses)} лв.</div></div></div>
-        <div class="summary-box"><i class="fa fa-balance-scale" style="color:${result>=0?'#22c55e':'#ef4444'};width:18px"></i><div><div style="font-size:10px;color:#555">Резултат</div><div style="font-size:13px;font-weight:700" class="${resultClass(result)}">${fmt(result)} лв.</div></div></div>
+        <div class="summary-box"><i class="fa fa-file-invoice-dollar" style="color:#9ca3af;width:18px"></i><div><div style="font-size:10px;color:#555">Бюджет</div><div style="font-size:13px;font-weight:700;color:#9ca3af">${bsoBudget>0?fmt(bsoBudget)+' €':'—'}</div></div></div>
+        <div class="summary-box"><i class="fa fa-wallet" style="color:${bsoRemainder>=0?'#22c55e':'#ef4444'};width:18px"></i><div><div style="font-size:10px;color:#555">Остатък</div><div style="font-size:13px;font-weight:700" class="${resultClass(bsoRemainder)}">${bsoBudget>0?fmt(bsoRemainder)+' €':'—'}</div></div></div>
+        <div class="summary-box"><i class="fa fa-arrow-up" style="color:#22c55e;width:18px"></i><div><div style="font-size:10px;color:#555">Приходи</div><div style="font-size:13px;font-weight:700;color:#22c55e">${fmt(mt.income)} €</div></div></div>
+        <div class="summary-box"><i class="fa fa-arrow-down" style="color:#ef4444;width:18px"></i><div><div style="font-size:10px;color:#555">Разходи</div><div style="font-size:13px;font-weight:700;color:#ef4444">${fmt(mt.expenses)} €</div></div></div>
+        <div class="summary-box"><i class="fa fa-balance-scale" style="color:${result>=0?'#22c55e':'#ef4444'};width:18px"></i><div><div style="font-size:10px;color:#555">Резултат</div><div style="font-size:13px;font-weight:700" class="${resultClass(result)}">${fmt(result)} €</div></div></div>
       </div>
       <div class="table-wrap">
         <table class="tbl">
@@ -1354,9 +1354,9 @@ function renderMetaPlan(){
   </div>
 
   <div class="grid-stats">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#555"> лв.</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#555"> €</span></div></div>
   </div>
 
   <div class="grid-2" style="margin-top:16px">
@@ -1445,9 +1445,9 @@ function renderInvestments(){
   </div>
 
   <div class="grid-stats" style="margin-bottom:16px">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
   </div>
 
   <div style="display:flex;gap:16px;flex-wrap:wrap">
@@ -1467,7 +1467,7 @@ function renderInvestments(){
             <span style="color:#22c55e">+${fmtShort(omt.income)}</span>
             <span style="color:#ef4444">-${fmtShort(omt.expenses)}</span>
           </div>
-          <div style="font-size:11px;margin-top:3px" class="${resultClass(or)}">Резултат: ${fmtShort(or)} лв.</div>
+          <div style="font-size:11px;margin-top:3px" class="${resultClass(or)}">Резултат: ${fmtShort(or)} €</div>
           ${subCount>0?`<div style="font-size:10px;color:#555;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
           ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
             <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteInvObject('${o.id}')"><i class="fa fa-trash"></i></button>
@@ -1480,9 +1480,9 @@ function renderInvestments(){
     <div style="flex:1;min-width:0">
       ${obj ? `
       <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> лв.</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> €</span></div></div>
       </div>
 
       <!-- Sub-objects panel -->
@@ -1571,9 +1571,9 @@ function renderKasa(company, title, icon){
   </div>
 
   <div class="grid-stats">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#555"> лв.</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#555"> лв.</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#555"> €</span></div></div>
   </div>
 
   <div class="grid-2" style="margin-top:16px">
@@ -1672,7 +1672,7 @@ function renderModal(){
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Период, продукт..."></div>
       <div class="frow">
         <div class="fgroup"><label class="lbl">Тонаж (т.)</label><input id="f-ton" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
-        <div class="fgroup"><label class="lbl">Приходи (лв.)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
       </div>
       <div class="frow">
         <div class="fgroup"><label class="lbl">Разходи — Работници</label><input id="f-ew" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
@@ -1700,7 +1700,7 @@ function renderModal(){
     <div class="modal-hd"><span class="modal-title"><i class="fa fa-building text-red" style="margin-right:8px"></i>Нов обект</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Обект X" required></div>
-      <div class="fgroup"><label class="lbl">Бюджет (лв.)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00" required></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00" required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
         <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
@@ -1724,7 +1724,7 @@ function renderModal(){
     <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Обект: ${obj?.name}</label></div>
-      <div class="fgroup"><label class="lbl">Бюджет (лв.)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${obj?.budget||0}" required></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${obj?.budget||0}" required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
         <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
@@ -1741,8 +1741,8 @@ function renderModal(){
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       ${lsSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${subObjOpts}</select></div>`:''}
       <div class="frow">
-        <div class="fgroup"><label class="lbl">Приходи (лв.)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
-        <div class="fgroup"><label class="lbl">Разходи (лв.)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
@@ -1758,8 +1758,8 @@ function renderModal(){
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       <div class="frow">
-        <div class="fgroup"><label class="lbl">Приходи (лв.)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
-        <div class="fgroup"><label class="lbl">Разходи (лв.)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
@@ -1777,8 +1777,8 @@ function renderModal(){
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       ${invSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${subObjOpts}</select></div>`:''}
       <div class="frow">
-        <div class="fgroup"><label class="lbl">Приходи (лв.)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
-        <div class="fgroup"><label class="lbl">Разходи (лв.)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
@@ -1791,7 +1791,7 @@ function renderModal(){
     <div class="modal-hd"><span class="modal-title"><i class="fa fa-city text-red" style="margin-right:8px"></i>Нов обект — БСО</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Напр. Обект X" required></div>
-      <div class="fgroup"><label class="lbl">Бюджет (лв.)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
         <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
@@ -1804,7 +1804,7 @@ function renderModal(){
     <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Обект: ${bsoCat?.name||''}</label></div>
-      <div class="fgroup"><label class="lbl">Бюджет (лв.)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${bsoCat?.budget||0}" required></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${bsoCat?.budget||0}" required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
         <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
@@ -1840,8 +1840,8 @@ function renderModal(){
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       <div class="frow">
-        <div class="fgroup"><label class="lbl">Приходи (лв.)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
-        <div class="fgroup"><label class="lbl">Разходи (лв.)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
@@ -1952,7 +1952,7 @@ function createPieChart(id, data, canvas){
     },
     options:{
       responsive:true,maintainAspectRatio:false,cutout:'65%',
-      plugins:{legend:{position:'right',labels:{color:'#666',font:{size:11},boxWidth:12,padding:12}},tooltip:{backgroundColor:'#1a1a1a',titleColor:'#ddd',bodyColor:'#888',borderColor:'#2a2a2a',borderWidth:1,callbacks:{label:ctx=>`${ctx.label}: ${fmtShort(ctx.raw)} лв.`}}}
+      plugins:{legend:{position:'right',labels:{color:'#666',font:{size:11},boxWidth:12,padding:12}},tooltip:{backgroundColor:'#1a1a1a',titleColor:'#ddd',bodyColor:'#888',borderColor:'#2a2a2a',borderWidth:1,callbacks:{label:ctx=>`${ctx.label}: ${fmtShort(ctx.raw)} €`}}}
     }
   });
 }
