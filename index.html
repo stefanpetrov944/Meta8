@@ -202,9 +202,11 @@ function defaultDB() {
 let db = (()=>{ try{ const s=localStorage.getItem(DB_KEY); return s ? JSON.parse(s) : defaultDB(); }catch(e){ return defaultDB(); }})();
 let session = (()=>{ try{ const s=localStorage.getItem(SES_KEY); return s ? JSON.parse(s) : null; }catch(e){ return null; }})();
 
-let _fbEvtSrc  = null;   // SSE EventSource for real-time sync
-let _fbOnline  = false;  // is Firebase reachable?
-let _ownSaveTs = 0;      // timestamp of our last save (to suppress echo)
+let _fbEvtSrc      = null;   // SSE EventSource for real-time sync
+let _fbOnline      = false;  // is Firebase reachable?
+let _ownSaveTs     = 0;      // timestamp of our last save (to suppress echo)
+let _fbFirstEvent  = true;   // skip the initial full-db SSE event (already loaded via initDB)
+let _pendingRender = false;  // SSE update arrived while modal was open — re-render on close
 
 // ---- saveDB: write to localStorage cache AND Firebase ----
 function saveDB(){
@@ -249,11 +251,18 @@ async function initDB(){
 // ---- startRealtimeSync: SSE listener — fires whenever any device saves ----
 function startRealtimeSync(){
   if(_fbEvtSrc){ _fbEvtSrc.close(); }
+  _fbFirstEvent = true;
   _fbEvtSrc = new EventSource(`${FIREBASE_URL}/${FB_NODE}.json`);
 
   _fbEvtSrc.addEventListener('put', evt=>{
-    // Suppress echo from our own saves (within 3 s)
-    if(Date.now() - _ownSaveTs < 3000) return;
+    // 1. Skip the very first event — it's the initial full-db snapshot we
+    //    already loaded in initDB(). Processing it causes an immediate re-render
+    //    that resets any open modal the user might have started filling in.
+    if(_fbFirstEvent){ _fbFirstEvent = false; return; }
+
+    // 2. Suppress echo of our own saves for up to 6 seconds
+    if(Date.now() - _ownSaveTs < 6000) return;
+
     try {
       const pl = JSON.parse(evt.data);
       const incoming = pl.data;
@@ -261,7 +270,12 @@ function startRealtimeSync(){
         db = _mergeDefaults(incoming);
         localStorage.setItem(DB_KEY, JSON.stringify(db));
         _fbOnline = true;
-        render();        // refresh UI with data from other device
+        // 3. If a modal is open, defer the render so we don't wipe the user's form
+        if(S.modal){
+          _pendingRender = true;
+        } else {
+          render(); // safe to re-render — no modal is open
+        }
       }
     } catch(_){}
   });
@@ -1896,6 +1910,7 @@ function openModal(type, entityId, company, label){
 function closeModal(){
   S.modal = null;
   S.mdata = {};
+  _pendingRender = false; // clear deferred flag — render() below covers it
   render();
 }
 
@@ -2030,7 +2045,12 @@ function bindEvents(){
 
   document.getElementById('m-form')?.addEventListener('submit',e=>{
     e.preventDefault();
-    handleModalSubmit();
+    try {
+      handleModalSubmit();
+    } catch(err){
+      console.error('handleModalSubmit error:', err);
+      notify('Грешка при запазване: ' + err.message, 'err');
+    }
   });
 }
 
