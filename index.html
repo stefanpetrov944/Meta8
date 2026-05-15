@@ -12,113 +12,115 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#080808;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;overflow-x:hidden}
+body{background:#f0f2f5;color:#111827;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;overflow-x:hidden}
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:#111}
+::-webkit-scrollbar-track{background:#e5e7eb}
 ::-webkit-scrollbar-thumb{background:#c00;border-radius:3px}
-.sidebar{width:252px;background:#0b0b0b;border-right:1px solid #1c1c1c;height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:100;transition:transform .3s}
-.logo-area{padding:20px 18px 16px;border-bottom:1px solid #1c1c1c;display:flex;align-items:center;gap:12px}
+/* ── Sidebar (stays dark for contrast) ── */
+.sidebar{width:252px;background:#1a1a2e;border-right:1px solid #252540;height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:100;transition:transform .3s}
+.logo-area{padding:20px 18px 16px;border-bottom:1px solid #252540;display:flex;align-items:center;gap:12px}
 .logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#c00,#800);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;letter-spacing:-1px;flex-shrink:0}
 .logo-text{line-height:1.2}
-.logo-text .t1{font-size:13px;font-weight:800;color:#fff;letter-spacing:.5px}
-.logo-text .t2{font-size:10px;color:#555;font-weight:500;letter-spacing:.3px}
-.sidebar-section{padding:8px 10px 4px;font-size:10px;font-weight:700;color:#444;letter-spacing:1px;text-transform:uppercase}
-.nav-item{display:flex;align-items:center;gap:11px;padding:10px 18px;cursor:pointer;color:#666;transition:all .2s;border-left:3px solid transparent;font-size:13.5px;font-weight:500;border-radius:0 6px 6px 0;margin:1px 8px 1px 0;text-decoration:none}
-.nav-item:hover{background:rgba(204,0,0,.1);color:#ddd;border-left-color:rgba(204,0,0,.5)}
-.nav-item.active{background:rgba(204,0,0,.15);color:#ff3333;border-left-color:#c00}
+.logo-text .t1{font-size:13px;font-weight:800;color:#f1f5f9;letter-spacing:.5px}
+.logo-text .t2{font-size:10px;color:#64748b;font-weight:500;letter-spacing:.3px}
+.sidebar-section{padding:8px 10px 4px;font-size:10px;font-weight:700;color:#475569;letter-spacing:1px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 18px;cursor:pointer;color:#94a3b8;transition:all .2s;border-left:3px solid transparent;font-size:13.5px;font-weight:500;border-radius:0 6px 6px 0;margin:1px 8px 1px 0;text-decoration:none}
+.nav-item:hover{background:rgba(204,0,0,.12);color:#f1f5f9;border-left-color:rgba(204,0,0,.5)}
+.nav-item.active{background:rgba(204,0,0,.18);color:#ff4444;border-left-color:#c00}
 .nav-item i{width:16px;text-align:center;font-size:13px}
-.sidebar-bottom{padding:14px;border-top:1px solid #1c1c1c}
-.user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#111;border-radius:8px;border:1px solid #1c1c1c}
+.sidebar-bottom{padding:14px;border-top:1px solid #252540}
+.user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#252540;border-radius:8px;border:1px solid #334155}
 .user-avatar{width:32px;height:32px;background:linear-gradient(135deg,#c00,#800);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
 .user-info{flex:1;min-width:0}
-.user-name{font-size:12px;font-weight:600;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-role{font-size:10px;color:#555}
-.main-content{margin-left:252px;min-height:100vh;display:flex;flex-direction:column}
-.topbar{background:rgba(11,11,11,.95);border-bottom:1px solid #1c1c1c;padding:13px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(8px)}
+.user-name{font-size:12px;font-weight:600;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10px;color:#64748b}
+/* ── Main content (light) ── */
+.main-content{margin-left:252px;min-height:100vh;display:flex;flex-direction:column;background:#f0f2f5}
+.topbar{background:rgba(255,255,255,.97);border-bottom:1px solid #e5e7eb;padding:13px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .page-area{padding:24px 26px;flex:1}
-.card{background:#111;border:1px solid #1e1e1e;border-radius:10px;padding:20px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .card-sm{padding:14px 16px}
 .card-red{border-color:rgba(204,0,0,.3)}
-.stat-card{background:#111;border:1px solid #1e1e1e;border-radius:10px;padding:18px 20px;transition:all .25s;cursor:default}
-.stat-card:hover{border-color:rgba(204,0,0,.35);transform:translateY(-2px);box-shadow:0 8px 30px rgba(204,0,0,.1)}
+.stat-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;transition:all .25s;cursor:default;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.stat-card:hover{border-color:rgba(204,0,0,.4);transform:translateY(-2px);box-shadow:0 6px 20px rgba(204,0,0,.08)}
 .btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:none;outline:none;line-height:1}
 .btn-primary{background:linear-gradient(135deg,#c00,#900);color:#fff}
-.btn-primary:hover{background:linear-gradient(135deg,#e00,#c00);box-shadow:0 4px 15px rgba(204,0,0,.4);transform:translateY(-1px)}
-.btn-secondary{background:#181818;color:#888;border:1px solid #252525}
-.btn-secondary:hover{background:#1f1f1f;color:#bbb;border-color:#333}
-.btn-danger{background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25)}
-.btn-danger:hover{background:rgba(239,68,68,.22)}
-.btn-success{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.25)}
-.btn-success:hover{background:rgba(34,197,94,.22)}
+.btn-primary:hover{background:linear-gradient(135deg,#e00,#c00);box-shadow:0 4px 15px rgba(204,0,0,.35);transform:translateY(-1px)}
+.btn-secondary{background:#f8fafc;color:#374151;border:1px solid #d1d5db}
+.btn-secondary:hover{background:#f1f5f9;color:#111827;border-color:#9ca3af}
+.btn-danger{background:rgba(239,68,68,.08);color:#dc2626;border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.15)}
+.btn-success{background:rgba(34,197,94,.1);color:#16a34a;border:1px solid rgba(34,197,94,.3)}
+.btn-success:hover{background:rgba(34,197,94,.18)}
 .btn-sm{padding:5px 10px;font-size:12px}
 .btn-lg{padding:12px 22px;font-size:14.5px}
 .btn-icon{padding:7px 8px}
-.input{width:100%;background:#151515;border:1px solid #222;border-radius:7px;padding:9px 13px;color:#fff;font-size:13.5px;transition:border-color .2s;outline:none}
-.input:focus{border-color:#c00;box-shadow:0 0 0 3px rgba(204,0,0,.1)}
-.input::placeholder{color:#444}
+.input{width:100%;background:#fff;border:1px solid #d1d5db;border-radius:7px;padding:9px 13px;color:#111827;font-size:13.5px;transition:border-color .2s;outline:none}
+.input:focus{border-color:#c00;box-shadow:0 0 0 3px rgba(204,0,0,.08)}
+.input::placeholder{color:#9ca3af}
 .input-lg{padding:11px 15px;font-size:14.5px;border-radius:8px}
-select.input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23666' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:20px;padding-right:32px}
-label.lbl{display:block;font-size:11px;font-weight:700;color:#555;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal{background:#0f0f0f;border:1px solid #252525;border-radius:13px;padding:26px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;animation:mIn .22s ease}
+select.input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%236b7280' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:20px;padding-right:32px}
+label.lbl{display:block;font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border:1px solid #e5e7eb;border-radius:13px;padding:26px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;animation:mIn .22s ease;box-shadow:0 20px 50px rgba(0,0,0,.15)}
 .modal-lg{max-width:700px}
 @keyframes mIn{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:none}}
-.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #1c1c1c}
-.modal-title{font-size:16px;font-weight:700}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #f3f4f6}
+.modal-title{font-size:16px;font-weight:700;color:#111827}
 .fgroup{margin-bottom:14px}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.table-wrap{overflow-x:auto;border-radius:8px;border:1px solid #1c1c1c}
+.table-wrap{overflow-x:auto;border-radius:8px;border:1px solid #e5e7eb}
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
-.tbl th{padding:9px 14px;text-align:left;background:#0d0d0d;color:#555;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #1c1c1c;white-space:nowrap}
-.tbl td{padding:11px 14px;border-bottom:1px solid #161616;color:#ccc;white-space:nowrap}
+.tbl th{padding:9px 14px;text-align:left;background:#f9fafb;color:#6b7280;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #e5e7eb;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #f3f4f6;color:#374151;white-space:nowrap}
 .tbl tr:last-child td{border-bottom:none}
-.tbl tr:hover td{background:rgba(204,0,0,.04)}
-.tbl-total td{background:#0d0d0d !important;font-weight:700;color:#fff !important;border-top:1px solid #2a2a2a}
-.tabs{display:flex;gap:3px;padding:3px;background:#0d0d0d;border-radius:8px;border:1px solid #1c1c1c}
-.tab{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:#555;transition:all .2s;white-space:nowrap}
-.tab:hover{color:#ccc;background:rgba(255,255,255,.04)}
+.tbl tr:hover td{background:rgba(204,0,0,.03)}
+.tbl-total td{background:#f9fafb !important;font-weight:700;color:#111827 !important;border-top:1px solid #e5e7eb}
+.tabs{display:flex;gap:3px;padding:3px;background:#f3f4f6;border-radius:8px;border:1px solid #e5e7eb}
+.tab{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:#6b7280;transition:all .2s;white-space:nowrap}
+.tab:hover{color:#111827;background:rgba(0,0,0,.06)}
 .tab.active{background:#c00;color:#fff}
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
-.badge-green{background:rgba(34,197,94,.15);color:#22c55e}
-.badge-red{background:rgba(239,68,68,.15);color:#ef4444}
-.badge-gray{background:rgba(156,163,175,.1);color:#9ca3af}
-.badge-blue{background:rgba(59,130,246,.15);color:#60a5fa}
-.badge-yellow{background:rgba(234,179,8,.15);color:#eab308}
-.badge-red2{background:rgba(204,0,0,.15);color:#ff4444}
-.text-pos{color:#22c55e;font-weight:600}
-.text-neg{color:#ef4444;font-weight:600}
-.text-neu{color:#ccc;font-weight:600}
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,rgba(204,0,0,.09) 0%,#080808 60%);padding:20px}
-.auth-card{background:#0d0d0d;border:1px solid #1f1f1f;border-radius:16px;padding:36px;width:100%;max-width:420px;box-shadow:0 25px 60px rgba(0,0,0,.85)}
-.divider{display:flex;align-items:center;gap:12px;color:#333;font-size:11px;margin:14px 0}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:#1c1c1c}
-.notice{position:fixed;top:18px;right:18px;z-index:9999;background:#111;border:1px solid #252525;border-radius:10px;padding:13px 16px;min-width:240px;max-width:340px;display:flex;align-items:center;gap:11px;box-shadow:0 8px 30px rgba(0,0,0,.6);animation:nIn .3s ease}
-.notice-ok{border-left:4px solid #22c55e}
-.notice-err{border-left:4px solid #ef4444}
+.badge-green{background:rgba(22,163,74,.12);color:#16a34a}
+.badge-red{background:rgba(220,38,38,.1);color:#dc2626}
+.badge-gray{background:rgba(107,114,128,.1);color:#6b7280}
+.badge-blue{background:rgba(59,130,246,.1);color:#2563eb}
+.badge-yellow{background:rgba(202,138,4,.1);color:#b45309}
+.badge-red2{background:rgba(204,0,0,.1);color:#c00}
+.text-pos{color:#16a34a;font-weight:600}
+.text-neg{color:#dc2626;font-weight:600}
+.text-neu{color:#374151;font-weight:600}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,rgba(204,0,0,.07) 0%,#f0f2f5 60%);padding:20px}
+.auth-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:36px;width:100%;max-width:420px;box-shadow:0 10px 40px rgba(0,0,0,.1)}
+.divider{display:flex;align-items:center;gap:12px;color:#9ca3af;font-size:11px;margin:14px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e5e7eb}
+.notice{position:fixed;top:18px;right:18px;z-index:9999;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:13px 16px;min-width:240px;max-width:340px;display:flex;align-items:center;gap:11px;box-shadow:0 8px 30px rgba(0,0,0,.12);animation:nIn .3s ease}
+.notice-ok{border-left:4px solid #16a34a}
+.notice-err{border-left:4px solid #dc2626}
 .notice-info{border-left:4px solid #c00}
 @keyframes nIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:none}}
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;color:#444;text-align:center}
-.empty-state i{font-size:36px;color:#282828;margin-bottom:14px}
-.sep{height:1px;background:#1c1c1c;margin:16px 0}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;color:#9ca3af;text-align:center}
+.empty-state i{font-size:36px;color:#d1d5db;margin-bottom:14px}
+.sep{height:1px;background:#e5e7eb;margin:16px 0}
 .chart-wrap{position:relative;height:220px}
-.progress-bar{height:5px;background:#1a1a1a;border-radius:3px;overflow:hidden;margin-top:8px}
+.progress-bar{height:5px;background:#e5e7eb;border-radius:3px;overflow:hidden;margin-top:8px}
 .progress-fill{height:100%;border-radius:3px;transition:width .4s ease}
-.obj-card{background:#111;border:1px solid #1c1c1c;border-radius:10px;padding:16px;cursor:pointer;transition:all .25s}
-.obj-card:hover{border-color:rgba(204,0,0,.35);transform:translateY(-1px);box-shadow:0 5px 20px rgba(204,0,0,.08)}
-.obj-card.sel{border-color:rgba(204,0,0,.5);background:rgba(204,0,0,.05)}
+.obj-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;cursor:pointer;transition:all .25s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.obj-card:hover{border-color:rgba(204,0,0,.4);transform:translateY(-1px);box-shadow:0 4px 16px rgba(204,0,0,.08)}
+.obj-card.sel{border-color:rgba(204,0,0,.5);background:rgba(204,0,0,.04)}
 .icon-box{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .section-hd{margin-bottom:20px}
-.section-hd h2{font-size:20px;font-weight:700;color:#fff;margin-bottom:2px}
-.section-hd p{font-size:13px;color:#555}
+.section-hd h2{font-size:20px;font-weight:700;color:#111827;margin-bottom:2px}
+.section-hd p{font-size:13px;color:#6b7280}
 .grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.month-nav{display:flex;align-items:center;gap:10px;background:#0d0d0d;border:1px solid #1c1c1c;border-radius:8px;padding:6px 12px}
-.month-nav select{background:transparent;border:none;color:#ddd;font-size:13px;cursor:pointer;outline:none;padding:0}
-.month-nav select option{background:#111}
+.month-nav{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #d1d5db;border-radius:8px;padding:6px 12px}
+.month-nav select{background:transparent;border:none;color:#374151;font-size:13px;cursor:pointer;outline:none;padding:0}
+.month-nav select option{background:#fff;color:#111827}
 @media(max-width:768px){
   .sidebar{transform:translateX(-260px)}
-  .sidebar.open{transform:translateX(0);box-shadow:4px 0 30px rgba(0,0,0,.8)}
+  .sidebar.open{transform:translateX(0);box-shadow:4px 0 30px rgba(0,0,0,.3)}
   .main-content{margin-left:0}
   .mob-menu{display:flex !important}
   .grid-2,.grid-3{grid-template-columns:1fr}
@@ -127,17 +129,17 @@ label.lbl{display:block;font-size:11px;font-weight:700;color:#555;margin-bottom:
   .topbar{padding:11px 16px}
   .hide-mob{display:none!important}
 }
-.mob-menu{display:none;align-items:center;justify-content:center;width:36px;height:36px;background:#151515;border:1px solid #222;border-radius:7px;cursor:pointer}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:90}
+.mob-menu{display:none;align-items:center;justify-content:center;width:36px;height:36px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:7px;cursor:pointer}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90}
 .sidebar-overlay.show{display:block}
 .text-red{color:#c00}
-.text-muted{color:#555}
-.text-dim{color:#888}
+.text-muted{color:#6b7280}
+.text-dim{color:#9ca3af}
 .font-mono{font-family:'SF Mono',Consolas,monospace}
 .grad-text{background:linear-gradient(135deg,#c00,#ff5555);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .ring-anim{animation:pulseR 2s ease-in-out infinite}
-@keyframes pulseR{0%,100%{box-shadow:0 0 0 0 rgba(204,0,0,.4)}50%{box-shadow:0 0 0 8px rgba(204,0,0,0)}}
-.summary-box{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#0d0d0d;border-radius:8px;border:1px solid #1c1c1c}
+@keyframes pulseR{0%,100%{box-shadow:0 0 0 0 rgba(204,0,0,.35)}50%{box-shadow:0 0 0 8px rgba(204,0,0,0)}}
+.summary-box{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb}
 </style>
 </head>
 <body>
@@ -394,7 +396,7 @@ function resultBadge(n){ return n>0 ? 'badge-green' : n<0 ? 'badge-red' : 'badge
 function notify(msg, type='ok'){
   const el = document.createElement('div');
   el.className = `notice notice-${type==='ok'?'ok':type==='err'?'err':'info'}`;
-  el.innerHTML = `<i class="fa ${type==='ok'?'fa-check-circle text-pos':type==='err'?'fa-times-circle text-neg':'fa-info-circle text-red'}"></i><span style="font-size:13px;color:#ccc;flex:1">${msg}</span><i class="fa fa-times" style="color:#444;cursor:pointer;font-size:12px" onclick="this.parentElement.remove()"></i>`;
+  el.innerHTML = `<i class="fa ${type==='ok'?'fa-check-circle text-pos':type==='err'?'fa-times-circle text-neg':'fa-info-circle text-red'}"></i><span style="font-size:13px;color:#374151;flex:1">${msg}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer;font-size:12px" onclick="this.parentElement.remove()"></i>`;
   document.body.appendChild(el);
   setTimeout(()=>{ el.style.animation='nIn .3s ease reverse'; setTimeout(()=>el.remove(),280); }, 3200);
 }
@@ -494,7 +496,7 @@ function companyCheckboxes(selected){
   return list.map(item=>{
     const checked = isAll || (Array.isArray(selected)?selected.includes(item.v):selected===item.v);
     const extra = item.v==='all' ? `id="fc-all" onchange="toggleAllCompanies(this)"` : `onchange="updateAllCheckbox()"`;
-    return `<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#ccc;padding:4px 0">
+    return `<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;padding:4px 0">
       <input type="checkbox" ${extra} name="companies" value="${item.v}" ${checked?'checked':''} style="width:14px;height:14px;accent-color:#c00;cursor:pointer">
       ${item.l}
     </label>`;
@@ -612,11 +614,11 @@ function renderLogin(){
           <div class="logo-icon" style="width:52px;height:52px;font-size:22px">FP</div>
           <div style="text-align:left">
             <div style="font-size:17px;font-weight:800;color:#fff">Finance Pro</div>
-            <div style="font-size:11px;color:#555;letter-spacing:.5px">HOLDING PORTAL</div>
+            <div style="font-size:11px;color:#6b7280;letter-spacing:.5px">HOLDING PORTAL</div>
           </div>
         </div>
         <h2 style="font-size:22px;font-weight:700;margin-bottom:6px">Добре дошли</h2>
-        <p style="color:#555;font-size:13px">Влезте в акаунта си, за да продължите</p>
+        <p style="color:#6b7280;font-size:13px">Влезте в акаунта си, за да продължите</p>
       </div>
       <form id="login-form">
         <div class="fgroup">
@@ -627,11 +629,11 @@ function renderLogin(){
           <label class="lbl">Парола</label>
           <div style="position:relative">
             <input type="password" id="l-pass" class="input input-lg" placeholder="••••••••" required style="padding-right:44px">
-            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer;font-size:15px" onclick="togglePwd('l-pass',this)"></i>
+            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer;font-size:15px" onclick="togglePwd('l-pass',this)"></i>
           </div>
         </div>
         <div style="text-align:right;margin-bottom:10px">
-          <span style="font-size:12px;color:#555;cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="S.view='forgotPassword';render()">Забравена парола?</span>
+          <span style="font-size:12px;color:#6b7280;cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="S.view='forgotPassword';render()">Забравена парола?</span>
         </div>
         <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">
           <i class="fa fa-sign-in-alt"></i> Вход
@@ -641,8 +643,8 @@ function renderLogin(){
       <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="S.view='register';render()">
         <i class="fa fa-user-plus"></i> Регистрация на нов потребител
       </button>
-      <div style="margin-top:20px;padding:12px;background:#0d0d0d;border-radius:8px;border:1px solid #1c1c1c">
-        <p style="font-size:11px;color:#444;text-align:center;margin-bottom:4px">Демо акаунт (Администратор)</p>
+      <div style="margin-top:20px;padding:12px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb">
+        <p style="font-size:11px;color:#9ca3af;text-align:center;margin-bottom:4px">Демо акаунт (Администратор)</p>
         <p style="font-size:12px;color:#666;text-align:center">admin@meta8.bg / admin1234</p>
       </div>
     </div>
@@ -658,11 +660,11 @@ function renderRegister(){
           <div class="logo-icon">FP</div>
           <div style="text-align:left">
             <div style="font-size:16px;font-weight:800;color:#fff">Finance Pro</div>
-            <div style="font-size:10px;color:#555">HOLDING PORTAL</div>
+            <div style="font-size:10px;color:#6b7280">HOLDING PORTAL</div>
           </div>
         </div>
         <h2 style="font-size:20px;font-weight:700;margin-bottom:5px">Регистрация</h2>
-        <p style="color:#555;font-size:13px">Акаунтът изисква потвърждение от администратор</p>
+        <p style="color:#6b7280;font-size:13px">Акаунтът изисква потвърждение от администратор</p>
       </div>
       <form id="reg-form">
         <div class="fgroup">
@@ -677,19 +679,19 @@ function renderRegister(){
           <label class="lbl">Парола</label>
           <div style="position:relative">
             <input type="password" id="r-pass" class="input" placeholder="Минимум 6 символа" required minlength="6" style="padding-right:40px">
-            <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer" onclick="togglePwd('r-pass',this)"></i>
+            <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer" onclick="togglePwd('r-pass',this)"></i>
           </div>
         </div>
         <div class="fgroup">
           <label class="lbl">Повтори парола</label>
           <div style="position:relative">
             <input type="password" id="r-pass2" class="input" placeholder="Повторете паролата" required style="padding-right:40px">
-            <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer" onclick="togglePwd('r-pass2',this)"></i>
+            <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer" onclick="togglePwd('r-pass2',this)"></i>
           </div>
         </div>
         <div class="fgroup">
           <label class="lbl">Достъп до фирми</label>
-          <div style="padding:10px 14px;background:#151515;border:1px solid #222;border-radius:7px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
+          <div style="padding:10px 14px;background:#f9fafb;border:1px solid #d1d5db;border-radius:7px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
             ${companyCheckboxes([])}
           </div>
         </div>
@@ -715,11 +717,11 @@ function renderForgotPassword(){
           <div class="logo-icon">FP</div>
           <div style="text-align:left">
             <div style="font-size:16px;font-weight:800;color:#fff">Finance Pro</div>
-            <div style="font-size:10px;color:#555">HOLDING PORTAL</div>
+            <div style="font-size:10px;color:#6b7280">HOLDING PORTAL</div>
           </div>
         </div>
         <h2 style="font-size:20px;font-weight:700;margin-bottom:5px">Забравена парола</h2>
-        <p style="color:#555;font-size:13px">Въведете имейла си за да получите линк за възстановяване</p>
+        <p style="color:#6b7280;font-size:13px">Въведете имейла си за да получите линк за възстановяване</p>
       </div>
       <form id="forgot-form">
         <div class="fgroup">
@@ -747,7 +749,7 @@ function renderResetPassword(token){
     <div class="auth-wrap"><div class="auth-card" style="text-align:center">
       <div class="logo-icon" style="margin:0 auto 20px;width:52px;height:52px;font-size:22px">FP</div>
       <h2 style="font-size:20px;font-weight:700;color:#ef4444;margin-bottom:10px"><i class="fa fa-times-circle"></i> Невалиден линк</h2>
-      <p style="color:#555;font-size:13px;margin-bottom:20px">Линкът е изтекъл или вече е използван. Моля поискайте нов.</p>
+      <p style="color:#6b7280;font-size:13px;margin-bottom:20px">Линкът е изтекъл или вече е използван. Моля поискайте нов.</p>
       <button class="btn btn-secondary" onclick="window.location.href=window.location.pathname">
         <i class="fa fa-arrow-left"></i> Към вход
       </button>
@@ -759,21 +761,21 @@ function renderResetPassword(token){
       <div style="text-align:center;margin-bottom:24px">
         <div class="logo-icon" style="margin:0 auto 16px;width:52px;height:52px;font-size:22px">FP</div>
         <h2 style="font-size:20px;font-weight:700;margin-bottom:5px">Нова парола</h2>
-        <p style="color:#555;font-size:13px">Въведете и потвърдете новата си парола</p>
+        <p style="color:#6b7280;font-size:13px">Въведете и потвърдете новата си парола</p>
       </div>
       <form id="reset-form" data-token="${token}">
         <div class="fgroup">
           <label class="lbl">Нова парола</label>
           <div style="position:relative">
             <input type="password" id="rp-pass" class="input input-lg" placeholder="Минимум 6 символа" required minlength="6" style="padding-right:44px">
-            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer;font-size:15px" onclick="togglePwd('rp-pass',this)"></i>
+            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer;font-size:15px" onclick="togglePwd('rp-pass',this)"></i>
           </div>
         </div>
         <div class="fgroup">
           <label class="lbl">Повтори новата парола</label>
           <div style="position:relative">
             <input type="password" id="rp-pass2" class="input input-lg" placeholder="Повторете паролата" required style="padding-right:44px">
-            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer;font-size:15px" onclick="togglePwd('rp-pass2',this)"></i>
+            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer;font-size:15px" onclick="togglePwd('rp-pass2',this)"></i>
           </div>
         </div>
         <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">
@@ -836,21 +838,21 @@ function renderApp(){
           <div class="user-name">${session.name||session.email}</div>
           <div class="user-role">${roleLabel}</div>
         </div>
-        <i class="fa fa-sign-out-alt" style="color:#444;cursor:pointer;font-size:14px" onclick="logout()" title="Изход"></i>
+        <i class="fa fa-sign-out-alt" style="color:#9ca3af;cursor:pointer;font-size:14px" onclick="logout()" title="Изход"></i>
       </div>
     </div>
   </div>
   <div class="main-content">
     <div class="topbar">
       <div style="display:flex;align-items:center;gap:14px">
-        <div class="mob-menu" onclick="toggleSidebar()"><i class="fa fa-bars" style="color:#888"></i></div>
+        <div class="mob-menu" onclick="toggleSidebar()"><i class="fa fa-bars" style="color:#6b7280"></i></div>
         <div>
           <div style="font-size:15px;font-weight:700;color:#fff">${viewTitle()}</div>
-          <div style="font-size:11px;color:#444">Finance Pro Holding</div>
+          <div style="font-size:11px;color:#9ca3af">Finance Pro Holding</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <div title="${_fbOnline?'Firebase: свързано':'Firebase: без връзка'}" style="display:flex;align-items:center;gap:5px;font-size:10px;color:#444;background:#0d0d0d;border:1px solid #1c1c1c;border-radius:6px;padding:4px 8px">
+        <div title="${_fbOnline?'Firebase: свързано':'Firebase: без връзка'}" style="display:flex;align-items:center;gap:5px;font-size:10px;color:#9ca3af;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px">
           <div style="width:7px;height:7px;border-radius:50%;background:${_fbOnline?'#22c55e':'#ef4444'};box-shadow:0 0 6px ${_fbOnline?'#22c55e':'#ef4444'}44"></div>
           <span class="hide-mob">${_fbOnline?'Онлайн':'Офлайн'}</span>
         </div>
@@ -918,8 +920,8 @@ function renderDashboard(){
     return `<div class="obj-card" onclick="nav('${c.id}')" style="display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;align-items:center;gap:12px">
         <div class="icon-box" style="background:rgba(255,255,255,.05);color:${c.color}"><i class="fa ${c.icon}"></i></div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#ddd">${c.label}</div>
-        <div style="font-size:11px;color:#555">Приходи: <span style="color:#22c55e">${fmt(t.income)} €</span></div></div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#1f2937">${c.label}</div>
+        <div style="font-size:11px;color:#6b7280">Приходи: <span style="color:#22c55e">${fmt(t.income)} €</span></div></div>
         <span class="badge ${resultBadge(p)}">${fmtShort(p)} €</span>
       </div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${c.color};opacity:.6"></div></div>
@@ -944,51 +946,51 @@ function renderDashboard(){
   <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
     <div class="stat-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Общо приходи</span>
+        <span style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Общо приходи</span>
         <div class="icon-box" style="width:36px;height:36px;background:rgba(34,197,94,.1);color:#22c55e;font-size:14px"><i class="fa fa-arrow-trend-up"></i></div>
       </div>
       <div style="font-size:26px;font-weight:800;color:#22c55e;font-family:'SF Mono',monospace">${fmtShort(ht.income)}</div>
-      <div style="font-size:11px;color:#444;margin-top:2px">евро</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:2px">евро</div>
     </div>
     <div class="stat-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Общо разходи</span>
+        <span style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Общо разходи</span>
         <div class="icon-box" style="width:36px;height:36px;background:rgba(239,68,68,.1);color:#ef4444;font-size:14px"><i class="fa fa-arrow-trend-down"></i></div>
       </div>
       <div style="font-size:26px;font-weight:800;color:#ef4444;font-family:'SF Mono',monospace">${fmtShort(ht.expenses)}</div>
-      <div style="font-size:11px;color:#444;margin-top:2px">евро</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:2px">евро</div>
     </div>
     <div class="stat-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Печалба</span>
+        <span style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Печалба</span>
         <div class="icon-box" style="width:36px;height:36px;background:rgba(204,0,0,.1);color:#c00;font-size:14px"><i class="fa fa-scale-balanced"></i></div>
       </div>
       <div style="font-size:26px;font-weight:800;font-family:'SF Mono',monospace" class="${resultClass(profit)}">${fmtShort(profit)}</div>
-      <div style="font-size:11px;color:#444;margin-top:2px">евро</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:2px">евро</div>
     </div>
     <div class="stat-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Рентабилност</span>
+        <span style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Рентабилност</span>
         <div class="icon-box" style="width:36px;height:36px;background:rgba(59,130,246,.1);color:#60a5fa;font-size:14px"><i class="fa fa-percent"></i></div>
       </div>
       <div style="font-size:26px;font-weight:800;color:#60a5fa;font-family:'SF Mono',monospace">${ht.income>0?Math.round(profit/ht.income*100):0}%</div>
-      <div style="font-size:11px;color:#444;margin-top:2px">марж на печалбата</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:2px">марж на печалбата</div>
     </div>
   </div>
 
   <div class="grid-2" style="margin-bottom:20px">
     <div class="card">
-      <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:14px"><i class="fa fa-chart-bar text-red" style="margin-right:7px"></i>Тренд — последни 6 месеца</div>
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-bar text-red" style="margin-right:7px"></i>Тренд — последни 6 месеца</div>
       <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
     </div>
     <div class="card">
-      <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:14px"><i class="fa fa-chart-pie text-red" style="margin-right:7px"></i>Разпределение на приходите</div>
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-pie text-red" style="margin-right:7px"></i>Разпределение на приходите</div>
       <div class="chart-wrap"><canvas id="chart-pie"></canvas></div>
     </div>
   </div>
 
   <div class="card">
-    <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:14px"><i class="fa fa-building text-red" style="margin-right:7px"></i>Преглед по фирми — ${MONTHS[S.month-1]} ${S.year}</div>
+    <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-building text-red" style="margin-right:7px"></i>Преглед по фирми — ${MONTHS[S.month-1]} ${S.year}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
       ${compRows}
     </div>
@@ -1041,15 +1043,15 @@ function renderMeta8(){
 
   return `
   <div class="section-hd">
-    <h2>Мета 8 <span style="font-size:13px;color:#555;font-weight:400">— Индустриални решения</span></h2>
+    <h2>Мета 8 <span style="font-size:13px;color:#6b7280;font-weight:400">— Индустриални решения</span></h2>
     <p>Управление на производства, тонаж, приходи и разходи</p>
   </div>
 
   <div class="grid-stats">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overall.income)}<span style="font-size:12px;font-weight:400;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overall.expenses)}<span style="font-size:12px;font-weight:400;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallResult)}">${fmtShort(overallResult)}<span style="font-size:12px;font-weight:400;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Тонаж</div><div style="font-size:22px;font-weight:800;color:#60a5fa">${fmtShort(overall.tonnage)}<span style="font-size:12px;font-weight:400;color:#555"> т.</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overall.income)}<span style="font-size:12px;font-weight:400;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overall.expenses)}<span style="font-size:12px;font-weight:400;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallResult)}">${fmtShort(overallResult)}<span style="font-size:12px;font-weight:400;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Тонаж</div><div style="font-size:22px;font-weight:800;color:#60a5fa">${fmtShort(overall.tonnage)}<span style="font-size:12px;font-weight:400;color:#6b7280"> т.</span></div></div>
   </div>
 
   <div class="card" style="margin-bottom:16px">
@@ -1063,12 +1065,12 @@ function renderMeta8(){
 
     ${selProd ? `
     <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px">
-      <div class="summary-box"><i class="fa fa-weight-hanging" style="color:#60a5fa;width:20px"></i><div><div style="font-size:11px;color:#555">Тонаж</div><div style="font-weight:700;color:#60a5fa">${fmt(prodData?.tonnage||0)} т.</div></div></div>
-      <div class="summary-box"><i class="fa fa-tag" style="color:#a78bfa;width:20px"></i><div><div style="font-size:11px;color:#555">Ср. продажна цена</div><div style="font-weight:700;color:#a78bfa">${prodData?.tonnage>0?fmt((prodData.income||0)/(prodData.tonnage||1)):'—'} €/т.</div></div></div>
-      <div class="summary-box"><i class="fa fa-arrow-up" style="color:#22c55e;width:20px"></i><div><div style="font-size:11px;color:#555">Приходи</div><div style="font-weight:700;color:#22c55e">+${fmt(prodData?.income||0)} €</div></div></div>
-      <div class="summary-box"><i class="fa fa-user-hard-hat" style="color:#ef4444;width:20px"></i><div><div style="font-size:11px;color:#555">Работници</div><div style="font-weight:700;color:#ef4444">-${fmt(prodData?.expWorkers||0)} €</div></div></div>
-      <div class="summary-box"><i class="fa fa-plus-circle" style="color:#f59e0b;width:20px"></i><div><div style="font-size:11px;color:#555">Допълнителни</div><div style="font-weight:700;color:#f59e0b">-${fmt(prodData?.expAdditional||0)} €</div></div></div>
-      <div class="summary-box"><i class="fa fa-balance-scale" style="color:${prodResult>=0?'#22c55e':'#ef4444'};width:20px"></i><div><div style="font-size:11px;color:#555">Резултат</div><div style="font-weight:700" class="${resultClass(prodResult)}">${fmt(prodResult)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-weight-hanging" style="color:#60a5fa;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Тонаж</div><div style="font-weight:700;color:#60a5fa">${fmt(prodData?.tonnage||0)} т.</div></div></div>
+      <div class="summary-box"><i class="fa fa-tag" style="color:#a78bfa;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Ср. продажна цена</div><div style="font-weight:700;color:#a78bfa">${prodData?.tonnage>0?fmt((prodData.income||0)/(prodData.tonnage||1)):'—'} €/т.</div></div></div>
+      <div class="summary-box"><i class="fa fa-arrow-up" style="color:#22c55e;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Приходи</div><div style="font-weight:700;color:#22c55e">+${fmt(prodData?.income||0)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-user-hard-hat" style="color:#ef4444;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Работници</div><div style="font-weight:700;color:#ef4444">-${fmt(prodData?.expWorkers||0)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-plus-circle" style="color:#f59e0b;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Допълнителни</div><div style="font-weight:700;color:#f59e0b">-${fmt(prodData?.expAdditional||0)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-balance-scale" style="color:${prodResult>=0?'#22c55e':'#ef4444'};width:20px"></i><div><div style="font-size:11px;color:#6b7280">Резултат</div><div style="font-weight:700" class="${resultClass(prodResult)}">${fmt(prodResult)} €</div></div></div>
     </div>
 
     <div class="table-wrap">
@@ -1083,7 +1085,7 @@ function renderMeta8(){
   </div>
 
   <div class="card">
-    <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:14px"><i class="fa fa-chart-bar text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
+    <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-bar text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
     <div class="chart-wrap"><canvas id="chart-meta8"></canvas></div>
   </div>
   <script type="app/data" id="meta8-trend">${JSON.stringify(ytdData)}<\/script>`;
@@ -1156,7 +1158,7 @@ function renderLiderStroy(){
     <!-- Object list -->
     <div style="width:230px;flex-shrink:0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:12px;color:#555;font-weight:700;text-transform:uppercase">Обекти</span>
+        <span style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase">Обекти</span>
         ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSObject')"><i class="fa fa-plus"></i></button>`:''}
       </div>
       ${objects.map(o=>{
@@ -1164,10 +1166,10 @@ function renderLiderStroy(){
         const rem=getLSRemainder(o.id);
         const subCount=(o.subObjects||[]).length;
         return `<div class="obj-card ${selObj===o.id?'sel':''}" style="margin-bottom:8px" onclick="S.selEntity='${o.id}';S.selSubEntity=null;render()">
-          <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:5px">${o.name}</div>
-          <div style="font-size:11px;color:#555">Бюджет: <span style="color:#ddd">${fmtShort(o.budget)} €</span></div>
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:5px">${o.name}</div>
+          <div style="font-size:11px;color:#6b7280">Бюджет: <span style="color:#1f2937">${fmtShort(o.budget)} €</span></div>
           <div style="font-size:11px;margin-top:2px;color:${rem>=0?'#22c55e':'#ef4444'}">Остатък: ${fmtShort(rem)} €</div>
-          ${subCount>0?`<div style="font-size:10px;color:#555;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
+          ${subCount>0?`<div style="font-size:10px;color:#6b7280;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
           ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
             <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editLSBudget','${o.id}')"><i class="fa fa-edit"></i> Бюджет</button>
             <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLSObject('${o.id}')"><i class="fa fa-trash"></i></button>
@@ -1181,11 +1183,11 @@ function renderLiderStroy(){
       ${obj ? `
       <!-- KPI row -->
       <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#ddd">${fmtShort(obj.budget)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(remainder)}">${fmtShort(remainder)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#1f2937">${fmtShort(obj.budget)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(remainder)}">${fmtShort(remainder)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
       </div>
 
       <!-- Sub-objects panel -->
@@ -1193,7 +1195,7 @@ function renderLiderStroy(){
       <div class="card" style="margin-bottom:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:13px;font-weight:700;color:#ddd"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
+            <span style="font-size:13px;font-weight:700;color:#1f2937"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
             ${selSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
           </div>
           ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSSubObj','${selObj}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
@@ -1204,13 +1206,13 @@ function renderLiderStroy(){
             <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
             <tbody>${subObjRows}</tbody>
           </table>
-        </div>`:`<div style="color:#555;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
+        </div>`:`<div style="color:#6b7280;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
       </div>` : ''}
 
       <div class="grid-2">
         <div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <span style="font-size:13px;font-weight:700;color:#ddd">${selSubObj?selSubObj.name+' — ':''}Записи — ${MONTHS[S.month-1]}</span>
+            <span style="font-size:13px;font-weight:700;color:#1f2937">${selSubObj?selSubObj.name+' — ':''}Записи — ${MONTHS[S.month-1]}</span>
             ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
           </div>
           <div class="table-wrap">
@@ -1221,7 +1223,7 @@ function renderLiderStroy(){
           </div>
         </div>
         <div class="card">
-          <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:12px">По месеци — ${S.year}</div>
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
           <div class="table-wrap" style="max-height:320px;overflow-y:auto">
             <table class="tbl">
               <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
@@ -1311,14 +1313,14 @@ function renderBSO(){
   </div>
 
   <div class="grid-stats" style="margin-bottom:16px">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
   </div>
 
   <div class="card" style="margin-bottom:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <span style="font-size:13px;font-weight:700;color:#ddd">Всички обекти — ${MONTHS[S.month-1]} ${S.year}</span>
+      <span style="font-size:13px;font-weight:700;color:#1f2937">Всички обекти — ${MONTHS[S.month-1]} ${S.year}</span>
       ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSOObject',null)"><i class="fa fa-plus"></i> Нов обект</button>`:''}
     </div>
     <div class="table-wrap">
@@ -1341,17 +1343,17 @@ function renderBSO(){
   ${subcat ? `
   <!-- KPI row -->
   <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
-    <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#ddd">${fmtShort(bsoBudget)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(bsoRemainder)}">${fmtShort(bsoRemainder)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selBSOSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selBSOSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#1f2937">${fmtShort(bsoBudget)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(bsoRemainder)}">${fmtShort(bsoRemainder)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selBSOSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selBSOSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
   </div>
 
   <div class="grid-2" style="margin-bottom:14px">
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <span style="font-size:13px;font-weight:700;color:#ddd">${selBSOSubObj?selBSOSubObj.name+' — ':subcat.name+' — '}${MONTHS[S.month-1]}</span>
+        <span style="font-size:13px;font-weight:700;color:#1f2937">${selBSOSubObj?selBSOSubObj.name+' — ':subcat.name+' — '}${MONTHS[S.month-1]}</span>
         ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSOEntry','${selSub}')"><i class="fa fa-plus"></i> Добави</button>`:''}
       </div>
       <div class="table-wrap">
@@ -1362,7 +1364,7 @@ function renderBSO(){
       </div>
     </div>
     <div class="card">
-      <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:12px">По месеци — ${S.year}</div>
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
       <div class="table-wrap" style="max-height:320px;overflow-y:auto">
         <table class="tbl">
           <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
@@ -1377,7 +1379,7 @@ function renderBSO(){
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:13px;font-weight:700;color:#ddd"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти — ${subcat.name}</span>
+        <span style="font-size:13px;font-weight:700;color:#1f2937"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти — ${subcat.name}</span>
         ${selBSOSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
       </div>
       ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSOSubObj','${selSub}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
@@ -1388,7 +1390,7 @@ function renderBSO(){
         <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
         <tbody>${subObjRows}</tbody>
       </table>
-    </div>`:`<div style="color:#555;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
+    </div>`:`<div style="color:#6b7280;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
   </div>` : ''}
   ` : ''}`;
 }
@@ -1449,26 +1451,26 @@ function renderBSODZZD(){
   </div>
 
   <div class="grid-stats" style="margin-bottom:16px">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
   </div>
 
   <div style="display:flex;gap:16px;flex-wrap:wrap">
     <!-- Object list -->
     <div style="width:230px;flex-shrink:0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:12px;color:#555;font-weight:700;text-transform:uppercase">Обекти</span>
+        <span style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase">Обекти</span>
         ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSODzzdObject')"><i class="fa fa-plus"></i></button>`:''}
       </div>
       ${objects.map(o=>{
         const rem=getBsoDzzdRemainder(o.id);
         const subCount=(o.subObjects||[]).length;
         return `<div class="obj-card ${selObj===o.id?'sel':''}" style="margin-bottom:8px" onclick="S.selEntity='${o.id}';S.selSubEntity=null;render()">
-          <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:5px">${o.name}</div>
-          <div style="font-size:11px;color:#555">Бюджет: <span style="color:#ddd">${fmtShort(o.budget||0)} €</span></div>
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:5px">${o.name}</div>
+          <div style="font-size:11px;color:#6b7280">Бюджет: <span style="color:#1f2937">${fmtShort(o.budget||0)} €</span></div>
           <div style="font-size:11px;margin-top:2px;color:${rem>=0?'#22c55e':'#ef4444'}">Остатък: ${fmtShort(rem)} €</div>
-          ${subCount>0?`<div style="font-size:10px;color:#555;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
+          ${subCount>0?`<div style="font-size:10px;color:#6b7280;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
           ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
             <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editBSODzzdBudget','${o.id}')"><i class="fa fa-edit"></i> Бюджет</button>
             <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteBSODzzdObject('${o.id}')"><i class="fa fa-trash"></i></button>
@@ -1483,11 +1485,11 @@ function renderBSODZZD(){
       ${obj ? `
       <!-- KPI row -->
       <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#ddd">${fmtShort(obj.budget||0)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(remainder)}">${fmtShort(remainder)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#1f2937">${fmtShort(obj.budget||0)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(remainder)}">${fmtShort(remainder)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
       </div>
 
       <!-- Sub-objects panel -->
@@ -1495,7 +1497,7 @@ function renderBSODZZD(){
       <div class="card" style="margin-bottom:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:13px;font-weight:700;color:#ddd"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
+            <span style="font-size:13px;font-weight:700;color:#1f2937"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
             ${selSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
           </div>
           ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSODzzdSubObj','${selObj}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
@@ -1506,13 +1508,13 @@ function renderBSODZZD(){
             <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
             <tbody>${subObjRows}</tbody>
           </table>
-        </div>`:`<div style="color:#555;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
+        </div>`:`<div style="color:#6b7280;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
       </div>` : ''}
 
       <div class="grid-2">
         <div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <span style="font-size:13px;font-weight:700;color:#ddd">${selSubObj?selSubObj.name+' — ':obj.name+' — '}${MONTHS[S.month-1]}</span>
+            <span style="font-size:13px;font-weight:700;color:#1f2937">${selSubObj?selSubObj.name+' — ':obj.name+' — '}${MONTHS[S.month-1]}</span>
             ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSODzzdEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
           </div>
           <div class="table-wrap">
@@ -1523,7 +1525,7 @@ function renderBSODZZD(){
           </div>
         </div>
         <div class="card">
-          <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:12px">По месеци — ${S.year}</div>
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
           <div class="table-wrap" style="max-height:320px;overflow-y:auto">
             <table class="tbl">
               <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
@@ -1575,15 +1577,15 @@ function renderMetaPlan(){
   </div>
 
   <div class="grid-stats">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
   </div>
 
   <div class="grid-2" style="margin-top:16px">
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <span style="font-size:13px;font-weight:700;color:#ddd">Записи — ${MONTHS[S.month-1]} ${S.year}</span>
+        <span style="font-size:13px;font-weight:700;color:#1f2937">Записи — ${MONTHS[S.month-1]} ${S.year}</span>
         ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addMetaPlanEntry',null)"><i class="fa fa-plus"></i> Добави</button>`:''}
       </div>
       <div class="table-wrap">
@@ -1594,7 +1596,7 @@ function renderMetaPlan(){
       </div>
     </div>
     <div class="card">
-      <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:12px">По месеци — ${S.year}</div>
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
       <div class="table-wrap" style="max-height:340px;overflow-y:auto">
         <table class="tbl">
           <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
@@ -1605,7 +1607,7 @@ function renderMetaPlan(){
   </div>
 
   <div class="card" style="margin-top:16px">
-    <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:14px"><i class="fa fa-chart-area text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
+    <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-area text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
     <div class="chart-wrap"><canvas id="chart-metaplan"></canvas></div>
   </div>
   <script type="app/data" id="metaplan-trend">${JSON.stringify(ytdData)}<\/script>`;
@@ -1666,16 +1668,16 @@ function renderInvestments(){
   </div>
 
   <div class="grid-stats" style="margin-bottom:16px">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
   </div>
 
   <div style="display:flex;gap:16px;flex-wrap:wrap">
     <!-- Object list -->
     <div style="width:230px;flex-shrink:0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:12px;color:#555;font-weight:700;text-transform:uppercase">Обекти</span>
+        <span style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase">Обекти</span>
         ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addInvObject')"><i class="fa fa-plus"></i></button>`:''}
       </div>
       ${objects.map(o=>{
@@ -1683,13 +1685,13 @@ function renderInvestments(){
         const or=omt.income-omt.expenses;
         const subCount=(o.subObjects||[]).length;
         return `<div class="obj-card ${selObj===o.id?'sel':''}" style="margin-bottom:8px" onclick="S.selEntity='${o.id}';S.selSubEntity=null;render()">
-          <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:5px">${o.name}</div>
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:5px">${o.name}</div>
           <div style="display:flex;gap:10px;font-size:11px;margin-top:2px">
             <span style="color:#22c55e">+${fmtShort(omt.income)}</span>
             <span style="color:#ef4444">-${fmtShort(omt.expenses)}</span>
           </div>
           <div style="font-size:11px;margin-top:3px" class="${resultClass(or)}">Резултат: ${fmtShort(or)} €</div>
-          ${subCount>0?`<div style="font-size:10px;color:#555;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
+          ${subCount>0?`<div style="font-size:10px;color:#6b7280;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
           ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
             <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteInvObject('${o.id}')"><i class="fa fa-trash"></i></button>
           </div>`:''}
@@ -1701,9 +1703,9 @@ function renderInvestments(){
     <div style="flex:1;min-width:0">
       ${obj ? `
       <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#555"> €</span></div></div>
-        <div class="stat-card"><div style="font-size:11px;color:#555;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#555"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
       </div>
 
       <!-- Sub-objects panel -->
@@ -1711,7 +1713,7 @@ function renderInvestments(){
       <div class="card" style="margin-bottom:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:13px;font-weight:700;color:#ddd"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
+            <span style="font-size:13px;font-weight:700;color:#1f2937"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
             ${selSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
           </div>
           ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addInvSubObj','${selObj}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
@@ -1722,13 +1724,13 @@ function renderInvestments(){
             <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
             <tbody>${subObjRows}</tbody>
           </table>
-        </div>`:`<div style="color:#555;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
+        </div>`:`<div style="color:#6b7280;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
       </div>` : ''}
 
       <div class="grid-2">
         <div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <span style="font-size:13px;font-weight:700;color:#ddd">${selSubObj?selSubObj.name+' — ':obj.name+' — '}${MONTHS[S.month-1]}</span>
+            <span style="font-size:13px;font-weight:700;color:#1f2937">${selSubObj?selSubObj.name+' — ':obj.name+' — '}${MONTHS[S.month-1]}</span>
             ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addInvEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
           </div>
           <div class="table-wrap">
@@ -1739,7 +1741,7 @@ function renderInvestments(){
           </div>
         </div>
         <div class="card">
-          <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:12px">По месеци — ${S.year}</div>
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
           <div class="table-wrap" style="max-height:320px;overflow-y:auto">
             <table class="tbl">
               <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
@@ -1792,15 +1794,15 @@ function renderKasa(company, title, icon){
   </div>
 
   <div class="grid-stats">
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#555"> €</span></div></div>
-    <div class="stat-card"><div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#555"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
   </div>
 
   <div class="grid-2" style="margin-top:16px">
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <span style="font-size:13px;font-weight:700;color:#ddd">Записи — ${MONTHS[S.month-1]} ${S.year}</span>
+        <span style="font-size:13px;font-weight:700;color:#1f2937">Записи — ${MONTHS[S.month-1]} ${S.year}</span>
         ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addKasaEntry',null,'${company}','${title}')"><i class="fa fa-plus"></i> Добави</button>`:''}
       </div>
       <div class="table-wrap">
@@ -1811,7 +1813,7 @@ function renderKasa(company, title, icon){
       </div>
     </div>
     <div class="card">
-      <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:12px">По месеци — ${S.year}</div>
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
       <div class="table-wrap" style="max-height:340px;overflow-y:auto">
         <table class="tbl">
           <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
@@ -1822,7 +1824,7 @@ function renderKasa(company, title, icon){
   </div>
 
   <div class="card" style="margin-top:16px">
-    <div style="font-size:13px;font-weight:700;color:#ddd;margin-bottom:14px"><i class="fa fa-chart-area text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
+    <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-area text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
     <div class="chart-wrap"><canvas id="${chartId}"></canvas></div>
   </div>
   <script type="app/data" id="${chartId}-data">${JSON.stringify(ytdData)}<\/script>`;
@@ -1837,12 +1839,12 @@ function renderUsers(){
       <td><div style="display:flex;align-items:center;gap:10px">
         <div class="user-avatar" style="width:30px;height:30px;font-size:11px">${(u.name||u.email)[0].toUpperCase()}</div>
         <div>
-          <div style="font-size:13px;font-weight:600;color:#ddd">${u.name||'—'}</div>
-          <div style="font-size:11px;color:#555">${u.email}</div>
+          <div style="font-size:13px;font-weight:600;color:#1f2937">${u.name||'—'}</div>
+          <div style="font-size:11px;color:#6b7280">${u.email}</div>
         </div>
       </div></td>
       <td><span class="badge ${u.role==='admin'?'badge-red2':'badge-blue'}">${u.role==='admin'?'Администратор':'Потребител'}</span></td>
-      <td style="font-size:12px;color:#aaa;max-width:200px;white-space:normal;line-height:1.5">${companiesLabel(u.company)}</td>
+      <td style="font-size:12px;color:#6b7280;max-width:200px;white-space:normal;line-height:1.5">${companiesLabel(u.company)}</td>
       <td><span class="badge ${u.confirmed?'badge-green':'badge-yellow'}">${u.confirmed?'Потвърден':'Чакащ'}</span></td>
       <td>${new Date(u.createdAt).toLocaleDateString('bg-BG')}</td>
       <td>
@@ -1860,7 +1862,7 @@ function renderUsers(){
   </div>
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-      <span style="font-size:13px;font-weight:700;color:#ddd">Всички потребители (${db.users.length})</span>
+      <span style="font-size:13px;font-weight:700;color:#1f2937">Всички потребители (${db.users.length})</span>
       <button class="btn btn-primary btn-sm" onclick="openModal('addUser',null)"><i class="fa fa-user-plus"></i> Добави потребител</button>
     </div>
     <div class="table-wrap">
@@ -1875,7 +1877,7 @@ function renderUsers(){
 function noAccess(){
   return `<div class="card"><div class="empty-state">
     <i class="fa fa-lock" style="color:#c00"></i>
-    <h3 style="color:#ddd;margin-bottom:8px">Достъпът е ограничен</h3>
+    <h3 style="color:#1f2937;margin-bottom:8px">Достъпът е ограничен</h3>
     <p>Нямате права за достъп до тази секция</p>
   </div></div>`;
 }
@@ -1889,7 +1891,7 @@ function renderModal(){
     const company = mdata.company;
     const entry = (db[company]?.entries||[]).find(e=>e.id===mdata.entryId);
     if(!entry){
-      content = `<div class="modal-hd"><span class="modal-title">Грешка</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div><p style="color:#555;padding:10px 0">Записът не е намерен.</p>`;
+      content = `<div class="modal-hd"><span class="modal-title">Грешка</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div><p style="color:#6b7280;padding:10px 0">Записът не е намерен.</p>`;
     } else {
       let subObjSection = '';
       if(['liderStroy','bso','bsoDzzd','investments'].includes(company) && entry.entityId){
@@ -1924,7 +1926,7 @@ function renderModal(){
         </div>`;
       }
       content = `
-      <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на запис</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+      <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на запис</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
       <form id="m-form">
         <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..." value="${(entry.description||'').replace(/"/g,'&quot;')}"></div>
         ${fieldsHtml}
@@ -1938,7 +1940,7 @@ function renderModal(){
   else if(modal==='addMeta8Entry'){
     const prod = db.meta8.productions.find(p=>p.id===mdata.entityId);
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${prod?.name||''}</span><i class="fa fa-times" style="color:#444;cursor:pointer;font-size:16px" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${prod?.name||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer;font-size:16px" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Период, продукт..."></div>
       <div class="frow">
@@ -1957,7 +1959,7 @@ function renderModal(){
   }
   else if(modal==='addProduction'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-industry text-red" style="margin-right:8px"></i>Ново производство</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-industry text-red" style="margin-right:8px"></i>Ново производство</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование</label><input id="f-name" class="input" placeholder="Напр. Производство А" required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
@@ -1968,7 +1970,7 @@ function renderModal(){
   }
   else if(modal==='addLSObject'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-building text-red" style="margin-right:8px"></i>Нов обект</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-building text-red" style="margin-right:8px"></i>Нов обект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Обект X" required></div>
       <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00" required></div>
@@ -1980,7 +1982,7 @@ function renderModal(){
   }
   else if(modal==='addLSSubObj'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на подобекта</label><input id="f-name" class="input" placeholder="Напр. Блок А, Етаж 1..." required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
@@ -1992,7 +1994,7 @@ function renderModal(){
   else if(modal==='editLSBudget'){
     const obj = db.liderStroy.objects.find(o=>o.id===mdata.entityId);
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Обект: ${obj?.name}</label></div>
       <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${obj?.budget||0}" required></div>
@@ -2007,7 +2009,7 @@ function renderModal(){
     const lsSubObjs = lsObj?.subObjects||[];
     const subObjOpts = lsSubObjs.map(s=>`<option value="${s.id}" ${S.selSubEntity===s.id?'selected':''}>${s.name}</option>`).join('');
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${lsObj?.name||''}</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${lsObj?.name||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       ${lsSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${subObjOpts}</select></div>`:''}
@@ -2026,7 +2028,7 @@ function renderModal(){
     const bsoSubObjs = bsoCatForEntry?.subObjects||[];
     const bsoSubOpts = bsoSubObjs.map(s=>`<option value="${s.id}" ${S.selSubEntity===s.id?'selected':''}>${s.name}</option>`).join('');
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис${bsoCatForEntry?' — '+bsoCatForEntry.name:''}</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис${bsoCatForEntry?' — '+bsoCatForEntry.name:''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       ${bsoSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${bsoSubOpts}</select></div>`:''}
@@ -2042,7 +2044,7 @@ function renderModal(){
   }
   else if(modal==='addMetaPlanEntry'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — Мета План</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — Мета План</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       <div class="frow">
@@ -2057,7 +2059,7 @@ function renderModal(){
   }
   else if(modal==='addBSOSubObj'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект — БСО</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект — БСО</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на подобекта</label><input id="f-name" class="input" placeholder="Напр. Блок А, Секция 1..." required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
@@ -2068,7 +2070,7 @@ function renderModal(){
   }
   else if(modal==='addBSODzzdObject'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-city text-red" style="margin-right:8px"></i>Нов обект — БСО - ДЗЗД</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-city text-red" style="margin-right:8px"></i>Нов обект — БСО - ДЗЗД</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Обект X" required></div>
       <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00" required></div>
@@ -2080,7 +2082,7 @@ function renderModal(){
   }
   else if(modal==='addBSODzzdSubObj'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект — БСО - ДЗЗД</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект — БСО - ДЗЗД</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на подобекта</label><input id="f-name" class="input" placeholder="Напр. Блок А, Секция 1..." required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
@@ -2092,7 +2094,7 @@ function renderModal(){
   else if(modal==='editBSODzzdBudget'){
     const dObj = (db.bsoDzzd.objects||[]).find(o=>o.id===mdata.entityId);
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет — БСО - ДЗЗД</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет — БСО - ДЗЗД</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Обект: ${dObj?.name||''}</label></div>
       <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${dObj?.budget||0}" required></div>
@@ -2107,7 +2109,7 @@ function renderModal(){
     const dSubObjs = dObj2?.subObjects||[];
     const dSubOpts = dSubObjs.map(s=>`<option value="${s.id}" ${S.selSubEntity===s.id?'selected':''}>${s.name}</option>`).join('');
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${dObj2?.name||'БСО - ДЗЗД'}</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${dObj2?.name||'БСО - ДЗЗД'}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       ${dSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${dSubOpts}</select></div>`:''}
@@ -2126,7 +2128,7 @@ function renderModal(){
     const invSubObjs = invObj?.subObjects||[];
     const subObjOpts = invSubObjs.map(s=>`<option value="${s.id}" ${S.selSubEntity===s.id?'selected':''}>${s.name}</option>`).join('');
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${invObj?.name||''}</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${invObj?.name||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       ${invSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${subObjOpts}</select></div>`:''}
@@ -2142,7 +2144,7 @@ function renderModal(){
   }
   else if(modal==='addBSOObject'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-city text-red" style="margin-right:8px"></i>Нов обект — БСО</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-city text-red" style="margin-right:8px"></i>Нов обект — БСО</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Напр. Обект X" required></div>
       <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
@@ -2155,7 +2157,7 @@ function renderModal(){
   else if(modal==='editBSOBudget'){
     const bsoCat = db.bso.subcategories.find(s=>s.id===mdata.entityId);
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Обект: ${bsoCat?.name||''}</label></div>
       <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${bsoCat?.budget||0}" required></div>
@@ -2167,7 +2169,7 @@ function renderModal(){
   }
   else if(modal==='addInvObject'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-coins text-red" style="margin-right:8px"></i>Нов инвестиционен обект</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-coins text-red" style="margin-right:8px"></i>Нов инвестиционен обект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Напр. Нова сграда" required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
@@ -2179,7 +2181,7 @@ function renderModal(){
   else if(modal==='addInvSubObj'){
     const invObj2 = db.investments.objects.find(o=>o.id===mdata.entityId);
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект — ${invObj2?.name||''}</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект — ${invObj2?.name||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Наименование на подобекта</label><input id="f-name" class="input" placeholder="Напр. Блок А, Етаж 1..." required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
@@ -2190,7 +2192,7 @@ function renderModal(){
   }
   else if(modal==='addKasaEntry'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${mdata.label||''}</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${mdata.label||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
       <div class="frow">
@@ -2205,7 +2207,7 @@ function renderModal(){
   }
   else if(modal==='addUser'){
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-user-plus text-red" style="margin-right:8px"></i>Нов потребител</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-user-plus text-red" style="margin-right:8px"></i>Нов потребител</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
       <div class="frow">
         <div class="fgroup"><label class="lbl">Пълно ime</label><input id="f-name" class="input" placeholder="Иван Иванов" required></div>
@@ -2216,19 +2218,19 @@ function renderModal(){
         <label class="lbl">Парола</label>
         <div style="position:relative">
           <input type="password" id="f-pass" class="input" placeholder="Минимум 6 символа" required minlength="6" style="padding-right:40px">
-          <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer" onclick="togglePwd('f-pass',this)"></i>
+          <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer" onclick="togglePwd('f-pass',this)"></i>
         </div>
       </div>
       <div class="fgroup">
         <label class="lbl">Повтори парола</label>
         <div style="position:relative">
           <input type="password" id="f-pass2" class="input" placeholder="Повторете паролата" required style="padding-right:40px">
-          <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#444;cursor:pointer" onclick="togglePwd('f-pass2',this)"></i>
+          <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer" onclick="togglePwd('f-pass2',this)"></i>
         </div>
       </div>
       <div class="fgroup">
         <label class="lbl">Достъп до фирми</label>
-        <div style="padding:10px 14px;background:#151515;border:1px solid #222;border-radius:7px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
+        <div style="padding:10px 14px;background:#f9fafb;border:1px solid #d1d5db;border-radius:7px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
           ${companyCheckboxes(['all'])}
         </div>
       </div>
@@ -2459,10 +2461,10 @@ function bindEvents(){
     if(!div) return;
     if(result.ok){
       div.innerHTML=`
-        <div style="background:#0d0d0d;border:1px solid #22c55e44;border-radius:8px;padding:14px">
+        <div style="background:#f9fafb;border:1px solid #22c55e44;border-radius:8px;padding:14px">
           <div style="font-size:12px;color:#22c55e;font-weight:700;margin-bottom:8px"><i class="fa fa-check-circle"></i> Линкът е генериран</div>
           <p style="font-size:11px;color:#666;margin-bottom:10px">Тъй като приложението работи без сървър, копирайте линка по-долу и го изпратете на потребителя:</p>
-          <div style="background:#111;border:1px solid #2a2a2a;border-radius:6px;padding:8px 10px;font-size:11px;font-family:monospace;color:#aaa;word-break:break-all;margin-bottom:8px">${result.resetUrl}</div>
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px;font-size:11px;font-family:monospace;color:#6b7280;word-break:break-all;margin-bottom:8px">${result.resetUrl}</div>
           <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('${result.resetUrl}').then(()=>notify('Копирано!','ok'))"><i class="fa fa-copy"></i> Копирай линка</button>
         </div>`;
     } else {
