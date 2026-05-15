@@ -199,7 +199,15 @@ function defaultDB() {
 
 // ================== DB & SESSION ==================
 // Start with localStorage cache immediately (instant UI), then sync from Firebase
-let db = (()=>{ try{ const s=localStorage.getItem(DB_KEY); return s ? JSON.parse(s) : defaultDB(); }catch(e){ return defaultDB(); }})();
+let db = (()=>{
+  try{
+    const s=localStorage.getItem(DB_KEY);
+    if(!s) return defaultDB();
+    const parsed = JSON.parse(s);
+    // _fixArrays called after it's defined below — patched via initDB on first run
+    return parsed;
+  }catch(e){ return defaultDB(); }
+})();
 let session = (()=>{ try{ const s=localStorage.getItem(SES_KEY); return s ? JSON.parse(s) : null; }catch(e){ return null; }})();
 
 let _fbEvtSrc      = null;   // SSE EventSource for real-time sync
@@ -221,11 +229,60 @@ function saveDB(){
   .catch(e=>{ console.warn('Firebase write failed:', e); });
 }
 
+// ---- Convert a Firebase value back to a proper JS array ----
+// Firebase stores [] as null, and arrays as {0:{..},1:{..}} objects.
+function _toArr(val){
+  if(!val) return [];                        // null / undefined → []
+  if(Array.isArray(val)) return val;         // already fine
+  if(typeof val==='object')                  // Firebase numeric-key object
+    return Object.keys(val)
+      .sort((a,b)=>Number(a)-Number(b))
+      .map(k=>val[k])
+      .filter(v=>v!=null);
+  return [];
+}
+
+// ---- Re-hydrate all known array fields after a Firebase load ----
+function _fixArrays(data){
+  // top-level arrays
+  data.users                    = _toArr(data.users);
+  data.resetTokens              = _toArr(data.resetTokens);
+  // meta8
+  if(data.meta8){
+    data.meta8.productions      = _toArr(data.meta8.productions);
+    data.meta8.entries          = _toArr(data.meta8.entries);
+  }
+  // liderStroy
+  if(data.liderStroy){
+    data.liderStroy.objects     = _toArr(data.liderStroy.objects);
+    data.liderStroy.entries     = _toArr(data.liderStroy.entries);
+    data.liderStroy.objects.forEach(o=>{ if(o) o.subObjects=_toArr(o.subObjects); });
+  }
+  // bso
+  if(data.bso){
+    data.bso.subcategories      = _toArr(data.bso.subcategories);
+    data.bso.entries            = _toArr(data.bso.entries);
+  }
+  // metaPlan
+  if(data.metaPlan)             data.metaPlan.entries       = _toArr(data.metaPlan.entries);
+  // kasaVarna
+  if(data.kasaVarna)            data.kasaVarna.entries      = _toArr(data.kasaVarna.entries);
+  // kasaPavlikeni
+  if(data.kasaPavlikeni)        data.kasaPavlikeni.entries  = _toArr(data.kasaPavlikeni.entries);
+  // investments
+  if(data.investments){
+    data.investments.objects    = _toArr(data.investments.objects);
+    data.investments.entries    = _toArr(data.investments.entries);
+    data.investments.objects.forEach(o=>{ if(o) o.subObjects=_toArr(o.subObjects); });
+  }
+  return data;
+}
+
 // ---- Merge helper: fill any missing top-level keys after loading from FB ----
 function _mergeDefaults(remote){
   const d = defaultDB();
   Object.keys(d).forEach(k=>{ if(remote[k]===undefined) remote[k]=d[k]; });
-  return remote;
+  return _fixArrays(remote);   // always re-hydrate arrays after merge
 }
 
 // ---- initDB: load latest data from Firebase on startup ----
@@ -2220,6 +2277,9 @@ function doResetPassword(token, newPass){
 }
 
 // =================== INIT ===================
+// Fix any arrays in the localStorage cache now that _fixArrays is defined
+try { db = _fixArrays(db); } catch(_){}
+
 // 1. Render immediately with cached/local data (no delay for user)
 render();
 // 2. Fetch latest from Firebase, then re-render and start live sync
