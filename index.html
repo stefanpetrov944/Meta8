@@ -1028,7 +1028,7 @@ function renderMeta8(){
       <td class="text-neg">-${fmt(e.expWorkers||0)}</td>
       <td class="text-neg">-${fmt(e.expAdditional||0)}</td>
       <td class="${resultClass(e.income-(e.expWorkers||0)-(e.expAdditional||0))}">${fmt(e.income-(e.expWorkers||0)-(e.expAdditional||0))}</td>
-      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('meta8','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('meta8','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('meta8','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
     </tr>`;
   }).join('') : `<tr><td colspan="8"><div class="empty-state"><i class="fa fa-inbox"></i><p>Няма записи за ${MONTHS[S.month-1]} ${S.year}</p></div></td></tr>`;
 
@@ -1130,7 +1130,7 @@ function renderLiderStroy(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('liderStroy','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('liderStroy','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('liderStroy','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   // Sub-objects summary table
@@ -1257,7 +1257,7 @@ function renderBSO(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('bso','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bso','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('bso','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const monthRows = MONTHS.map((mn,i)=>{
@@ -1427,7 +1427,7 @@ function renderBSODZZD(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('bsoDzzd','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bsoDzzd','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('bsoDzzd','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const subObjRows = subObjects.map(s=>{
@@ -1549,7 +1549,7 @@ function renderMetaPlan(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('metaPlan','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('metaPlan','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('metaPlan','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const monthRows = MONTHS.map((mn,i)=>{
@@ -1644,7 +1644,7 @@ function renderInvestments(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('investments','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('investments','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('investments','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const subObjRows = subObjects.map(s=>{
@@ -1765,7 +1765,7 @@ function renderKasa(company, title, icon){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${company}','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('${company}','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('${company}','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const monthRows = MONTHS.map((mn,i)=>{
@@ -1885,7 +1885,57 @@ function renderModal(){
   const {modal, mdata} = S;
   let content = '';
 
-  if(modal==='addMeta8Entry'){
+  if(modal==='editEntry'){
+    const company = mdata.company;
+    const entry = (db[company]?.entries||[]).find(e=>e.id===mdata.entryId);
+    if(!entry){
+      content = `<div class="modal-hd"><span class="modal-title">Грешка</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div><p style="color:#555;padding:10px 0">Записът не е намерен.</p>`;
+    } else {
+      let subObjSection = '';
+      if(['liderStroy','bso','bsoDzzd','investments'].includes(company) && entry.entityId){
+        const parentArr = company==='bso' ? db.bso.subcategories
+          : company==='liderStroy' ? db.liderStroy.objects
+          : company==='bsoDzzd' ? db.bsoDzzd.objects
+          : db.investments.objects;
+        const parent = (parentArr||[]).find(o=>o.id===entry.entityId);
+        const subObjs = parent?.subObjects||[];
+        if(subObjs.length>0){
+          const opts = subObjs.map(s=>`<option value="${s.id}" ${entry.subEntityId===s.id?'selected':''}>${s.name}</option>`).join('');
+          subObjSection = `<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${opts}</select></div>`;
+        }
+      }
+      let fieldsHtml;
+      if(company==='meta8'){
+        fieldsHtml = `
+        <div class="frow">
+          <div class="fgroup"><label class="lbl">Тонаж (т.)</label><input id="f-ton" type="number" step="0.01" min="0" class="input" value="${entry.tonnage||0}"></div>
+          <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" value="${entry.income||0}"></div>
+        </div>
+        <div class="frow">
+          <div class="fgroup"><label class="lbl">Разходи — Работници (€)</label><input id="f-ew" type="number" step="0.01" min="0" class="input" value="${entry.expWorkers||0}"></div>
+          <div class="fgroup"><label class="lbl">Разходи — Допълнителни (€)</label><input id="f-ea" type="number" step="0.01" min="0" class="input" value="${entry.expAdditional||0}"></div>
+        </div>`;
+      } else {
+        fieldsHtml = `
+        ${subObjSection}
+        <div class="frow">
+          <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" value="${entry.income||0}"></div>
+          <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" value="${entry.expenses||0}"></div>
+        </div>`;
+      }
+      content = `
+      <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на запис</span><i class="fa fa-times" style="color:#444;cursor:pointer" onclick="closeModal()"></i></div>
+      <form id="m-form">
+        <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..." value="${(entry.description||'').replace(/"/g,'&quot;')}"></div>
+        ${fieldsHtml}
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+        </div>
+      </form>`;
+    }
+  }
+  else if(modal==='addMeta8Entry'){
     const prod = db.meta8.productions.find(p=>p.id===mdata.entityId);
     content = `
     <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${prod?.name||''}</span><i class="fa fa-times" style="color:#444;cursor:pointer;font-size:16px" onclick="closeModal()"></i></div>
@@ -2275,6 +2325,12 @@ function closeModal(){
   render();
 }
 
+function openEditEntry(company, entryId){
+  S.modal = 'editEntry';
+  S.mdata = {company, entryId};
+  render();
+}
+
 function nav(view){
   S.view = view;
   S.selEntity = null;
@@ -2444,7 +2500,26 @@ function bindEvents(){
 function handleModalSubmit(){
   const {modal, mdata} = S;
 
-  if(modal==='addMeta8Entry'){
+  if(modal==='editEntry'){
+    const company = mdata.company;
+    const entry = (db[company]?.entries||[]).find(e=>e.id===mdata.entryId);
+    if(!entry){ notify('Записът не е намерен','err'); return; }
+    entry.description = (document.getElementById('f-desc')?.value||'').trim();
+    if(company==='meta8'){
+      entry.tonnage      = parseFloat(document.getElementById('f-ton')?.value)||0;
+      entry.income       = parseFloat(document.getElementById('f-inc')?.value)||0;
+      entry.expWorkers   = parseFloat(document.getElementById('f-ew')?.value)||0;
+      entry.expAdditional= parseFloat(document.getElementById('f-ea')?.value)||0;
+      entry.expenses     = entry.expWorkers + entry.expAdditional;
+    } else {
+      const subObjEl = document.getElementById('f-subobj');
+      if(subObjEl) entry.subEntityId = subObjEl.value||null;
+      entry.income   = parseFloat(document.getElementById('f-inc')?.value)||0;
+      entry.expenses = parseFloat(document.getElementById('f-exp')?.value)||0;
+    }
+    saveDB(); closeModal(); notify('Записът е обновен','ok');
+  }
+  else if(modal==='addMeta8Entry'){
     const entry = {
       id:genId(), entityId:mdata.entityId, year:S.year, month:S.month,
       description:document.getElementById('f-desc').value.trim(),
