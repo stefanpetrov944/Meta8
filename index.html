@@ -152,6 +152,9 @@ const DB_KEY  = 'fph_db_v2';
 const SES_KEY = 'fph_ses_v2';
 const FIREBASE_URL = 'https://finance-pro-holding-default-rtdb.firebaseio.com';
 const FB_NODE      = 'fph_v1'; // path in Firebase Realtime Database
+const FB_API_KEY   = 'AIzaSyDQXufe34hVauw8MjdaypcvADEFMkB9ATA';
+const FB_AUTH_EMAIL= 'app@finance-pro-holding.bg';
+const FB_AUTH_PASS = 'DA1da2da3_';
 
 // ================== DEFAULT DATA ==================
 function defaultDB() {
@@ -225,14 +228,55 @@ let _ownSaveTs     = 0;      // timestamp of our last save (to suppress echo)
 let _fbFirstEvent  = true;   // skip the initial full-db SSE event (already loaded via initDB)
 let _pendingRender = false;  // SSE update arrived while modal was open — re-render on close
 
+// ---- Firebase Auth token state ----
+let _fbToken        = null;  // current ID token
+let _fbRefreshTok   = null;  // refresh token (long-lived)
+let _fbTokenExpiry  = 0;     // ms timestamp when token expires
+
+async function _fbSignIn(){
+  const res = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FB_API_KEY}`,
+    { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email:FB_AUTH_EMAIL, password:FB_AUTH_PASS, returnSecureToken:true}) }
+  );
+  if(!res.ok) throw new Error('Firebase sign-in failed: '+res.status);
+  const d = await res.json();
+  _fbToken       = d.idToken;
+  _fbRefreshTok  = d.refreshToken;
+  _fbTokenExpiry = Date.now() + (parseInt(d.expiresIn,10) - 60) * 1000; // refresh 1 min early
+  return _fbToken;
+}
+
+async function _fbRefresh(){
+  const res = await fetch(
+    `https://securetoken.googleapis.com/v1/token?key=${FB_API_KEY}`,
+    { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({grant_type:'refresh_token', refresh_token:_fbRefreshTok}) }
+  );
+  if(!res.ok) throw new Error('Token refresh failed: '+res.status);
+  const d = await res.json();
+  _fbToken       = d.id_token;
+  _fbRefreshTok  = d.refresh_token;
+  _fbTokenExpiry = Date.now() + (parseInt(d.expires_in,10) - 60) * 1000;
+  return _fbToken;
+}
+
+async function _getToken(){
+  if(!_fbToken)                    return _fbSignIn();
+  if(Date.now() >= _fbTokenExpiry) return _fbRefresh();
+  return _fbToken;
+}
+
 // ---- saveDB: write to localStorage cache AND Firebase ----
 function saveDB(){
   localStorage.setItem(DB_KEY, JSON.stringify(db));
   _ownSaveTs = Date.now();
-  fetch(`${FIREBASE_URL}/${FB_NODE}.json`, {
-    method : 'PUT',
-    headers: {'Content-Type':'application/json'},
-    body   : JSON.stringify(db)
+  _getToken().then(tok=>{
+    return fetch(`${FIREBASE_URL}/${FB_NODE}.json?auth=${tok}`, {
+      method : 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body   : JSON.stringify(db)
+    });
   })
   .then(()=>{ _fbOnline=true; })
   .catch(e=>{ console.warn('Firebase write failed:', e); });
@@ -304,7 +348,8 @@ function _mergeDefaults(remote){
 // ---- initDB: load latest data from Firebase on startup ----
 async function initDB(){
   try {
-    const res = await fetch(`${FIREBASE_URL}/${FB_NODE}.json`);
+    const tok = await _getToken();
+    const res = await fetch(`${FIREBASE_URL}/${FB_NODE}.json?auth=${tok}`);
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     if(data && data.users){
@@ -322,10 +367,17 @@ async function initDB(){
 }
 
 // ---- startRealtimeSync: SSE listener — fires whenever any device saves ----
-function startRealtimeSync(){
+async function startRealtimeSync(){
   if(_fbEvtSrc){ _fbEvtSrc.close(); }
   _fbFirstEvent = true;
-  _fbEvtSrc = new EventSource(`${FIREBASE_URL}/${FB_NODE}.json`);
+  try {
+    const tok = await _getToken();
+    _fbEvtSrc = new EventSource(`${FIREBASE_URL}/${FB_NODE}.json?auth=${tok}`);
+  } catch(e){
+    console.warn('SSE auth failed, retrying in 15s:', e);
+    setTimeout(startRealtimeSync, 15000);
+    return;
+  }
 
   _fbEvtSrc.addEventListener('put', evt=>{
     // 1. Skip the very first event — it's the initial full-db snapshot we
@@ -356,7 +408,8 @@ function startRealtimeSync(){
   _fbEvtSrc.addEventListener('error', ()=>{
     _fbOnline = false;
     _fbEvtSrc.close();
-    setTimeout(startRealtimeSync, 10000); // reconnect after 10 s
+    // Token may have expired — get a fresh one before reconnecting
+    setTimeout(startRealtimeSync, 10000);
   });
 }
 
@@ -2754,11 +2807,11 @@ try { db = _fixArrays(db); } catch(_){}
 
 // 1. Render immediately with cached/local data (no delay for user)
 render();
-// 2. Fetch latest from Firebase, then re-render and start live sync
-initDB().then(()=>{
-  render();
-  startRealtimeSync();
-});
+// 2. Sign in to Firebase → load latest data → start live sync
+_fbSignIn()
+  .then(()=> initDB())
+  .then(()=>{ render(); startRealtimeSync(); })
+  .catch(e=>{ console.warn('Firebase startup failed:', e); render(); });
 </script>
 </body>
 </html>
