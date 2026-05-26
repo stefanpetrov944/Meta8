@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-26-v5">
+<meta name="version" content="2026-05-26-v6">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -956,7 +956,7 @@ function renderApp(){
         </div>
         <i class="fa fa-sign-out-alt" style="color:#9ca3af;cursor:pointer;font-size:14px" onclick="logout()" title="Изход"></i>
       </div>
-      <div style="text-align:center;font-size:9px;color:#374151;margin-top:8px;opacity:.5">v5 · 2026-05-26</div>
+      <div style="text-align:center;font-size:9px;color:#374151;margin-top:8px;opacity:.5">v6 · 2026-05-26</div>
     </div>
   </div>
   <div class="main-content">
@@ -2877,9 +2877,12 @@ function doResetPassword(token, newPass){
 // Fix any arrays in the localStorage cache now that _fixArrays is defined
 try { db = _fixArrays(db); } catch(_){}
 
-// Immediately remove any erroneously-seeded p_* productions (runs before first render,
-// so the user never sees duplicates regardless of cache or Firebase timing)
+// Immediately remove any erroneously-seeded p_* productions
 if(db.meta8) db.meta8.productions = (db.meta8.productions||[]).filter(p=>!p.id.startsWith('p_'));
+
+// Seed users immediately (before Firebase) so login works even if Firebase is unavailable
+// (e.g. when opening from file://, localhost, or an unauthorized domain)
+try { seedData(); } catch(_){}
 
 // 1. Render immediately with cached/local data (no delay for user)
 render();
