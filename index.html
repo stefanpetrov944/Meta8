@@ -525,6 +525,8 @@ function register(email, password, name, company){
 }
 
 function isAdmin(){ return session && session.role==='admin'; }
+// canWrite: any logged-in user who can view a company can also add/edit entries in it
+function canWrite(comp){ return canView(comp); }
 function canView(comp){
   if(isAdmin()) return true;
   if(!session) return false;
@@ -1147,7 +1149,7 @@ function renderMeta8(){
       <td class="text-neg">-${fmt(e.expWorkers||0)}</td>
       <td class="text-neg">-${fmt(e.expAdditional||0)}</td>
       <td class="${resultClass(e.income-(e.expWorkers||0)-(e.expAdditional||0))}">${fmt(e.income-(e.expWorkers||0)-(e.expAdditional||0))}</td>
-      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('meta8','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('meta8','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${canWrite('meta8')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('meta8','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('meta8','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`;
   }).join('') : `<tr><td colspan="8"><div class="empty-state"><i class="fa fa-inbox"></i><p>Няма записи за ${MONTHS[S.month-1]} ${S.year}</p></div></td></tr>`;
 
@@ -1177,7 +1179,7 @@ function renderMeta8(){
         <div class="tabs" style="flex-wrap:wrap">${prodTabs}</div>
         ${isAdmin()?`<button class="btn btn-secondary btn-sm" onclick="openModal('addProduction')"><i class="fa fa-plus"></i> Производство</button>`:''}
       </div>
-      ${isAdmin()&&selProd?`<button class="btn btn-primary btn-sm" onclick="openModal('addMeta8Entry','${selProd}')"><i class="fa fa-plus"></i> Добави запис</button>`:''}
+      ${canWrite('meta8')&&selProd?`<button class="btn btn-primary btn-sm" onclick="openModal('addMeta8Entry','${selProd}')"><i class="fa fa-plus"></i> Добави запис</button>`:''}
     </div>
 
     ${selProd ? `
@@ -1194,7 +1196,7 @@ function renderMeta8(){
       <table class="tbl">
         <thead><tr>
           <th>Описание</th><th>Тонаж</th><th>Ср. продажна цена</th><th>Приходи</th><th>Работници</th><th>Допълнителни</th><th>Резултат</th>
-          ${isAdmin()?'<th></th>':''}
+          ${canWrite('meta8')?'<th></th>':''}
         </tr></thead>
         <tbody>${entryRows}</tbody>
       </table>
@@ -1249,7 +1251,7 @@ function renderLiderStroy(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('liderStroy','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('liderStroy','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${canWrite('liderStroy')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('liderStroy','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('liderStroy','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   // Sub-objects summary table
@@ -1330,11 +1332,11 @@ function renderLiderStroy(){
         <div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
             <span style="font-size:13px;font-weight:700;color:#1f2937">${selSubObj?selSubObj.name+' — ':''}Записи — ${MONTHS[S.month-1]}</span>
-            ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+            ${canWrite('liderStroy')?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
           </div>
           <div class="table-wrap">
             <table class="tbl">
-              <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+              <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('liderStroy')?'<th></th>':''}</tr></thead>
               <tbody>${entryRows}</tbody>
             </table>
           </div>
@@ -1376,7 +1378,7 @@ function renderBSO(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bso','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('bso','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${canWrite('bso')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bso','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('bso','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const monthRows = MONTHS.map((mn,i)=>{
@@ -1471,11 +1473,11 @@ function renderBSO(){
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <span style="font-size:13px;font-weight:700;color:#1f2937">${selBSOSubObj?selBSOSubObj.name+' — ':subcat.name+' — '}${MONTHS[S.month-1]}</span>
-        ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSOEntry','${selSub}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+        ${canWrite('bso')?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSOEntry','${selSub}')"><i class="fa fa-plus"></i> Добави</button>`:''}
       </div>
       <div class="table-wrap">
         <table class="tbl">
-          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('bso')?'<th></th>':''}</tr></thead>
           <tbody>${entryRows}</tbody>
         </table>
       </div>
@@ -1546,7 +1548,7 @@ function renderBSODZZD(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bsoDzzd','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('bsoDzzd','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${canWrite('bsoDzzd')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bsoDzzd','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('bsoDzzd','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const subObjRows = subObjects.map(s=>{
@@ -1632,11 +1634,11 @@ function renderBSODZZD(){
         <div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
             <span style="font-size:13px;font-weight:700;color:#1f2937">${selSubObj?selSubObj.name+' — ':obj.name+' — '}${MONTHS[S.month-1]}</span>
-            ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSODzzdEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+            ${canWrite('bsoDzzd')?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSODzzdEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
           </div>
           <div class="table-wrap">
             <table class="tbl">
-              <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+              <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('bsoDzzd')?'<th></th>':''}</tr></thead>
               <tbody>${entryRows}</tbody>
             </table>
           </div>
@@ -1668,7 +1670,7 @@ function renderMetaPlan(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('metaPlan','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('metaPlan','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${canWrite('metaPlan')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('metaPlan','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('metaPlan','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const monthRows = MONTHS.map((mn,i)=>{
@@ -1703,11 +1705,11 @@ function renderMetaPlan(){
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <span style="font-size:13px;font-weight:700;color:#1f2937">Записи — ${MONTHS[S.month-1]} ${S.year}</span>
-        ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addMetaPlanEntry',null)"><i class="fa fa-plus"></i> Добави</button>`:''}
+        ${canWrite('metaPlan')?`<button class="btn btn-primary btn-sm" onclick="openModal('addMetaPlanEntry',null)"><i class="fa fa-plus"></i> Добави</button>`:''}
       </div>
       <div class="table-wrap">
         <table class="tbl">
-          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('metaPlan')?'<th></th>':''}</tr></thead>
           <tbody>${entryRows}</tbody>
         </table>
       </div>
@@ -1763,7 +1765,7 @@ function renderInvestments(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('investments','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('investments','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${canWrite('investments')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('investments','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('investments','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const subObjRows = subObjects.map(s=>{
@@ -1848,11 +1850,11 @@ function renderInvestments(){
         <div class="card">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
             <span style="font-size:13px;font-weight:700;color:#1f2937">${selSubObj?selSubObj.name+' — ':obj.name+' — '}${MONTHS[S.month-1]}</span>
-            ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addInvEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+            ${canWrite('investments')?`<button class="btn btn-primary btn-sm" onclick="openModal('addInvEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
           </div>
           <div class="table-wrap">
             <table class="tbl">
-              <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+              <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('investments')?'<th></th>':''}</tr></thead>
               <tbody>${entryRows}</tbody>
             </table>
           </div>
@@ -1884,7 +1886,7 @@ function renderKasa(company, title, icon){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${isAdmin()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('${company}','${e.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="deleteEntry('${company}','${e.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${canWrite(company)?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('${company}','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('${company}','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const monthRows = MONTHS.map((mn,i)=>{
@@ -1920,11 +1922,11 @@ function renderKasa(company, title, icon){
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <span style="font-size:13px;font-weight:700;color:#1f2937">Записи — ${MONTHS[S.month-1]} ${S.year}</span>
-        ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addKasaEntry',null,'${company}','${title}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+        ${canWrite(company)?`<button class="btn btn-primary btn-sm" onclick="openModal('addKasaEntry',null,'${company}','${title}')"><i class="fa fa-plus"></i> Добави</button>`:''}
       </div>
       <div class="table-wrap">
         <table class="tbl">
-          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite(company)?'<th></th>':''}</tr></thead>
           <tbody>${entryRows}</tbody>
         </table>
       </div>
