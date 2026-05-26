@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-26-v4">
+<meta name="version" content="2026-05-26-v5">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -542,8 +542,12 @@ function canView(comp){
 // Returns null (= full access) or array of lowercase keyword strings for this user's Meta8 access
 function getAccessibleMeta8ProdIds(){
   if(isAdmin()) return null;
-  const kws = session?.meta8Prods || [];
+  // Always read fresh from DB to avoid stale session data (e.g. old p_* IDs from before patching)
+  const u = session ? db.users.find(u=>u.id===session.userId) : null;
+  const kws = (u ? (u.meta8Prods||[]) : (session?.meta8Prods||[]));
   if(kws.length === 0) return null; // no restriction → full access
+  // Safety: if ALL keywords look like old p_* IDs (stale data), fall back to full access
+  if(kws.every(k => k.startsWith('p_'))) return null;
   return kws;
 }
 
@@ -952,6 +956,7 @@ function renderApp(){
         </div>
         <i class="fa fa-sign-out-alt" style="color:#9ca3af;cursor:pointer;font-size:14px" onclick="logout()" title="Изход"></i>
       </div>
+      <div style="text-align:center;font-size:9px;color:#374151;margin-top:8px;opacity:.5">v5 · 2026-05-26</div>
     </div>
   </div>
   <div class="main-content">
