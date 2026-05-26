@@ -21,5 +21,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
           publish_branch: gh-pages
-          exclude_assets: '.github,.nojekyll'
+          exclude_assets: '.github'
           force_orphan: true
