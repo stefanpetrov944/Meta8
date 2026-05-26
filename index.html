@@ -156,6 +156,31 @@ const FB_API_KEY   = 'AIzaSyDQXufe34hVauw8MjdaypcvADEFMkB9ATA';
 const FB_AUTH_EMAIL= 'app@finance-pro-holding.bg';
 const FB_AUTH_PASS = 'DA1da2da3_';
 
+// ================== SEED DATA ==================
+// Stable Meta8 production IDs — never rename these IDs (entries are linked by id)
+const SEED_PRODUCTIONS = [
+  {id:'p_armatura',   name:'Арматурни заготовки',  createdAt:'2024-01-01T00:00:00Z'},
+  {id:'p_mrezi',      name:'Мрежи',                createdAt:'2024-01-01T00:00:00Z'},
+  {id:'p_prof_suho',  name:'Проф.за сухо ст-во',   createdAt:'2024-01-01T00:00:00Z'},
+  {id:'p_usilv',      name:'Усилващи профили',      createdAt:'2024-01-01T00:00:00Z'},
+  {id:'p_lamarina',   name:'Ламарина',              createdAt:'2024-01-01T00:00:00Z'},
+  {id:'p_gvozdei',    name:'Гвоздеи',               createdAt:'2024-01-01T00:00:00Z'},
+  {id:'p_fibri',      name:'Фибри',                 createdAt:'2024-01-01T00:00:00Z'},
+  {id:'p_tel',        name:'Тел',                   createdAt:'2024-01-01T00:00:00Z'},
+  {id:'p_uslugi',     name:'Услуги',                createdAt:'2024-01-01T00:00:00Z'},
+  {id:'p_met_konstr', name:'Мет.конструкции',       createdAt:'2024-01-01T00:00:00Z'},
+];
+
+// Seed users — matched by email; only inserted if missing
+const SEED_USERS = [
+  {id:'u_kolarova',  email:'v.kolarova@liderstroy.bg', password:'Kolar@2024', name:'В. Коларова',  role:'user', confirmed:true, company:['liderStroy'],              meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_damyanova', email:'z.damyanova@bso-bg.com',   password:'Damyan@24',  name:'З. Дамянова',  role:'user', confirmed:true, company:['bso','bsoDzzd'],           meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_vgmeta8',   email:'vgmeta8@abv.bg',           password:'VgMet@24',   name:'VG Мета 8',    role:'user', confirmed:true, company:['investments','kasaVarna'],  meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_rusanova',  email:'s.rusanova@meta8.bg',      password:'Rusan@24',   name:'С. Русанова',  role:'user', confirmed:true, company:['kasaPavlikeni','meta8'],    meta8Prods:['p_mrezi','p_prof_suho','p_usilv','p_lamarina','p_gvozdei','p_fibri','p_tel','p_uslugi'], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_office',    email:'office@meta8.bg',          password:'Offic@24',   name:'Офис Мета 8',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['p_armatura'], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_georgieva', email:'s.georgieva@meta8.bg',     password:'Georg@24',   name:'С. Георгиева', role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['p_met_konstr'], createdAt:'2024-01-01T00:00:00Z'},
+];
+
 // ================== DEFAULT DATA ==================
 function defaultDB() {
   return {
@@ -345,6 +370,26 @@ function _mergeDefaults(remote){
   return _fixArrays(remote);   // always re-hydrate arrays after merge
 }
 
+// ---- seedData: ensure all seed productions and users exist ----
+function seedData(){
+  let changed = false;
+  // Ensure all seed productions exist (match by stable id)
+  SEED_PRODUCTIONS.forEach(sp=>{
+    if(!db.meta8.productions.find(p=>p.id===sp.id)){
+      db.meta8.productions.push({...sp});
+      changed = true;
+    }
+  });
+  // Ensure all seed users exist (match by email)
+  SEED_USERS.forEach(su=>{
+    if(!db.users.find(u=>u.email.toLowerCase()===su.email.toLowerCase())){
+      db.users.push({...su});
+      changed = true;
+    }
+  });
+  if(changed) saveDB();
+}
+
 // ---- initDB: load latest data from Firebase on startup ----
 async function initDB(){
   try {
@@ -360,6 +405,8 @@ async function initDB(){
       // Firebase is empty → push our local/default data up
       saveDB();
     }
+    // Always ensure seed data exists (idempotent — only writes if something is missing)
+    seedData();
   } catch(e){
     console.warn('Firebase init failed, using local cache:', e);
     _fbOnline = false;
@@ -459,7 +506,7 @@ function login(email, password){
   const u = db.users.find(u=>u.email.toLowerCase()===email.toLowerCase() && u.password===password);
   if(!u) return {ok:false, msg:'Грешен имейл или парола'};
   if(!u.confirmed) return {ok:false, msg:'Акаунтът не е потвърден'};
-  session = {userId:u.id, email:u.email, name:u.name, role:u.role, company:u.company||[]};
+  session = {userId:u.id, email:u.email, name:u.name, role:u.role, company:u.company||[], meta8Prods:u.meta8Prods||[]};
   saveSession();
   return {ok:true};
 }
@@ -492,6 +539,20 @@ function canView(comp){
   if(c===comp) return true; // legacy single string
   if(Array.isArray(c)) return c.includes('all') || c.includes(comp);
   return false;
+}
+
+// Returns null (= full access) or an array of production IDs this user may see
+function getAccessibleMeta8ProdIds(){
+  if(isAdmin()) return null;
+  const prods = session?.meta8Prods || [];
+  if(prods.length === 0) return null; // no restriction specified → full access
+  return prods;
+}
+
+function canViewMeta8Prod(prodId){
+  const ids = getAccessibleMeta8ProdIds();
+  if(ids === null) return true;
+  return ids.includes(prodId);
 }
 
 // ================== RESET TOKEN URL CHECK ==================
@@ -1053,11 +1114,23 @@ function renderDashboard(){
 // =================== META 8 ===================
 function renderMeta8(){
   if(!canView('meta8')) return noAccess();
-  const prods = db.meta8.productions;
-  const overall = getCompanyMonthTotals('meta8',S.year,S.month);
+  // Filter productions by what this user is allowed to see
+  const accessibleProdIds = getAccessibleMeta8ProdIds();
+  const prods = accessibleProdIds
+    ? db.meta8.productions.filter(p=>accessibleProdIds.includes(p.id))
+    : db.meta8.productions;
+  // Overall totals only for accessible productions
+  const overallEntries = (db.meta8.entries||[]).filter(e=>
+    e.year===S.year && e.month===S.month &&
+    (accessibleProdIds===null || accessibleProdIds.includes(e.entityId))
+  );
+  const overall = sumEntries(overallEntries);
   const overallResult = overall.income - overall.expenses;
 
-  const selProd = S.selEntity || (prods[0]?.id||null);
+  // If the previously selected production is no longer accessible, fall back to first
+  const selProd = (S.selEntity && prods.find(p=>p.id===S.selEntity))
+    ? S.selEntity
+    : (prods[0]?.id||null);
 
   const prodTabs = prods.map(p=>`
     <div class="tab ${selProd===p.id?'active':''}" onclick="S.selEntity='${p.id}';render()">${p.name}</div>
