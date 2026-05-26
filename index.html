@@ -7,6 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
+<meta name="version" content="2026-05-26-v4">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -364,9 +365,9 @@ function _mergeDefaults(remote){
 function seedData(){
   let changed = false;
 
-  // 1. Remove the erroneously-added duplicate seed productions
+  // 1. Remove any p_* productions that were erroneously seeded in a previous deployment
   const before = db.meta8.productions.length;
-  db.meta8.productions = db.meta8.productions.filter(p=>!_CLEANUP_PROD_IDS.includes(p.id));
+  db.meta8.productions = db.meta8.productions.filter(p=>!p.id.startsWith('p_'));
   if(db.meta8.productions.length !== before) changed = true;
 
   // 2. Seed users (insert if missing; patch meta8Prods if still using old p_ IDs)
@@ -2870,6 +2871,10 @@ function doResetPassword(token, newPass){
 // =================== INIT ===================
 // Fix any arrays in the localStorage cache now that _fixArrays is defined
 try { db = _fixArrays(db); } catch(_){}
+
+// Immediately remove any erroneously-seeded p_* productions (runs before first render,
+// so the user never sees duplicates regardless of cache or Firebase timing)
+if(db.meta8) db.meta8.productions = (db.meta8.productions||[]).filter(p=>!p.id.startsWith('p_'));
 
 // 1. Render immediately with cached/local data (no delay for user)
 render();
