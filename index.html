@@ -157,29 +157,19 @@ const FB_AUTH_EMAIL= 'app@finance-pro-holding.bg';
 const FB_AUTH_PASS = 'DA1da2da3_';
 
 // ================== SEED DATA ==================
-// Stable Meta8 production IDs — never rename these IDs (entries are linked by id)
-const SEED_PRODUCTIONS = [
-  {id:'p_armatura',   name:'Арматурни заготовки',  createdAt:'2024-01-01T00:00:00Z'},
-  {id:'p_mrezi',      name:'Мрежи',                createdAt:'2024-01-01T00:00:00Z'},
-  {id:'p_prof_suho',  name:'Проф.за сухо ст-во',   createdAt:'2024-01-01T00:00:00Z'},
-  {id:'p_usilv',      name:'Усилващи профили',      createdAt:'2024-01-01T00:00:00Z'},
-  {id:'p_lamarina',   name:'Ламарина',              createdAt:'2024-01-01T00:00:00Z'},
-  {id:'p_gvozdei',    name:'Гвоздеи',               createdAt:'2024-01-01T00:00:00Z'},
-  {id:'p_fibri',      name:'Фибри',                 createdAt:'2024-01-01T00:00:00Z'},
-  {id:'p_tel',        name:'Тел',                   createdAt:'2024-01-01T00:00:00Z'},
-  {id:'p_uslugi',     name:'Услуги',                createdAt:'2024-01-01T00:00:00Z'},
-  {id:'p_met_konstr', name:'Мет.конструкции',       createdAt:'2024-01-01T00:00:00Z'},
-];
-
-// Seed users — matched by email; only inserted if missing
+// meta8Prods stores lowercase name KEYWORDS — matched as substring against production.name
+// This avoids dependency on specific IDs in the database.
 const SEED_USERS = [
   {id:'u_kolarova',  email:'v.kolarova@liderstroy.bg', password:'Kolar@2024', name:'В. Коларова',  role:'user', confirmed:true, company:['liderStroy'],              meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_damyanova', email:'z.damyanova@bso-bg.com',   password:'Damyan@24',  name:'З. Дамянова',  role:'user', confirmed:true, company:['bso','bsoDzzd'],           meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_vgmeta8',   email:'vgmeta8@abv.bg',           password:'VgMet@24',   name:'VG Мета 8',    role:'user', confirmed:true, company:['investments','kasaVarna'],  meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
-  {id:'u_rusanova',  email:'s.rusanova@meta8.bg',      password:'Rusan@24',   name:'С. Русанова',  role:'user', confirmed:true, company:['kasaPavlikeni','meta8'],    meta8Prods:['p_mrezi','p_prof_suho','p_usilv','p_lamarina','p_gvozdei','p_fibri','p_tel','p_uslugi'], createdAt:'2024-01-01T00:00:00Z'},
-  {id:'u_office',    email:'office@meta8.bg',          password:'Offic@24',   name:'Офис Мета 8',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['p_armatura'], createdAt:'2024-01-01T00:00:00Z'},
-  {id:'u_georgieva', email:'s.georgieva@meta8.bg',     password:'Georg@24',   name:'С. Георгиева', role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['p_met_konstr'], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_rusanova',  email:'s.rusanova@meta8.bg',      password:'Rusan@24',   name:'С. Русанова',  role:'user', confirmed:true, company:['kasaPavlikeni','meta8'],    meta8Prods:['мрежи','профили за сухо','усилващи','ламарина','гвоздеи','фибри','тел','услуги'], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_office',    email:'office@meta8.bg',          password:'Offic@24',   name:'Офис Мета 8',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['арматурн'], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_georgieva', email:'s.georgieva@meta8.bg',     password:'Georg@24',   name:'С. Георгиева', role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['метални'], createdAt:'2024-01-01T00:00:00Z'},
 ];
+
+// IDs of the erroneously-seeded duplicate productions — remove them on next startup
+const _CLEANUP_PROD_IDS = ['p_armatura','p_mrezi','p_prof_suho','p_usilv','p_lamarina','p_gvozdei','p_fibri','p_tel','p_uslugi','p_met_konstr'];
 
 // ================== DEFAULT DATA ==================
 function defaultDB() {
@@ -370,23 +360,28 @@ function _mergeDefaults(remote){
   return _fixArrays(remote);   // always re-hydrate arrays after merge
 }
 
-// ---- seedData: ensure all seed productions and users exist ----
+// ---- seedData: clean up duplicate productions and ensure users exist ----
 function seedData(){
   let changed = false;
-  // Ensure all seed productions exist (match by stable id)
-  SEED_PRODUCTIONS.forEach(sp=>{
-    if(!db.meta8.productions.find(p=>p.id===sp.id)){
-      db.meta8.productions.push({...sp});
-      changed = true;
-    }
-  });
-  // Ensure all seed users exist (match by email)
+
+  // 1. Remove the erroneously-added duplicate seed productions
+  const before = db.meta8.productions.length;
+  db.meta8.productions = db.meta8.productions.filter(p=>!_CLEANUP_PROD_IDS.includes(p.id));
+  if(db.meta8.productions.length !== before) changed = true;
+
+  // 2. Seed users (insert if missing; patch meta8Prods if still using old p_ IDs)
   SEED_USERS.forEach(su=>{
-    if(!db.users.find(u=>u.email.toLowerCase()===su.email.toLowerCase())){
+    const existing = db.users.find(u=>u.email.toLowerCase()===su.email.toLowerCase());
+    if(!existing){
       db.users.push({...su});
       changed = true;
+    } else if((existing.meta8Prods||[]).some(p=>p.startsWith('p_'))){
+      // Fix old ID-based meta8Prods → replace with keyword-based ones from seed
+      existing.meta8Prods = su.meta8Prods;
+      changed = true;
     }
   });
+
   if(changed) saveDB();
 }
 
@@ -541,18 +536,22 @@ function canView(comp){
   return false;
 }
 
-// Returns null (= full access) or an array of production IDs this user may see
+// Returns null (= full access) or array of lowercase keyword strings for this user's Meta8 access
 function getAccessibleMeta8ProdIds(){
   if(isAdmin()) return null;
-  const prods = session?.meta8Prods || [];
-  if(prods.length === 0) return null; // no restriction specified → full access
-  return prods;
+  const kws = session?.meta8Prods || [];
+  if(kws.length === 0) return null; // no restriction → full access
+  return kws;
 }
 
+// Match by name substring (case-insensitive) so access doesn't depend on production IDs
 function canViewMeta8Prod(prodId){
-  const ids = getAccessibleMeta8ProdIds();
-  if(ids === null) return true;
-  return ids.includes(prodId);
+  const keywords = getAccessibleMeta8ProdIds();
+  if(keywords === null) return true;
+  const prod = db.meta8.productions.find(p=>p.id===prodId);
+  if(!prod) return false;
+  const name = prod.name.toLowerCase();
+  return keywords.some(kw=>name.includes(kw.toLowerCase()));
 }
 
 // ================== RESET TOKEN URL CHECK ==================
@@ -1114,20 +1113,16 @@ function renderDashboard(){
 // =================== META 8 ===================
 function renderMeta8(){
   if(!canView('meta8')) return noAccess();
-  // Filter productions by what this user is allowed to see
-  const accessibleProdIds = getAccessibleMeta8ProdIds();
-  const prods = accessibleProdIds
-    ? db.meta8.productions.filter(p=>accessibleProdIds.includes(p.id))
-    : db.meta8.productions;
+  // Filter productions by what this user is allowed to see (name-keyword match)
+  const prods = db.meta8.productions.filter(p=>canViewMeta8Prod(p.id));
   // Overall totals only for accessible productions
   const overallEntries = (db.meta8.entries||[]).filter(e=>
-    e.year===S.year && e.month===S.month &&
-    (accessibleProdIds===null || accessibleProdIds.includes(e.entityId))
+    e.year===S.year && e.month===S.month && canViewMeta8Prod(e.entityId)
   );
   const overall = sumEntries(overallEntries);
   const overallResult = overall.income - overall.expenses;
 
-  // If the previously selected production is no longer accessible, fall back to first
+  // If the previously selected production is not accessible, fall back to first visible one
   const selProd = (S.selEntity && prods.find(p=>p.id===S.selEntity))
     ? S.selEntity
     : (prods[0]?.id||null);
