@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v10">
+<meta name="version" content="2026-05-27-v11">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -161,7 +161,7 @@ const FB_AUTH_PASS = 'DA1da2da3_';
 // meta8Prods stores lowercase name KEYWORDS — matched as substring against production.name
 // This avoids dependency on specific IDs in the database.
 const SEED_USERS = [
-  {id:'u_kolarova',  email:'v.kolarova@liderstroy.bg', password:'Kolar@2024', name:'В. Коларова',  role:'user', confirmed:true, company:['liderStroy'],              meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_kolarova',  email:'v.kolarova@liderstroy.bg', password:'Kolar@2024', name:'В. Коларова',  role:'user', confirmed:true, company:['liderStroy'],              meta8Prods:[], manageLiderStroy:true, createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_damyanova', email:'z.damyanova@bso-bg.com',   password:'Damyan@24',  name:'З. Дамянова',  role:'user', confirmed:true, company:['bso','bsoDzzd'],           meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_vgmeta8',   email:'vgmeta8@abv.bg',           password:'VgMet@24',   name:'VG Мета 8',    role:'user', confirmed:true, company:['investments','kasaVarna'],  meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_rusanova',  email:'s.rusanova@meta8.bg',      password:'Rusan@24',   name:'С. Русанова',  role:'user', confirmed:true, company:['kasaPavlikeni','meta8'],    meta8Prods:['мрежи','профили за сухо','усилващи','ламарина','гвоздеи','фибри','тел','услуги'], createdAt:'2024-01-01T00:00:00Z'},
@@ -391,6 +391,7 @@ function seedData(){
       }
       if(existing.role !== su.role){ existing.role = su.role; changed = true; }
       if(JSON.stringify(existing.company) !== JSON.stringify(su.company)){ existing.company = su.company; changed = true; }
+      if(su.manageLiderStroy && !existing.manageLiderStroy){ existing.manageLiderStroy = true; changed = true; }
     }
   });
 
@@ -539,6 +540,12 @@ function register(email, password, name, company){
 function isAdmin(){ return session && session.role==='admin'; }
 // canWrite: any logged-in user who can view a company can also add/edit entries in it
 function canWrite(comp){ return canView(comp); }
+// canManageLSObjects: admin OR user with manageLiderStroy flag can add objects/sub-objects
+function canManageLSObjects(){
+  if(isAdmin()) return true;
+  const u = session ? db.users.find(u=>u.id===session.userId) : null;
+  return !!(u && u.manageLiderStroy);
+}
 function canView(comp){
   if(isAdmin()) return true;
   if(!session) return false;
@@ -1295,7 +1302,7 @@ function renderLiderStroy(){
     <div style="width:230px;flex-shrink:0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <span style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase">Обекти</span>
-        ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSObject')"><i class="fa fa-plus"></i></button>`:''}
+        ${canManageLSObjects()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSObject')"><i class="fa fa-plus"></i></button>`:''}
       </div>
       ${objects.map(o=>{
         const allEnts=getAllEntries('liderStroy',o.id);
@@ -1327,14 +1334,14 @@ function renderLiderStroy(){
       </div>
 
       <!-- Sub-objects panel -->
-      ${subObjects.length>0||isAdmin() ? `
+      ${subObjects.length>0||canManageLSObjects() ? `
       <div class="card" style="margin-bottom:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:13px;font-weight:700;color:#1f2937"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
             ${selSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
           </div>
-          ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSSubObj','${selObj}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
+          ${canManageLSObjects()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSSubObj','${selObj}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
         </div>
         ${subObjects.length>0?`
         <div class="table-wrap">
