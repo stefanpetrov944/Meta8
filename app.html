@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v7">
+<meta name="version" content="2026-05-27-v8">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -167,6 +167,8 @@ const SEED_USERS = [
   {id:'u_rusanova',  email:'s.rusanova@meta8.bg',      password:'Rusan@24',   name:'С. Русанова',  role:'user', confirmed:true, company:['kasaPavlikeni','meta8'],    meta8Prods:['мрежи','профили за сухо','усилващи','ламарина','гвоздеи','фибри','тел','услуги'], createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_office',    email:'office@meta8.bg',          password:'Offic@24',   name:'Офис Мета 8',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['арматурн'], createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_georgieva', email:'s.georgieva@meta8.bg',     password:'Georg@24',   name:'С. Георгиева', role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['метални'], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_ganchev',   email:'arh_ganchev@meta8.bg',    password:'Ganch@2025', name:'Арх. Ганчев',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
+  {id:'u_petrov',    email:'p.petrov@meta8.bg',        password:'Petr@2025',  name:'П. Петров',    role:'user', confirmed:true, company:['meta8'],                    meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
 ];
 
 // IDs of the erroneously-seeded duplicate productions — remove them on next startup
@@ -956,7 +958,7 @@ function renderApp(){
         </div>
         <i class="fa fa-sign-out-alt" style="color:#9ca3af;cursor:pointer;font-size:14px" onclick="logout()" title="Изход"></i>
       </div>
-      <div style="text-align:center;font-size:9px;color:#374151;margin-top:8px;opacity:.5">v7 · 2026-05-27</div>
+      <div style="text-align:center;font-size:9px;color:#374151;margin-top:8px;opacity:.5">v8 · 2026-05-27</div>
     </div>
   </div>
   <div class="main-content">
