@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v13">
+<meta name="version" content="2026-05-27-v14">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1294,7 +1294,7 @@ function renderLiderStroy(){
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
-      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLSSubObj('${selObj}','${s.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+      ${canManageLSObjects()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editLSSubObj','${selObj}',null,null,'${s.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLSSubObj('${selObj}','${s.id}')"><i class="fa fa-trash"></i></button></td>`:''}
     </tr>`;
   }).join('');
 
@@ -1320,8 +1320,8 @@ function renderLiderStroy(){
           <div style="font-size:11px;color:#6b7280">Бюджет: <span style="color:#1f2937">${fmtShort(o.budget)} €</span></div>
           <div style="font-size:11px;margin-top:2px;color:${rem>=0?'#22c55e':'#ef4444'}">Остатък: ${fmtShort(rem)} €</div>
           ${subCount>0?`<div style="font-size:10px;color:#6b7280;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
-          ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
-            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editLSBudget','${o.id}')"><i class="fa fa-edit"></i> Бюджет</button>
+          ${canManageLSObjects()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editLSObject','${o.id}')"><i class="fa fa-edit"></i></button>
             <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLSObject('${o.id}')"><i class="fa fa-trash"></i></button>
           </div>`:''}
         </div>`;
@@ -1353,7 +1353,7 @@ function renderLiderStroy(){
         ${subObjects.length>0?`
         <div class="table-wrap">
           <table class="tbl">
-            <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+            <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canManageLSObjects()?'<th></th>':''}</tr></thead>
             <tbody>${subObjRows}</tbody>
           </table>
         </div>`:`<div style="color:#6b7280;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
@@ -2196,13 +2196,26 @@ function renderModal(){
       </div>
     </form>`;
   }
-  else if(modal==='editLSBudget'){
+  else if(modal==='editLSObject'){
     const obj = db.liderStroy.objects.find(o=>o.id===mdata.entityId);
     content = `
-    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на обект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
     <form id="m-form">
-      <div class="fgroup"><label class="lbl">Обект: ${obj?.name}</label></div>
-      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${obj?.budget||0}" required></div>
+      <div class="fgroup"><label class="lbl">Наименование</label><input id="f-name" type="text" class="input" value="${obj?.name||''}" required></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${obj?.budget||0}"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='editLSSubObj'){
+    const obj = db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    const sub = obj?.subObjects?.find(s=>s.id===mdata.subId);
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на подобект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование</label><input id="f-name" type="text" class="input" value="${sub?.name||''}" required></div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
         <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
@@ -2519,9 +2532,9 @@ function createPieChart(id, data, canvas){
 }
 
 // =================== ACTIONS ===================
-function openModal(type, entityId, company, label){
+function openModal(type, entityId, company, label, subId){
   S.modal = type;
-  S.mdata = {entityId, company, label};
+  S.mdata = {entityId, company, label, subId};
   render();
 }
 
@@ -2768,9 +2781,25 @@ function handleModalSubmit(){
     S.selSubEntity=sub.id;
     saveDB(); closeModal(); notify('Подобектът е добавен','ok');
   }
-  else if(modal==='editLSBudget'){
+  else if(modal==='editLSObject'){
     const obj=db.liderStroy.objects.find(o=>o.id===mdata.entityId);
-    if(obj){ obj.budget=parseFloat(document.getElementById('f-budget').value)||0; saveDB(); closeModal(); notify('Бюджетът е актуализиран','ok'); }
+    if(obj){
+      const name=document.getElementById('f-name').value.trim();
+      if(!name) return;
+      obj.name=name;
+      obj.budget=parseFloat(document.getElementById('f-budget').value)||0;
+      saveDB(); closeModal(); notify('Обектът е актуализиран','ok');
+    }
+  }
+  else if(modal==='editLSSubObj'){
+    const obj=db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    const sub=obj?.subObjects?.find(s=>s.id===mdata.subId);
+    if(sub){
+      const name=document.getElementById('f-name').value.trim();
+      if(!name) return;
+      sub.name=name;
+      saveDB(); closeModal(); notify('Подобектът е актуализиран','ok');
+    }
   }
   else if(modal==='addLSEntry'){
     const subObjEl = document.getElementById('f-subobj');
