@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v14">
+<meta name="version" content="2026-05-27-v15">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1269,7 +1269,7 @@ function renderLiderStroy(){
     const t = sumEntries(ents);
     const r = t.income-t.expenses;
     return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
-      <td style="color:${i+1===S.month?'#fff':'#888'};font-weight:${i+1===S.month?700:400}">${mn}</td>
+      <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
@@ -1417,7 +1417,7 @@ function renderBSO(){
     const t = sumEntries(ents);
     const r = t.income-t.expenses;
     return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
-      <td style="color:${i+1===S.month?'#fff':'#888'};font-weight:${i+1===S.month?700:400}">${mn}</td>
+      <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
@@ -1566,7 +1566,7 @@ function renderBSODZZD(){
     const t = sumEntries(ents);
     const r = t.income-t.expenses;
     return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
-      <td style="color:${i+1===S.month?'#fff':'#888'};font-weight:${i+1===S.month?700:400}">${mn}</td>
+      <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
@@ -1708,7 +1708,7 @@ function renderMetaPlan(){
     const t=getCompanyMonthTotals('metaPlan',S.year,i+1);
     const r=t.income-t.expenses;
     return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
-      <td style="color:${i+1===S.month?'#fff':'#888'}">${mn}</td>
+      <td style="color:${i+1===S.month?'#c00':'#374151'}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
@@ -1783,7 +1783,7 @@ function renderInvestments(){
     const t = sumEntries(ents);
     const r = t.income-t.expenses;
     return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
-      <td style="color:${i+1===S.month?'#fff':'#888'};font-weight:${i+1===S.month?700:400}">${mn}</td>
+      <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
@@ -1924,7 +1924,7 @@ function renderKasa(company, title, icon){
     const t=getCompanyMonthTotals(company,S.year,i+1);
     const r=t.income-t.expenses;
     return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
-      <td style="color:${i+1===S.month?'#fff':'#888'}">${mn}</td>
+      <td style="color:${i+1===S.month?'#c00':'#374151'}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
