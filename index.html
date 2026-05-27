@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v11">
+<meta name="version" content="2026-05-27-v12">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -162,11 +162,11 @@ const FB_AUTH_PASS = 'DA1da2da3_';
 // This avoids dependency on specific IDs in the database.
 const SEED_USERS = [
   {id:'u_kolarova',  email:'v.kolarova@liderstroy.bg', password:'Kolar@2024', name:'В. Коларова',  role:'user', confirmed:true, company:['liderStroy'],              meta8Prods:[], manageLiderStroy:true, createdAt:'2024-01-01T00:00:00Z'},
-  {id:'u_damyanova', email:'z.damyanova@bso-bg.com',   password:'Damyan@24',  name:'З. Дамянова',  role:'user', confirmed:true, company:['bso','bsoDzzd'],           meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
-  {id:'u_vgmeta8',   email:'vgmeta8@abv.bg',           password:'VgMet@24',   name:'VG Мета 8',    role:'user', confirmed:true, company:['investments','kasaVarna'],  meta8Prods:[], createdAt:'2024-01-01T00:00:00Z'},
-  {id:'u_rusanova',  email:'s.rusanova@meta8.bg',      password:'Rusan@24',   name:'С. Русанова',  role:'user', confirmed:true, company:['kasaPavlikeni','meta8'],    meta8Prods:['мрежи','профили за сухо','усилващи','ламарина','гвоздеи','фибри','тел','услуги'], createdAt:'2024-01-01T00:00:00Z'},
-  {id:'u_office',    email:'office@meta8.bg',          password:'Offic@24',   name:'Офис Мета 8',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['арматурн'], createdAt:'2024-01-01T00:00:00Z'},
-  {id:'u_georgieva', email:'s.georgieva@meta8.bg',     password:'Georg@24',   name:'С. Георгиева', role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['метални'], createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_damyanova', email:'z.damyanova@bso-bg.com',   password:'Damyan@24',  name:'З. Дамянова',  role:'user', confirmed:true, company:['bso','bsoDzzd'],           meta8Prods:[], manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_vgmeta8',   email:'vgmeta8@abv.bg',           password:'VgMet@24',   name:'VG Мета 8',    role:'user', confirmed:true, company:['investments','kasaVarna'],  meta8Prods:[], manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_rusanova',  email:'s.rusanova@meta8.bg',      password:'Rusan@24',   name:'С. Русанова',  role:'user', confirmed:true, company:['kasaPavlikeni','meta8'],    meta8Prods:['мрежи','профили за сухо','усилващи','ламарина','гвоздеи','фибри','тел','услуги'], manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_office',    email:'office@meta8.bg',          password:'Offic@24',   name:'Офис Мета 8',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['арматурн'], manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_georgieva', email:'s.georgieva@meta8.bg',     password:'Georg@24',   name:'С. Георгиева', role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['метални'], manager:true, createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_ganchev',   email:'arh_ganchev@meta8.bg',    password:'Ganch@2025', name:'Арх. Ганчев',  role:'admin', confirmed:true, company:'all', meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
   {id:'u_petrov',    email:'p.petrov@meta8.bg',        password:'Petr@2025',  name:'П. Петров',    role:'admin', confirmed:true, company:'all', meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
 ];
@@ -392,6 +392,7 @@ function seedData(){
       if(existing.role !== su.role){ existing.role = su.role; changed = true; }
       if(JSON.stringify(existing.company) !== JSON.stringify(su.company)){ existing.company = su.company; changed = true; }
       if(su.manageLiderStroy && !existing.manageLiderStroy){ existing.manageLiderStroy = true; changed = true; }
+      if(su.manager && !existing.manager){ existing.manager = true; changed = true; }
     }
   });
 
@@ -545,6 +546,12 @@ function canManageLSObjects(){
   if(isAdmin()) return true;
   const u = session ? db.users.find(u=>u.id===session.userId) : null;
   return !!(u && u.manageLiderStroy);
+}
+// canDeleteEntry: admin OR manager user who can already write to that company
+function canDeleteEntry(comp){
+  if(isAdmin()) return true;
+  const u = session ? db.users.find(u=>u.id===session.userId) : null;
+  return !!(u && u.manager) && canWrite(comp);
 }
 function canView(comp){
   if(isAdmin()) return true;
@@ -1173,7 +1180,7 @@ function renderMeta8(){
       <td class="text-neg">-${fmt(e.expWorkers||0)}</td>
       <td class="text-neg">-${fmt(e.expAdditional||0)}</td>
       <td class="${resultClass(e.income-(e.expWorkers||0)-(e.expAdditional||0))}">${fmt(e.income-(e.expWorkers||0)-(e.expAdditional||0))}</td>
-      ${canWrite('meta8')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('meta8','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('meta8','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+      ${canWrite('meta8')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('meta8','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('meta8')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('meta8','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`;
   }).join('') : `<tr><td colspan="8"><div class="empty-state"><i class="fa fa-inbox"></i><p>Няма записи за ${MONTHS[S.month-1]} ${S.year}</p></div></td></tr>`;
 
@@ -1275,7 +1282,7 @@ function renderLiderStroy(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${canWrite('liderStroy')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('liderStroy','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('liderStroy','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+      ${canWrite('liderStroy')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('liderStroy','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('liderStroy')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('liderStroy','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   // Sub-objects summary table
@@ -1402,7 +1409,7 @@ function renderBSO(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${canWrite('bso')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bso','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('bso','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+      ${canWrite('bso')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bso','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('bso')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('bso','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const monthRows = MONTHS.map((mn,i)=>{
@@ -1572,7 +1579,7 @@ function renderBSODZZD(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${canWrite('bsoDzzd')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bsoDzzd','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('bsoDzzd','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+      ${canWrite('bsoDzzd')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bsoDzzd','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('bsoDzzd')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('bsoDzzd','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const subObjRows = subObjects.map(s=>{
@@ -1694,7 +1701,7 @@ function renderMetaPlan(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${canWrite('metaPlan')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('metaPlan','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('metaPlan','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+      ${canWrite('metaPlan')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('metaPlan','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('metaPlan')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('metaPlan','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const monthRows = MONTHS.map((mn,i)=>{
@@ -1789,7 +1796,7 @@ function renderInvestments(){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${canWrite('investments')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('investments','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('investments','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+      ${canWrite('investments')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('investments','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('investments')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('investments','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const subObjRows = subObjects.map(s=>{
@@ -1910,7 +1917,7 @@ function renderKasa(company, title, icon){
       <td class="text-pos">+${fmt(e.income||0)}</td>
       <td class="text-neg">-${fmt(e.expenses||0)}</td>
       <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
-      ${canWrite(company)?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('${company}','${e.id}')"><i class="fa fa-edit"></i></button>${isAdmin()?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('${company}','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+      ${canWrite(company)?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('${company}','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry(company)?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('${company}','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
     </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
 
   const monthRows = MONTHS.map((mn,i)=>{
