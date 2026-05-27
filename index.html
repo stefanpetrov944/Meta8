@@ -167,8 +167,8 @@ const SEED_USERS = [
   {id:'u_rusanova',  email:'s.rusanova@meta8.bg',      password:'Rusan@24',   name:'С. Русанова',  role:'user', confirmed:true, company:['kasaPavlikeni','meta8'],    meta8Prods:['мрежи','профили за сухо','усилващи','ламарина','гвоздеи','фибри','тел','услуги'], createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_office',    email:'office@meta8.bg',          password:'Offic@24',   name:'Офис Мета 8',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['арматурн'], createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_georgieva', email:'s.georgieva@meta8.bg',     password:'Georg@24',   name:'С. Георгиева', role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['метални'], createdAt:'2024-01-01T00:00:00Z'},
-  {id:'u_ganchev',   email:'arh_ganchev@meta8.bg',    password:'Ganch@2025', name:'Арх. Ганчев',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
-  {id:'u_petrov',    email:'p.petrov@meta8.bg',        password:'Petr@2025',  name:'П. Петров',    role:'user', confirmed:true, company:['meta8'],                    meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
+  {id:'u_ganchev',   email:'arh_ganchev@meta8.bg',    password:'Ganch@2025', name:'Арх. Ганчев',  role:'admin', confirmed:true, company:'all', meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
+  {id:'u_petrov',    email:'p.petrov@meta8.bg',        password:'Petr@2025',  name:'П. Петров',    role:'admin', confirmed:true, company:'all', meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
 ];
 
 // IDs of the erroneously-seeded duplicate productions — remove them on next startup
@@ -378,10 +378,13 @@ function seedData(){
     if(!existing){
       db.users.push({...su});
       changed = true;
-    } else if((existing.meta8Prods||[]).some(p=>p.startsWith('p_'))){
-      // Fix old ID-based meta8Prods → replace with keyword-based ones from seed
-      existing.meta8Prods = su.meta8Prods;
-      changed = true;
+    } else {
+      // Patch role/company/meta8Prods if seed definition changed
+      if((existing.meta8Prods||[]).some(p=>p.startsWith('p_'))){
+        existing.meta8Prods = su.meta8Prods; changed = true;
+      }
+      if(existing.role !== su.role){ existing.role = su.role; changed = true; }
+      if(JSON.stringify(existing.company) !== JSON.stringify(su.company)){ existing.company = su.company; changed = true; }
     }
   });
 
