@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v9">
+<meta name="version" content="2026-05-27-v10">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -178,7 +178,7 @@ const _CLEANUP_PROD_IDS = ['p_armatura','p_mrezi','p_prof_suho','p_usilv','p_lam
 function defaultDB() {
   return {
     users: [{
-      id:'u_admin', email:'admin@meta8.bg', password:'admin1234',
+      id:'u_admin', email:'admin@meta8.bg', password:'FinancePro_2026',
       role:'admin', name:'Администратор', confirmed:true, company:'all',
       createdAt:'2024-01-01T00:00:00Z'
     }],
@@ -372,7 +372,13 @@ function seedData(){
   db.meta8.productions = db.meta8.productions.filter(p=>!p.id.startsWith('p_'));
   if(db.meta8.productions.length !== before) changed = true;
 
-  // 2. Seed users (insert if missing; patch meta8Prods if still using old p_ IDs)
+  // 2. Patch admin password if changed
+  const adminUser = db.users.find(u=>u.id==='u_admin');
+  if(adminUser && adminUser.password !== 'FinancePro_2026'){
+    adminUser.password = 'FinancePro_2026'; changed = true;
+  }
+
+  // 3. Seed users (insert if missing; patch role/company/meta8Prods if changed)
   SEED_USERS.forEach(su=>{
     const existing = db.users.find(u=>u.email.toLowerCase()===su.email.toLowerCase());
     if(!existing){
@@ -961,7 +967,7 @@ function renderApp(){
         </div>
         <i class="fa fa-sign-out-alt" style="color:#9ca3af;cursor:pointer;font-size:14px" onclick="logout()" title="Изход"></i>
       </div>
-      <div style="text-align:center;font-size:9px;color:#374151;margin-top:8px;opacity:.5">v9 · 2026-05-27</div>
+      <div style="text-align:center;font-size:9px;color:#374151;margin-top:8px;opacity:.5">v10 · 2026-05-27</div>
     </div>
   </div>
   <div class="main-content">
