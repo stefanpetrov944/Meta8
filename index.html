@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v15">
+<meta name="version" content="2026-05-27-v16">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1268,11 +1268,12 @@ function renderLiderStroy(){
     const ents = selObj ? getLSEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
     const t = sumEntries(ents);
     const r = t.income-t.expenses;
-    return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
       <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('liderStroy')&&selObj?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addLSEntry','${selObj}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
     </tr>`;
   }).join('');
 
@@ -1376,7 +1377,7 @@ function renderLiderStroy(){
           <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
           <div class="table-wrap" style="max-height:320px;overflow-y:auto">
             <table class="tbl">
-              <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
+              <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
               <tbody>${monthRows}</tbody>
             </table>
           </div>
@@ -1416,11 +1417,12 @@ function renderBSO(){
     const ents = selSub ? getBSOEntriesBySubObj(selSub, selBSOSub||undefined, S.year, i+1) : [];
     const t = sumEntries(ents);
     const r = t.income-t.expenses;
-    return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
       <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('bso')&&selSub?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addBSOEntry','${selSub}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
     </tr>`;
   }).join('');
 
@@ -1517,7 +1519,7 @@ function renderBSO(){
       <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
       <div class="table-wrap" style="max-height:320px;overflow-y:auto">
         <table class="tbl">
-          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
+          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
           <tbody>${monthRows}</tbody>
         </table>
       </div>
@@ -1565,11 +1567,12 @@ function renderBSODZZD(){
     const ents = selObj ? getBsoDzzdEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
     const t = sumEntries(ents);
     const r = t.income-t.expenses;
-    return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
       <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('bsoDzzd')&&selObj?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addBSODzzdEntry','${selObj}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
     </tr>`;
   }).join('');
 
@@ -1678,7 +1681,7 @@ function renderBSODZZD(){
           <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
           <div class="table-wrap" style="max-height:320px;overflow-y:auto">
             <table class="tbl">
-              <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
+              <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
               <tbody>${monthRows}</tbody>
             </table>
           </div>
@@ -1707,11 +1710,12 @@ function renderMetaPlan(){
   const monthRows = MONTHS.map((mn,i)=>{
     const t=getCompanyMonthTotals('metaPlan',S.year,i+1);
     const r=t.income-t.expenses;
-    return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
       <td style="color:${i+1===S.month?'#c00':'#374151'}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('metaPlan')?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addMetaPlanEntry',null)"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
     </tr>`;
   }).join('');
 
@@ -1749,7 +1753,7 @@ function renderMetaPlan(){
       <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
       <div class="table-wrap" style="max-height:340px;overflow-y:auto">
         <table class="tbl">
-          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
+          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
           <tbody>${monthRows}</tbody>
         </table>
       </div>
@@ -1782,11 +1786,12 @@ function renderInvestments(){
     const ents = selObj ? getInvEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
     const t = sumEntries(ents);
     const r = t.income-t.expenses;
-    return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
       <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('investments')&&selObj?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addInvEntry','${selObj}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
     </tr>`;
   }).join('');
 
@@ -1894,7 +1899,7 @@ function renderInvestments(){
           <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
           <div class="table-wrap" style="max-height:320px;overflow-y:auto">
             <table class="tbl">
-              <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
+              <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
               <tbody>${monthRows}</tbody>
             </table>
           </div>
@@ -1923,11 +1928,12 @@ function renderKasa(company, title, icon){
   const monthRows = MONTHS.map((mn,i)=>{
     const t=getCompanyMonthTotals(company,S.year,i+1);
     const r=t.income-t.expenses;
-    return `<tr ${i+1===S.month?'style="background:rgba(204,0,0,.06)"':''}>
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
       <td style="color:${i+1===S.month?'#c00':'#374151'}">${mn}</td>
       <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
       <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
       <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite(company)?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addKasaEntry',null,'${company}','${title}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
     </tr>`;
   }).join('');
 
@@ -1966,7 +1972,7 @@ function renderKasa(company, title, icon){
       <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
       <div class="table-wrap" style="max-height:340px;overflow-y:auto">
         <table class="tbl">
-          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th></tr></thead>
+          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
           <tbody>${monthRows}</tbody>
         </table>
       </div>
