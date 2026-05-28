@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v16">
+<meta name="version" content="2026-05-27-v17">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -501,6 +501,33 @@ function fmtShort(n){
 
 function resultClass(n){ return n>0 ? 'text-pos' : n<0 ? 'text-neg' : 'text-neu'; }
 function resultBadge(n){ return n>0 ? 'badge-green' : n<0 ? 'badge-red' : 'badge-gray'; }
+
+// YTD summary card — shown above monthly KPI row, covers Jan → S.month
+function ytdPeriodCard(income, expenses){
+  const result = income - expenses;
+  const label = S.month > 1 ? `${MONTHS[0]} — ${MONTHS[S.month-1]} ${S.year}` : `${MONTHS[0]} ${S.year}`;
+  return `
+  <div style="background:#fff;border:1px solid #e5e7eb;border-left:4px solid #c00;border-radius:10px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(0,0,0,.05)">
+    <div style="min-width:120px">
+      <div style="font-size:10px;font-weight:700;color:#c00;text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px"><i class="fa fa-calendar-check" style="margin-right:5px"></i>Период</div>
+      <div style="font-size:13px;font-weight:700;color:#1f2937">${label}</div>
+    </div>
+    <div style="display:flex;gap:28px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:10px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:3px">Приходи</div>
+        <div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(income)}<span style="font-size:11px;color:#6b7280"> €</span></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:3px">Разходи</div>
+        <div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:3px">Резултат</div>
+        <div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div>
+      </div>
+    </div>
+  </div>`;
+}
 
 function notify(msg, type='ok'){
   const el = document.createElement('div');
@@ -1264,6 +1291,11 @@ function renderLiderStroy(){
   const remainder = selObj ? getLSRemainder(selObj) : 0;
   const result = monthTotals.income - monthTotals.expenses;
 
+  // YTD: Jan → S.month
+  let _ytdI=0,_ytdE=0;
+  if(selObj){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getLSEntriesBySubObj(selObj,selSub||undefined,S.year,m)); _ytdI+=t.income; _ytdE+=t.expenses; } }
+  const lsYtdCard = selObj ? ytdPeriodCard(_ytdI,_ytdE) : '';
+
   const monthRows = MONTHS.map((mn,i)=>{
     const ents = selObj ? getLSEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
     const t = sumEntries(ents);
@@ -1332,6 +1364,7 @@ function renderLiderStroy(){
     <!-- Object detail -->
     <div style="flex:1;min-width:0">
       ${obj ? `
+      ${lsYtdCard}
       <!-- KPI row -->
       <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
         <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#1f2937">${fmtShort(obj.budget)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
@@ -1403,6 +1436,9 @@ function renderBSO(){
   const bsoBudget = subcat?.budget||0;
   const bsoRemainder = selSub ? getBSORemainder(selSub) : 0;
   const overallMonth = getCompanyMonthTotals('bso', S.year, S.month);
+  let _bytdI=0,_bytdE=0;
+  if(selSub){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getBSOEntriesBySubObj(selSub,selBSOSub||undefined,S.year,m)); _bytdI+=t.income; _bytdE+=t.expenses; } }
+  const bsoYtdCard = selSub ? ytdPeriodCard(_bytdI,_bytdE) : '';
 
   const entryRows = activeEntries.length ? activeEntries.map(e=>`
     <tr>
@@ -1493,6 +1529,7 @@ function renderBSO(){
   </div>
 
   ${subcat ? `
+  ${bsoYtdCard}
   <!-- KPI row -->
   <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
     <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#1f2937">${fmtShort(bsoBudget)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
@@ -1562,6 +1599,9 @@ function renderBSODZZD(){
   const remainder = selObj ? getBsoDzzdRemainder(selObj) : 0;
   const result = monthTotals.income - monthTotals.expenses;
   const overallMonth = getCompanyMonthTotals('bsoDzzd', S.year, S.month);
+  let _dytdI=0,_dytdE=0;
+  if(selObj){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getBsoDzzdEntriesBySubObj(selObj,selSub||undefined,S.year,m)); _dytdI+=t.income; _dytdE+=t.expenses; } }
+  const dzzdYtdCard = selObj ? ytdPeriodCard(_dytdI,_dytdE) : '';
 
   const monthRows = MONTHS.map((mn,i)=>{
     const ents = selObj ? getBsoDzzdEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
@@ -1636,6 +1676,7 @@ function renderBSODZZD(){
     <!-- Object detail -->
     <div style="flex:1;min-width:0">
       ${obj ? `
+      ${dzzdYtdCard}
       <!-- KPI row -->
       <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
         <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#1f2937">${fmtShort(obj.budget||0)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
@@ -1697,6 +1738,8 @@ function renderMetaPlan(){
   const mt = getCompanyMonthTotals('metaPlan', S.year, S.month);
   const result = mt.income - mt.expenses;
   const entries = getEntries('metaPlan', null, S.year, S.month);
+  let _mpI=0,_mpE=0; for(let m=1;m<=S.month;m++){ const t=getCompanyMonthTotals('metaPlan',S.year,m); _mpI+=t.income; _mpE+=t.expenses; }
+  const mpYtdCard = ytdPeriodCard(_mpI,_mpE);
 
   const entryRows = entries.length ? entries.map(e=>`
     <tr>
@@ -1730,6 +1773,7 @@ function renderMetaPlan(){
     <p>Приходи, разходи и финансов резултат</p>
   </div>
 
+  ${mpYtdCard}
   <div class="grid-stats">
     <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
     <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
@@ -1781,6 +1825,9 @@ function renderInvestments(){
   const monthTotals = sumEntries(activeEntries);
   const result = monthTotals.income - monthTotals.expenses;
   const overallMonth = getCompanyMonthTotals('investments', S.year, S.month);
+  let _iytdI=0,_iytdE=0;
+  if(selObj){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getInvEntriesBySubObj(selObj,selSub||undefined,S.year,m)); _iytdI+=t.income; _iytdE+=t.expenses; } }
+  const invYtdCard = selObj ? ytdPeriodCard(_iytdI,_iytdE) : '';
 
   const monthRows = MONTHS.map((mn,i)=>{
     const ents = selObj ? getInvEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
@@ -1857,6 +1904,7 @@ function renderInvestments(){
     <!-- Object detail -->
     <div style="flex:1;min-width:0">
       ${obj ? `
+      ${invYtdCard}
       <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
         <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
         <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
@@ -1915,6 +1963,8 @@ function renderKasa(company, title, icon){
   const mt = getCompanyMonthTotals(company, S.year, S.month);
   const result = mt.income - mt.expenses;
   const entries = getEntries(company, null, S.year, S.month);
+  let _kytdI=0,_kytdE=0; for(let m=1;m<=S.month;m++){ const t=getCompanyMonthTotals(company,S.year,m); _kytdI+=t.income; _kytdE+=t.expenses; }
+  const kasaYtdCard = ytdPeriodCard(_kytdI,_kytdE);
 
   const entryRows = entries.length ? entries.map(e=>`
     <tr>
@@ -1949,6 +1999,7 @@ function renderKasa(company, title, icon){
     <p>Приходи, разходи и финансов резултат</p>
   </div>
 
+  ${kasaYtdCard}
   <div class="grid-stats">
     <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
     <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
