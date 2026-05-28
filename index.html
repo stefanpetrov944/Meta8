@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v18">
+<meta name="version" content="2026-05-27-v19">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -481,7 +481,8 @@ let S = {
   year: new Date().getFullYear(),
   sidebarOpen: false,
   modal: null,
-  mdata: {}
+  mdata: {},
+  periodMode: 'ytd'  // 'ytd' | 'alltime'
 };
 
 // ================== UTILS ==================
@@ -502,14 +503,26 @@ function fmtShort(n){
 function resultClass(n){ return n>0 ? 'text-pos' : n<0 ? 'text-neg' : 'text-neu'; }
 function resultBadge(n){ return n>0 ? 'badge-green' : n<0 ? 'badge-red' : 'badge-gray'; }
 
-// YTD summary card — shown above monthly KPI row, covers Jan → S.month
-function ytdPeriodCard(income, expenses){
-  const result = income - expenses;
-  const label = S.month > 1 ? `${MONTHS[0]} — ${MONTHS[S.month-1]} ${S.year}` : `${MONTHS[0]} ${S.year}`;
+// Period summary card — YTD (Jan→current month) or All-time toggle
+function ytdPeriodCard(ytdI, ytdE, atI, atE){
+  const mode = S.periodMode || 'ytd';
+  const income   = mode === 'ytd' ? ytdI : atI;
+  const expenses = mode === 'ytd' ? ytdE : atE;
+  const result   = income - expenses;
+  const ytdLabel = S.month > 1 ? `${MONTHS[0]} — ${MONTHS[S.month-1]} ${S.year}` : `${MONTHS[0]} ${S.year}`;
+  const atLabel  = 'Целият период';
+  const label    = mode === 'ytd' ? ytdLabel : atLabel;
+  const btnBase  = 'padding:3px 11px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid';
+  const btnActive   = `${btnBase} #c00;background:#c00;color:#fff`;
+  const btnInactive = `${btnBase} #d1d5db;background:#f9fafb;color:#6b7280`;
   return `
   <div style="background:#fff;border:1px solid #e5e7eb;border-left:4px solid #c00;border-radius:10px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(0,0,0,.05)">
-    <div style="min-width:120px">
-      <div style="font-size:10px;font-weight:700;color:#c00;text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px"><i class="fa fa-calendar-check" style="margin-right:5px"></i>Период</div>
+    <div style="min-width:130px">
+      <div style="display:flex;gap:5px;margin-bottom:8px">
+        <button onclick="S.periodMode='ytd';render()" style="${mode==='ytd'?btnActive:btnInactive}">YTD</button>
+        <button onclick="S.periodMode='alltime';render()" style="${mode==='alltime'?btnActive:btnInactive}">Всички</button>
+      </div>
+      <div style="font-size:10px;color:#c00;text-transform:uppercase;font-weight:700;letter-spacing:.5px;margin-bottom:2px"><i class="fa fa-calendar-check" style="margin-right:4px"></i>Период</div>
       <div style="font-size:13px;font-weight:700;color:#1f2937">${label}</div>
     </div>
     <div style="display:flex;gap:28px;flex-wrap:wrap">
@@ -1294,7 +1307,10 @@ function renderLiderStroy(){
   // YTD: Jan → S.month
   let _ytdI=0,_ytdE=0;
   if(selObj){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getLSEntriesBySubObj(selObj,selSub||undefined,S.year,m)); _ytdI+=t.income; _ytdE+=t.expenses; } }
-  const lsYtdCard = selObj ? ytdPeriodCard(_ytdI,_ytdE) : '';
+  // All-time
+  const _atEnts = selObj ? (db.liderStroy.entries||[]).filter(e=>e.entityId===selObj&&(!selSub||e.subEntityId===selSub)) : [];
+  const _at = sumEntries(_atEnts);
+  const lsYtdCard = selObj ? ytdPeriodCard(_ytdI,_ytdE,_at.income,_at.expenses) : '';
 
   const monthRows = MONTHS.map((mn,i)=>{
     const ents = selObj ? getLSEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
@@ -1438,7 +1454,9 @@ function renderBSO(){
   const overallMonth = getCompanyMonthTotals('bso', S.year, S.month);
   let _bytdI=0,_bytdE=0;
   if(selSub){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getBSOEntriesBySubObj(selSub,selBSOSub||undefined,S.year,m)); _bytdI+=t.income; _bytdE+=t.expenses; } }
-  const bsoYtdCard = selSub ? ytdPeriodCard(_bytdI,_bytdE) : '';
+  const _batEnts = selSub ? (db.bso.entries||[]).filter(e=>e.entityId===selSub&&(!selBSOSub||e.subEntityId===selBSOSub)) : [];
+  const _bat = sumEntries(_batEnts);
+  const bsoYtdCard = selSub ? ytdPeriodCard(_bytdI,_bytdE,_bat.income,_bat.expenses) : '';
 
   const entryRows = activeEntries.length ? activeEntries.map(e=>`
     <tr>
@@ -1601,7 +1619,9 @@ function renderBSODZZD(){
   const overallMonth = getCompanyMonthTotals('bsoDzzd', S.year, S.month);
   let _dytdI=0,_dytdE=0;
   if(selObj){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getBsoDzzdEntriesBySubObj(selObj,selSub||undefined,S.year,m)); _dytdI+=t.income; _dytdE+=t.expenses; } }
-  const dzzdYtdCard = selObj ? ytdPeriodCard(_dytdI,_dytdE) : '';
+  const _datEnts = selObj ? (db.bsoDzzd.entries||[]).filter(e=>e.entityId===selObj&&(!selSub||e.subEntityId===selSub)) : [];
+  const _dat = sumEntries(_datEnts);
+  const dzzdYtdCard = selObj ? ytdPeriodCard(_dytdI,_dytdE,_dat.income,_dat.expenses) : '';
 
   const monthRows = MONTHS.map((mn,i)=>{
     const ents = selObj ? getBsoDzzdEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
@@ -1739,7 +1759,8 @@ function renderMetaPlan(){
   const result = mt.income - mt.expenses;
   const entries = getEntries('metaPlan', null, S.year, S.month);
   let _mpI=0,_mpE=0; for(let m=1;m<=S.month;m++){ const t=getCompanyMonthTotals('metaPlan',S.year,m); _mpI+=t.income; _mpE+=t.expenses; }
-  const mpYtdCard = ytdPeriodCard(_mpI,_mpE);
+  const _mpAt = sumEntries(db.metaPlan?.entries||[]);
+  const mpYtdCard = ytdPeriodCard(_mpI,_mpE,_mpAt.income,_mpAt.expenses);
 
   const entryRows = entries.length ? entries.map(e=>`
     <tr>
@@ -1827,7 +1848,9 @@ function renderInvestments(){
   const overallMonth = getCompanyMonthTotals('investments', S.year, S.month);
   let _iytdI=0,_iytdE=0;
   if(selObj){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getInvEntriesBySubObj(selObj,selSub||undefined,S.year,m)); _iytdI+=t.income; _iytdE+=t.expenses; } }
-  const invYtdCard = selObj ? ytdPeriodCard(_iytdI,_iytdE) : '';
+  const _iatEnts = selObj ? (db.investments.entries||[]).filter(e=>e.entityId===selObj&&(!selSub||e.subEntityId===selSub)) : [];
+  const _iat = sumEntries(_iatEnts);
+  const invYtdCard = selObj ? ytdPeriodCard(_iytdI,_iytdE,_iat.income,_iat.expenses) : '';
 
   const monthRows = MONTHS.map((mn,i)=>{
     const ents = selObj ? getInvEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
@@ -1964,7 +1987,8 @@ function renderKasa(company, title, icon){
   const result = mt.income - mt.expenses;
   const entries = getEntries(company, null, S.year, S.month);
   let _kytdI=0,_kytdE=0; for(let m=1;m<=S.month;m++){ const t=getCompanyMonthTotals(company,S.year,m); _kytdI+=t.income; _kytdE+=t.expenses; }
-  const kasaYtdCard = ytdPeriodCard(_kytdI,_kytdE);
+  const _katAt = sumEntries(db[company]?.entries||[]);
+  const kasaYtdCard = ytdPeriodCard(_kytdI,_kytdE,_katAt.income,_katAt.expenses);
 
   const entryRows = entries.length ? entries.map(e=>`
     <tr>
