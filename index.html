@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v20">
+<meta name="version" content="2026-05-29-v21">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -245,6 +245,7 @@ let _fbOnline      = false;  // is Firebase reachable?
 let _ownSaveTs     = 0;      // timestamp of our last save (to suppress echo)
 let _fbFirstEvent  = true;   // skip the initial full-db SSE event (already loaded via initDB)
 let _pendingRender = false;  // SSE update arrived while modal was open — re-render on close
+let _sseHasData    = false;  // true once SSE has delivered a real (non-first) update — guards against stale initDB() overwrite
 
 // ---- Firebase Auth token state ----
 let _fbToken        = null;  // current ID token
@@ -287,6 +288,7 @@ async function _getToken(){
 
 // ---- saveDB: write to localStorage cache AND Firebase ----
 function saveDB(){
+  db._ts = Date.now();  // freshness timestamp — used to detect stale initDB() vs SSE race
   localStorage.setItem(DB_KEY, JSON.stringify(db));
   _ownSaveTs = Date.now();
   _getToken().then(tok=>{
@@ -411,14 +413,24 @@ async function initDB(){
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     if(data && data.users){
-      db = _mergeDefaults(data);
-      localStorage.setItem(DB_KEY, JSON.stringify(db));
+      // Guard against race condition: SSE may have already delivered FRESHER data
+      // while this fetch was in-flight. Compare timestamps (_ts) — use whichever is newer.
+      // If _sseHasData is true and the current db._ts is >= the fetched data's _ts,
+      // the SSE version is at least as fresh — do NOT overwrite it.
+      const fetchedTs = (data._ts) || 0;
+      const currentTs = (db._ts)   || 0;
+      if(!_sseHasData || fetchedTs >= currentTs){
+        // Safe to use fetched data: SSE hasn't fired yet, OR fetched data is newer
+        db = _mergeDefaults(data);
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+      }
+      // Either way, Firebase is reachable
       _fbOnline = true;
     } else {
       // Firebase is empty → push our local/default data up
       saveDB();
     }
-    // Always ensure seed data exists (idempotent — only writes if something is missing)
+    // Ensure seed data exists (idempotent — only writes if something changed)
     seedData();
   } catch(e){
     console.warn('Firebase init failed, using local cache:', e);
@@ -452,6 +464,8 @@ async function startRealtimeSync(){
       const pl = JSON.parse(evt.data);
       const incoming = pl.data;
       if(incoming && incoming.users){
+        // Mark that SSE has delivered real data — initDB() must not overwrite this
+        _sseHasData = true;
         db = _mergeDefaults(incoming);
         localStorage.setItem(DB_KEY, JSON.stringify(db));
         _fbOnline = true;
