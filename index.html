@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-29-v21">
+<meta name="version" content="2026-05-29-v22">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -302,6 +302,27 @@ function saveDB(){
   .catch(e=>{ console.warn('Firebase write failed:', e); });
 }
 
+// ---- saveNodes: PATCH only specified paths — prevents cross-company data loss ----
+// Uses HTTP PATCH on the root node, so ONLY the listed keys are touched in Firebase.
+// All other companies/sections remain completely untouched.
+function saveNodes(updates){
+  db._ts = Date.now();
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+  _ownSaveTs = Date.now();
+  const patch = Object.assign({ _ts: db._ts }, updates);
+  _getToken().then(tok=>{
+    return fetch(`${FIREBASE_URL}/${FB_NODE}.json?auth=${tok}`, {
+      method : 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body   : JSON.stringify(patch)
+    });
+  })
+  .then(()=>{ _fbOnline=true; })
+  .catch(e=>{ console.warn('Firebase write failed:', e); });
+}
+// Convenience: save a single top-level key (e.g. 'liderStroy', 'users')
+function saveNode(path, data){ const u={}; u[path]=data; saveNodes(u); }
+
 // ---- Convert a Firebase value back to a proper JS array ----
 // Firebase stores [] as null, and arrays as {0:{..},1:{..}} objects.
 function _toArr(val){
@@ -367,21 +388,22 @@ function _mergeDefaults(remote){
 
 // ---- seedData: clean up duplicate productions and ensure users exist ----
 function seedData(){
-  let changed = false;
+  let usersChanged = false;
+  let meta8Changed = false;
 
   // 1. Remove any p_* productions that were erroneously seeded in a previous deployment
   const before = db.meta8.productions.length;
   db.meta8.productions = db.meta8.productions.filter(p=>!p.id.startsWith('p_'));
-  if(db.meta8.productions.length !== before) changed = true;
+  if(db.meta8.productions.length !== before) meta8Changed = true;
 
   // 2. Patch passwords if changed
   const adminUser = db.users.find(u=>u.id==='u_admin');
   if(adminUser && adminUser.password !== 'FinancePro_2026'){
-    adminUser.password = 'FinancePro_2026'; changed = true;
+    adminUser.password = 'FinancePro_2026'; usersChanged = true;
   }
   const petrovUser = db.users.find(u=>u.id==='u_petrov');
   if(petrovUser && petrovUser.password !== 'Petr@67'){
-    petrovUser.password = 'Petr@67'; changed = true;
+    petrovUser.password = 'Petr@67'; usersChanged = true;
   }
 
   // 3. Seed users (insert if missing; patch role/company/meta8Prods if changed)
@@ -389,20 +411,24 @@ function seedData(){
     const existing = db.users.find(u=>u.email.toLowerCase()===su.email.toLowerCase());
     if(!existing){
       db.users.push({...su});
-      changed = true;
+      usersChanged = true;
     } else {
       // Patch role/company/meta8Prods if seed definition changed
       if((existing.meta8Prods||[]).some(p=>p.startsWith('p_'))){
-        existing.meta8Prods = su.meta8Prods; changed = true;
+        existing.meta8Prods = su.meta8Prods; usersChanged = true;
       }
-      if(existing.role !== su.role){ existing.role = su.role; changed = true; }
-      if(JSON.stringify(existing.company) !== JSON.stringify(su.company)){ existing.company = su.company; changed = true; }
-      if(su.manageLiderStroy && !existing.manageLiderStroy){ existing.manageLiderStroy = true; changed = true; }
-      if(su.manager && !existing.manager){ existing.manager = true; changed = true; }
+      if(existing.role !== su.role){ existing.role = su.role; usersChanged = true; }
+      if(JSON.stringify(existing.company) !== JSON.stringify(su.company)){ existing.company = su.company; usersChanged = true; }
+      if(su.manageLiderStroy && !existing.manageLiderStroy){ existing.manageLiderStroy = true; usersChanged = true; }
+      if(su.manager && !existing.manager){ existing.manager = true; usersChanged = true; }
     }
   });
 
-  if(changed) saveDB();
+  // Save ONLY the sections that actually changed — never touch other companies' data
+  const upd = {};
+  if(usersChanged) upd.users = db.users;
+  if(meta8Changed) upd.meta8 = db.meta8;
+  if(Object.keys(upd).length > 0) saveNodes(upd);
 }
 
 // ---- initDB: load latest data from Firebase on startup ----
@@ -592,7 +618,7 @@ function register(email, password, name, company){
   const compArr = Array.isArray(company) ? company : (company ? [company] : []);
   const u = {id:genId(), email, password, name, role:'user', confirmed:false, company:compArr, createdAt:new Date().toISOString()};
   db.users.push(u);
-  saveDB();
+  saveNode('users',db.users);
   return {ok:true};
 }
 
@@ -2663,18 +2689,18 @@ function closeSidebar(){ S.sidebarOpen=false; render(); }
 
 function confirmUser(id){
   const u=db.users.find(u=>u.id===id);
-  if(u){ u.confirmed=true; saveDB(); notify('Потребителят е потвърден','ok'); render(); }
+  if(u){ u.confirmed=true; saveNode('users',db.users); notify('Потребителят е потвърден','ok'); render(); }
 }
 
 function deleteUser(id){
   if(!confirm('Изтриване на потребителя?')) return;
-  db.users=db.users.filter(u=>u.id!==id); saveDB(); notify('Потребителят е изтрит','ok'); render();
+  db.users=db.users.filter(u=>u.id!==id); saveNode('users',db.users); notify('Потребителят е изтрит','ok'); render();
 }
 
 function deleteEntry(company, id){
   if(!confirm('Изтриване на записа?')) return;
   db[company].entries = db[company].entries.filter(e=>e.id!==id);
-  saveDB(); notify('Записът е изтрит','ok'); render();
+  saveNode(company,db[company]); notify('Записът е изтрит','ok'); render();
 }
 
 function deleteLSObject(id){
@@ -2682,7 +2708,7 @@ function deleteLSObject(id){
   db.liderStroy.objects = db.liderStroy.objects.filter(o=>o.id!==id);
   db.liderStroy.entries = db.liderStroy.entries.filter(e=>e.entityId!==id);
   if(S.selEntity===id){ S.selEntity=null; S.selSubEntity=null; }
-  saveDB(); notify('Обектът е изтрит','ok'); render();
+  saveNode('liderStroy',db.liderStroy); notify('Обектът е изтрит','ok'); render();
 }
 
 function deleteLSSubObj(objId, subId){
@@ -2691,7 +2717,7 @@ function deleteLSSubObj(objId, subId){
   if(obj) obj.subObjects=(obj.subObjects||[]).filter(s=>s.id!==subId);
   db.liderStroy.entries=db.liderStroy.entries.filter(e=>!(e.entityId===objId&&e.subEntityId===subId));
   if(S.selSubEntity===subId) S.selSubEntity=null;
-  saveDB(); notify('Подобектът е изтрит','ok'); render();
+  saveNode('liderStroy',db.liderStroy); notify('Подобектът е изтрит','ok'); render();
 }
 
 function deleteBSOSubcat(id){
@@ -2699,7 +2725,7 @@ function deleteBSOSubcat(id){
   db.bso.subcategories = db.bso.subcategories.filter(s=>s.id!==id);
   db.bso.entries = db.bso.entries.filter(e=>e.entityId!==id);
   if(S.selEntity===id){ S.selEntity=null; S.selSubEntity=null; }
-  saveDB(); notify('Обектът е изтрит','ok'); render();
+  saveNode('bso',db.bso); notify('Обектът е изтрит','ok'); render();
 }
 
 function deleteBSOSubObj(catId, subId){
@@ -2708,7 +2734,7 @@ function deleteBSOSubObj(catId, subId){
   if(cat) cat.subObjects=(cat.subObjects||[]).filter(s=>s.id!==subId);
   db.bso.entries=db.bso.entries.filter(e=>!(e.entityId===catId&&e.subEntityId===subId));
   if(S.selSubEntity===subId) S.selSubEntity=null;
-  saveDB(); notify('Подобектът е изтрит','ok'); render();
+  saveNode('bso',db.bso); notify('Подобектът е изтрит','ok'); render();
 }
 
 function deleteBSODzzdObject(id){
@@ -2716,7 +2742,7 @@ function deleteBSODzzdObject(id){
   db.bsoDzzd.objects = (db.bsoDzzd.objects||[]).filter(o=>o.id!==id);
   db.bsoDzzd.entries = (db.bsoDzzd.entries||[]).filter(e=>e.entityId!==id);
   if(S.selEntity===id){ S.selEntity=null; S.selSubEntity=null; }
-  saveDB(); notify('Обектът е изтрит','ok'); render();
+  saveNode('bsoDzzd',db.bsoDzzd); notify('Обектът е изтрит','ok'); render();
 }
 
 function deleteBSODzzdSubObj(objId, subId){
@@ -2725,7 +2751,7 @@ function deleteBSODzzdSubObj(objId, subId){
   if(obj) obj.subObjects=(obj.subObjects||[]).filter(s=>s.id!==subId);
   db.bsoDzzd.entries=(db.bsoDzzd.entries||[]).filter(e=>!(e.entityId===objId&&e.subEntityId===subId));
   if(S.selSubEntity===subId) S.selSubEntity=null;
-  saveDB(); notify('Подобектът е изтрит','ok'); render();
+  saveNode('bsoDzzd',db.bsoDzzd); notify('Подобектът е изтрит','ok'); render();
 }
 
 function deleteInvObject(id){
@@ -2733,7 +2759,7 @@ function deleteInvObject(id){
   db.investments.objects = db.investments.objects.filter(o=>o.id!==id);
   db.investments.entries = db.investments.entries.filter(e=>e.entityId!==id);
   if(S.selEntity===id){ S.selEntity=null; S.selSubEntity=null; }
-  saveDB(); notify('Обектът е изтрит','ok'); render();
+  saveNode('investments',db.investments); notify('Обектът е изтрит','ok'); render();
 }
 
 function deleteInvSubObj(objId, subId){
@@ -2742,7 +2768,7 @@ function deleteInvSubObj(objId, subId){
   if(obj) obj.subObjects=(obj.subObjects||[]).filter(s=>s.id!==subId);
   db.investments.entries=db.investments.entries.filter(e=>!(e.entityId===objId&&e.subEntityId===subId));
   if(S.selSubEntity===subId) S.selSubEntity=null;
-  saveDB(); notify('Подобектът е изтрит','ok'); render();
+  saveNode('investments',db.investments); notify('Подобектът е изтрит','ok'); render();
 }
 
 // =================== EVENTS ===================
@@ -2836,7 +2862,7 @@ function handleModalSubmit(){
       entry.income   = parseFloat(document.getElementById('f-inc')?.value)||0;
       entry.expenses = parseFloat(document.getElementById('f-exp')?.value)||0;
     }
-    saveDB(); closeModal(); notify('Записът е обновен','ok');
+    saveNode(company,db[company]); closeModal(); notify('Записът е обновен','ok');
   }
   else if(modal==='addMeta8Entry'){
     const entry = {
@@ -2851,7 +2877,7 @@ function handleModalSubmit(){
     };
     entry.expenses = entry.expWorkers + entry.expAdditional;
     db.meta8.entries.push(entry);
-    saveDB(); closeModal(); notify('Записът е запазен','ok');
+    saveNode('meta8',db.meta8); closeModal(); notify('Записът е запазен','ok');
   }
   else if(modal==='addProduction'){
     const name=document.getElementById('f-name').value.trim();
@@ -2859,7 +2885,7 @@ function handleModalSubmit(){
     const prod={id:genId(),name,createdAt:new Date().toISOString()};
     db.meta8.productions.push(prod);
     S.selEntity=prod.id;
-    saveDB(); closeModal(); notify('Производството е добавено','ok');
+    saveNode('meta8',db.meta8); closeModal(); notify('Производството е добавено','ok');
   }
   else if(modal==='addLSObject'){
     const name=document.getElementById('f-name').value.trim();
@@ -2868,7 +2894,7 @@ function handleModalSubmit(){
     const obj={id:genId(),name,budget,subObjects:[]};
     db.liderStroy.objects.push(obj);
     S.selEntity=obj.id;
-    saveDB(); closeModal(); notify('Обектът е добавен','ok');
+    saveNode('liderStroy',db.liderStroy); closeModal(); notify('Обектът е добавен','ok');
   }
   else if(modal==='addLSSubObj'){
     const name=document.getElementById('f-name').value.trim();
@@ -2878,7 +2904,7 @@ function handleModalSubmit(){
     const sub={id:genId(),name};
     obj.subObjects.push(sub);
     S.selSubEntity=sub.id;
-    saveDB(); closeModal(); notify('Подобектът е добавен','ok');
+    saveNode('liderStroy',db.liderStroy); closeModal(); notify('Подобектът е добавен','ok');
   }
   else if(modal==='editLSObject'){
     const obj=db.liderStroy.objects.find(o=>o.id===mdata.entityId);
@@ -2887,7 +2913,7 @@ function handleModalSubmit(){
       if(!name) return;
       obj.name=name;
       obj.budget=parseFloat(document.getElementById('f-budget').value)||0;
-      saveDB(); closeModal(); notify('Обектът е актуализиран','ok');
+      saveNode('liderStroy',db.liderStroy); closeModal(); notify('Обектът е актуализиран','ok');
     }
   }
   else if(modal==='editLSSubObj'){
@@ -2897,7 +2923,7 @@ function handleModalSubmit(){
       const name=document.getElementById('f-name').value.trim();
       if(!name) return;
       sub.name=name;
-      saveDB(); closeModal(); notify('Подобектът е актуализиран','ok');
+      saveNode('liderStroy',db.liderStroy); closeModal(); notify('Подобектът е актуализиран','ok');
     }
   }
   else if(modal==='addLSEntry'){
@@ -2912,7 +2938,7 @@ function handleModalSubmit(){
       createdBy:session.email, createdAt:new Date().toISOString()
     };
     db.liderStroy.entries.push(entry);
-    saveDB(); closeModal(); notify('Записът е запазен','ok');
+    saveNode('liderStroy',db.liderStroy); closeModal(); notify('Записът е запазен','ok');
   }
   else if(modal==='addBSOEntry'){
     const subObjEl = document.getElementById('f-subobj');
@@ -2926,7 +2952,7 @@ function handleModalSubmit(){
       createdBy:session.email, createdAt:new Date().toISOString()
     };
     db.bso.entries.push(entry);
-    saveDB(); closeModal(); notify('Записът е запазен','ok');
+    saveNode('bso',db.bso); closeModal(); notify('Записът е запазен','ok');
   }
   else if(modal==='addMetaPlanEntry'||modal==='addKasaEntry'){
     const compMap = {addMetaPlanEntry:'metaPlan',addKasaEntry:mdata.company};
@@ -2939,7 +2965,7 @@ function handleModalSubmit(){
       createdBy:session.email, createdAt:new Date().toISOString()
     };
     db[company].entries.push(entry);
-    saveDB(); closeModal(); notify('Записът е запазен','ok');
+    saveNode(company,db[company]); closeModal(); notify('Записът е запазен','ok');
   }
   else if(modal==='addBSOSubObj'){
     const name=document.getElementById('f-name').value.trim();
@@ -2949,7 +2975,7 @@ function handleModalSubmit(){
     const sub={id:genId(),name};
     cat.subObjects.push(sub);
     S.selSubEntity=sub.id;
-    saveDB(); closeModal(); notify('Подобектът е добавен','ok');
+    saveNode('bso',db.bso); closeModal(); notify('Подобектът е добавен','ok');
   }
   else if(modal==='addBSODzzdObject'){
     const name=document.getElementById('f-name').value.trim();
@@ -2960,7 +2986,7 @@ function handleModalSubmit(){
     db.bsoDzzd.objects.push(obj);
     S.selEntity=obj.id;
     S.selSubEntity=null;
-    saveDB(); closeModal(); notify('Обектът е добавен','ok');
+    saveNode('bsoDzzd',db.bsoDzzd); closeModal(); notify('Обектът е добавен','ok');
   }
   else if(modal==='addBSODzzdSubObj'){
     const name=document.getElementById('f-name').value.trim();
@@ -2971,11 +2997,11 @@ function handleModalSubmit(){
     const sub={id:genId(),name};
     obj.subObjects.push(sub);
     S.selSubEntity=sub.id;
-    saveDB(); closeModal(); notify('Подобектът е добавен','ok');
+    saveNode('bsoDzzd',db.bsoDzzd); closeModal(); notify('Подобектът е добавен','ok');
   }
   else if(modal==='editBSODzzdBudget'){
     const obj=(db.bsoDzzd.objects||[]).find(o=>o.id===mdata.entityId);
-    if(obj){ obj.budget=parseFloat(document.getElementById('f-budget').value)||0; saveDB(); closeModal(); notify('Бюджетът е актуализиран','ok'); }
+    if(obj){ obj.budget=parseFloat(document.getElementById('f-budget').value)||0; saveNode('bsoDzzd',db.bsoDzzd); closeModal(); notify('Бюджетът е актуализиран','ok'); }
   }
   else if(modal==='addBSODzzdEntry'){
     const subObjEl = document.getElementById('f-subobj');
@@ -2990,7 +3016,7 @@ function handleModalSubmit(){
     };
     if(!db.bsoDzzd.entries) db.bsoDzzd.entries=[];
     db.bsoDzzd.entries.push(entry);
-    saveDB(); closeModal(); notify('Записът е запазен','ok');
+    saveNode('bsoDzzd',db.bsoDzzd); closeModal(); notify('Записът е запазен','ok');
   }
   else if(modal==='addInvEntry'){
     const subObjEl = document.getElementById('f-subobj');
@@ -3004,7 +3030,7 @@ function handleModalSubmit(){
       createdBy:session.email, createdAt:new Date().toISOString()
     };
     db.investments.entries.push(entry);
-    saveDB(); closeModal(); notify('Записът е запазен','ok');
+    saveNode('investments',db.investments); closeModal(); notify('Записът е запазен','ok');
   }
   else if(modal==='addBSOObject'){
     const name=document.getElementById('f-name').value.trim();
@@ -3013,11 +3039,11 @@ function handleModalSubmit(){
     const sub={id:genId(),name,budget};
     db.bso.subcategories.push(sub);
     S.selEntity=sub.id;
-    saveDB(); closeModal(); notify('Обектът е добавен','ok');
+    saveNode('bso',db.bso); closeModal(); notify('Обектът е добавен','ok');
   }
   else if(modal==='editBSOBudget'){
     const cat=db.bso.subcategories.find(s=>s.id===mdata.entityId);
-    if(cat){ cat.budget=parseFloat(document.getElementById('f-budget').value)||0; saveDB(); closeModal(); notify('Бюджетът е актуализиран','ok'); }
+    if(cat){ cat.budget=parseFloat(document.getElementById('f-budget').value)||0; saveNode('bso',db.bso); closeModal(); notify('Бюджетът е актуализиран','ok'); }
   }
   else if(modal==='addInvObject'){
     const name=document.getElementById('f-name').value.trim();
@@ -3026,7 +3052,7 @@ function handleModalSubmit(){
     db.investments.objects.push(obj);
     S.selEntity=obj.id;
     S.selSubEntity=null;
-    saveDB(); closeModal(); notify('Обектът е добавен','ok');
+    saveNode('investments',db.investments); closeModal(); notify('Обектът е добавен','ok');
   }
   else if(modal==='addInvSubObj'){
     const name=document.getElementById('f-name').value.trim();
@@ -3036,7 +3062,7 @@ function handleModalSubmit(){
     const sub={id:genId(),name};
     obj.subObjects.push(sub);
     S.selSubEntity=sub.id;
-    saveDB(); closeModal(); notify('Подобектът е добавен','ok');
+    saveNode('investments',db.investments); closeModal(); notify('Подобектът е добавен','ok');
   }
   else if(modal==='addUser'){
     const name=document.getElementById('f-name').value.trim();
@@ -3050,7 +3076,7 @@ function handleModalSubmit(){
     if(companies.length===0){ notify('Изберете поне една фирма','err'); return; }
     if(db.users.find(u=>u.email.toLowerCase()===email.toLowerCase())){ notify('Имейлът вече съществува','err'); return; }
     db.users.push({id:genId(),email,password:pass,role,name,confirmed:true,company:companies,createdAt:new Date().toISOString()});
-    saveDB(); closeModal(); notify('Потребителят е създаден','ok');
+    saveNode('users',db.users); closeModal(); notify('Потребителят е създаден','ok');
   }
 }
 
@@ -3064,7 +3090,7 @@ function handleForgotPassword(email){
   const token=genId()+genId()+genId();
   const expiresAt=new Date(Date.now()+24*60*60*1000).toISOString();
   db.resetTokens.push({token,userId:u.id,expiresAt});
-  saveDB();
+  saveNode('resetTokens',db.resetTokens);
   const resetUrl=window.location.href.split('?')[0]+'?reset='+token;
   return {ok:true, resetUrl, email:u.email};
 }
@@ -3077,7 +3103,7 @@ function doResetPassword(token, newPass){
   if(!u) return {ok:false,msg:'Потребителят не е намерен'};
   u.password=newPass;
   db.resetTokens=db.resetTokens.filter(t=>t.token!==token);
-  saveDB();
+  saveNodes({users:db.users, resetTokens:db.resetTokens});
   return {ok:true};
 }
 
