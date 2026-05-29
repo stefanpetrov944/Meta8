@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Finance Pro Holding</title>
-<meta name="version" content="2026-05-27-v19">
+<meta name="version" content="2026-05-27-v20">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -168,7 +168,7 @@ const SEED_USERS = [
   {id:'u_office',    email:'office@meta8.bg',          password:'Offic@24',   name:'Офис Мета 8',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['арматурн'], manager:true, createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_georgieva', email:'s.georgieva@meta8.bg',     password:'Georg@24',   name:'С. Георгиева', role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['метални'], manager:true, createdAt:'2024-01-01T00:00:00Z'},
   {id:'u_ganchev',   email:'arh_ganchev@meta8.bg',    password:'Ganch@2025', name:'Арх. Ганчев',  role:'admin', confirmed:true, company:'all', meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
-  {id:'u_petrov',    email:'p.petrov@meta8.bg',        password:'Petr@2025',  name:'П. Петров',    role:'admin', confirmed:true, company:'all', meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
+  {id:'u_petrov',    email:'p.petrov@meta8.bg',        password:'Petr@67',    name:'П. Петров',    role:'admin', confirmed:true, company:'all', meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
 ];
 
 // IDs of the erroneously-seeded duplicate productions — remove them on next startup
@@ -372,10 +372,14 @@ function seedData(){
   db.meta8.productions = db.meta8.productions.filter(p=>!p.id.startsWith('p_'));
   if(db.meta8.productions.length !== before) changed = true;
 
-  // 2. Patch admin password if changed
+  // 2. Patch passwords if changed
   const adminUser = db.users.find(u=>u.id==='u_admin');
   if(adminUser && adminUser.password !== 'FinancePro_2026'){
     adminUser.password = 'FinancePro_2026'; changed = true;
+  }
+  const petrovUser = db.users.find(u=>u.id==='u_petrov');
+  if(petrovUser && petrovUser.password !== 'Petr@67'){
+    petrovUser.password = 'Petr@67'; changed = true;
   }
 
   // 3. Seed users (insert if missing; patch role/company/meta8Prods if changed)
