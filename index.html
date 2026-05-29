@@ -1,0 +1,3126 @@
+﻿<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Finance Pro Holding</title>
+<meta name="version" content="2026-05-29-v22">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f2f5;color:#111827;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#e5e7eb}
+::-webkit-scrollbar-thumb{background:#c00;border-radius:3px}
+/* ── Sidebar (stays dark for contrast) ── */
+.sidebar{width:252px;background:#1a1a2e;border-right:1px solid #252540;height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:100;transition:transform .3s}
+.logo-area{padding:20px 18px 16px;border-bottom:1px solid #252540;display:flex;align-items:center;gap:12px}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,#c00,#800);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;letter-spacing:-1px;flex-shrink:0}
+.logo-text{line-height:1.2}
+.logo-text .t1{font-size:13px;font-weight:800;color:#f1f5f9;letter-spacing:.5px}
+.logo-text .t2{font-size:10px;color:#64748b;font-weight:500;letter-spacing:.3px}
+.sidebar-section{padding:8px 10px 4px;font-size:10px;font-weight:700;color:#475569;letter-spacing:1px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 18px;cursor:pointer;color:#94a3b8;transition:all .2s;border-left:3px solid transparent;font-size:13.5px;font-weight:500;border-radius:0 6px 6px 0;margin:1px 8px 1px 0;text-decoration:none}
+.nav-item:hover{background:rgba(204,0,0,.12);color:#f1f5f9;border-left-color:rgba(204,0,0,.5)}
+.nav-item.active{background:rgba(204,0,0,.18);color:#ff4444;border-left-color:#c00}
+.nav-item i{width:16px;text-align:center;font-size:13px}
+.sidebar-bottom{padding:14px;border-top:1px solid #252540}
+.user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#252540;border-radius:8px;border:1px solid #334155}
+.user-avatar{width:32px;height:32px;background:linear-gradient(135deg,#c00,#800);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:12px;font-weight:600;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10px;color:#64748b}
+/* ── Main content (light) ── */
+.main-content{margin-left:252px;min-height:100vh;display:flex;flex-direction:column;background:#f0f2f5}
+.topbar{background:rgba(255,255,255,.97);border-bottom:1px solid #e5e7eb;padding:13px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.page-area{padding:24px 26px;flex:1}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card-sm{padding:14px 16px}
+.card-red{border-color:rgba(204,0,0,.3)}
+.stat-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;transition:all .25s;cursor:default;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.stat-card:hover{border-color:rgba(204,0,0,.4);transform:translateY(-2px);box-shadow:0 6px 20px rgba(204,0,0,.08)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:none;outline:none;line-height:1}
+.btn-primary{background:linear-gradient(135deg,#c00,#900);color:#fff}
+.btn-primary:hover{background:linear-gradient(135deg,#e00,#c00);box-shadow:0 4px 15px rgba(204,0,0,.35);transform:translateY(-1px)}
+.btn-secondary{background:#f8fafc;color:#374151;border:1px solid #d1d5db}
+.btn-secondary:hover{background:#f1f5f9;color:#111827;border-color:#9ca3af}
+.btn-danger{background:rgba(239,68,68,.08);color:#dc2626;border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.15)}
+.btn-success{background:rgba(34,197,94,.1);color:#16a34a;border:1px solid rgba(34,197,94,.3)}
+.btn-success:hover{background:rgba(34,197,94,.18)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-lg{padding:12px 22px;font-size:14.5px}
+.btn-icon{padding:7px 8px}
+.input{width:100%;background:#fff;border:1px solid #d1d5db;border-radius:7px;padding:9px 13px;color:#111827;font-size:13.5px;transition:border-color .2s;outline:none}
+.input:focus{border-color:#c00;box-shadow:0 0 0 3px rgba(204,0,0,.08)}
+.input::placeholder{color:#9ca3af}
+.input-lg{padding:11px 15px;font-size:14.5px;border-radius:8px}
+select.input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%236b7280' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:20px;padding-right:32px}
+label.lbl{display:block;font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border:1px solid #e5e7eb;border-radius:13px;padding:26px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;animation:mIn .22s ease;box-shadow:0 20px 50px rgba(0,0,0,.15)}
+.modal-lg{max-width:700px}
+@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:none}}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #f3f4f6}
+.modal-title{font-size:16px;font-weight:700;color:#111827}
+.fgroup{margin-bottom:14px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.table-wrap{overflow-x:auto;border-radius:8px;border:1px solid #e5e7eb}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{padding:9px 14px;text-align:left;background:#f9fafb;color:#6b7280;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #e5e7eb;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #f3f4f6;color:#374151;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(204,0,0,.03)}
+.tbl-total td{background:#f9fafb !important;font-weight:700;color:#111827 !important;border-top:1px solid #e5e7eb}
+.tabs{display:flex;gap:3px;padding:3px;background:#f3f4f6;border-radius:8px;border:1px solid #e5e7eb}
+.tab{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:#6b7280;transition:all .2s;white-space:nowrap}
+.tab:hover{color:#111827;background:rgba(0,0,0,.06)}
+.tab.active{background:#c00;color:#fff}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-green{background:rgba(22,163,74,.12);color:#16a34a}
+.badge-red{background:rgba(220,38,38,.1);color:#dc2626}
+.badge-gray{background:rgba(107,114,128,.1);color:#6b7280}
+.badge-blue{background:rgba(59,130,246,.1);color:#2563eb}
+.badge-yellow{background:rgba(202,138,4,.1);color:#b45309}
+.badge-red2{background:rgba(204,0,0,.1);color:#c00}
+.text-pos{color:#16a34a;font-weight:600}
+.text-neg{color:#dc2626;font-weight:600}
+.text-neu{color:#374151;font-weight:600}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,rgba(204,0,0,.07) 0%,#f0f2f5 60%);padding:20px}
+.auth-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:36px;width:100%;max-width:420px;box-shadow:0 10px 40px rgba(0,0,0,.1)}
+.divider{display:flex;align-items:center;gap:12px;color:#9ca3af;font-size:11px;margin:14px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e5e7eb}
+.notice{position:fixed;top:18px;right:18px;z-index:9999;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:13px 16px;min-width:240px;max-width:340px;display:flex;align-items:center;gap:11px;box-shadow:0 8px 30px rgba(0,0,0,.12);animation:nIn .3s ease}
+.notice-ok{border-left:4px solid #16a34a}
+.notice-err{border-left:4px solid #dc2626}
+.notice-info{border-left:4px solid #c00}
+@keyframes nIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:none}}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;color:#9ca3af;text-align:center}
+.empty-state i{font-size:36px;color:#d1d5db;margin-bottom:14px}
+.sep{height:1px;background:#e5e7eb;margin:16px 0}
+.chart-wrap{position:relative;height:220px}
+.progress-bar{height:5px;background:#e5e7eb;border-radius:3px;overflow:hidden;margin-top:8px}
+.progress-fill{height:100%;border-radius:3px;transition:width .4s ease}
+.obj-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;cursor:pointer;transition:all .25s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.obj-card:hover{border-color:rgba(204,0,0,.4);transform:translateY(-1px);box-shadow:0 4px 16px rgba(204,0,0,.08)}
+.obj-card.sel{border-color:rgba(204,0,0,.5);background:rgba(204,0,0,.04)}
+.icon-box{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.section-hd{margin-bottom:20px}
+.section-hd h2{font-size:20px;font-weight:700;color:#111827;margin-bottom:2px}
+.section-hd p{font-size:13px;color:#6b7280}
+.grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.month-nav{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #d1d5db;border-radius:8px;padding:6px 12px}
+.month-nav select{background:transparent;border:none;color:#374151;font-size:13px;cursor:pointer;outline:none;padding:0}
+.month-nav select option{background:#fff;color:#111827}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-260px)}
+  .sidebar.open{transform:translateX(0);box-shadow:4px 0 30px rgba(0,0,0,.3)}
+  .main-content{margin-left:0}
+  .mob-menu{display:flex !important}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .frow{grid-template-columns:1fr}
+  .page-area{padding:16px}
+  .topbar{padding:11px 16px}
+  .hide-mob{display:none!important}
+}
+.mob-menu{display:none;align-items:center;justify-content:center;width:36px;height:36px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:7px;cursor:pointer}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90}
+.sidebar-overlay.show{display:block}
+.text-red{color:#c00}
+.text-muted{color:#6b7280}
+.text-dim{color:#9ca3af}
+.font-mono{font-family:'SF Mono',Consolas,monospace}
+.grad-text{background:linear-gradient(135deg,#c00,#ff5555);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ring-anim{animation:pulseR 2s ease-in-out infinite}
+@keyframes pulseR{0%,100%{box-shadow:0 0 0 0 rgba(204,0,0,.35)}50%{box-shadow:0 0 0 8px rgba(204,0,0,0)}}
+.summary-box{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ================== CONSTANTS ==================
+const MONTHS = ['Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'];
+const DB_KEY  = 'fph_db_v2';
+const SES_KEY = 'fph_ses_v2';
+const FIREBASE_URL = 'https://finance-pro-holding-default-rtdb.firebaseio.com';
+const FB_NODE      = 'fph_v1'; // path in Firebase Realtime Database
+const FB_API_KEY   = 'AIzaSyDQXufe34hVauw8MjdaypcvADEFMkB9ATA';
+const FB_AUTH_EMAIL= 'app@finance-pro-holding.bg';
+const FB_AUTH_PASS = 'DA1da2da3_';
+
+// ================== SEED DATA ==================
+// meta8Prods stores lowercase name KEYWORDS — matched as substring against production.name
+// This avoids dependency on specific IDs in the database.
+const SEED_USERS = [
+  {id:'u_kolarova',  email:'v.kolarova@liderstroy.bg', password:'Kolar@2024', name:'В. Коларова',  role:'user', confirmed:true, company:['liderStroy'],              meta8Prods:[], manageLiderStroy:true, manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_damyanova', email:'z.damyanova@bso-bg.com',   password:'Damyan@24',  name:'З. Дамянова',  role:'user', confirmed:true, company:['bso','bsoDzzd'],           meta8Prods:[], manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_vgmeta8',   email:'vgmeta8@abv.bg',           password:'VgMet@24',   name:'VG Мета 8',    role:'user', confirmed:true, company:['investments','kasaVarna'],  meta8Prods:[], manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_rusanova',  email:'s.rusanova@meta8.bg',      password:'Rusan@24',   name:'С. Русанова',  role:'user', confirmed:true, company:['kasaPavlikeni','meta8'],    meta8Prods:['мрежи','профили за сухо','усилващи','ламарина','гвоздеи','фибри','тел','услуги'], manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_office',    email:'office@meta8.bg',          password:'Offic@24',   name:'Офис Мета 8',  role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['арматурн'], manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_georgieva', email:'s.georgieva@meta8.bg',     password:'Georg@24',   name:'С. Георгиева', role:'user', confirmed:true, company:['meta8'],                    meta8Prods:['метални'], manager:true, createdAt:'2024-01-01T00:00:00Z'},
+  {id:'u_ganchev',   email:'arh_ganchev@meta8.bg',    password:'Ganch@2025', name:'Арх. Ганчев',  role:'admin', confirmed:true, company:'all', meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
+  {id:'u_petrov',    email:'p.petrov@meta8.bg',        password:'Petr@67',    name:'П. Петров',    role:'admin', confirmed:true, company:'all', meta8Prods:[], createdAt:'2025-01-01T00:00:00Z'},
+];
+
+// IDs of the erroneously-seeded duplicate productions — remove them on next startup
+const _CLEANUP_PROD_IDS = ['p_armatura','p_mrezi','p_prof_suho','p_usilv','p_lamarina','p_gvozdei','p_fibri','p_tel','p_uslugi','p_met_konstr'];
+
+// ================== DEFAULT DATA ==================
+function defaultDB() {
+  return {
+    users: [{
+      id:'u_admin', email:'admin@meta8.bg', password:'FinancePro_2026',
+      role:'admin', name:'Администратор', confirmed:true, company:'all',
+      createdAt:'2024-01-01T00:00:00Z'
+    }],
+    meta8: {
+      productions:[{id:'p1', name:'Основно производство', createdAt:'2024-01-01T00:00:00Z'}],
+      entries:[]
+    },
+    liderStroy: {
+      objects:[{id:'lo1', name:'Обект 1', budget:500000, subObjects:[]}],
+      entries:[]
+    },
+    bso: {
+      subcategories:[
+        {id:'b1',name:'Индустриален парк',budget:0,subObjects:[]},
+        {id:'b2',name:'Църква Свищов',budget:0,subObjects:[]},
+        {id:'b3',name:'Парк Калето',budget:0,subObjects:[]},
+        {id:'b4',name:'Лаборатория Индустриален парк Свищов',budget:0,subObjects:[]},
+        {id:'b5',name:'Спортна зала Свищов',budget:0,subObjects:[]},
+        {id:'b6',name:'Офис Свищов',budget:0,subObjects:[]},
+        {id:'b7',name:'Плевен-Рубин Eco Collection',budget:0,subObjects:[]},
+        {id:'b8',name:'Бяла Сметище',budget:0,subObjects:[]},
+        {id:'b9',name:'Плевен Блок за Саниране #1',budget:0,subObjects:[]},
+        {id:'b10',name:'Блок за Саниране #2',budget:0,subObjects:[]}
+      ],
+      entries:[]
+    },
+    metaPlan:{ entries:[] },
+    kasaVarna:{ entries:[] },
+    kasaPavlikeni:{ entries:[] },
+    investments:{
+      objects:[
+        {id:'i1',name:'Радиозавод',subObjects:[]},
+        {id:'i2',name:'Администрация на радиозавод',subObjects:[]},
+        {id:'i3',name:'Магазини',subObjects:[]},
+        {id:'i4',name:'Офис над магазини',subObjects:[]},
+        {id:'i5',name:'Автомивка',subObjects:[]},
+        {id:'i6',name:'Спортни съоражения',subObjects:[]}
+      ],
+      entries:[]
+    },
+    bsoDzzd: {
+      objects: [],
+      entries: []
+    },
+    resetTokens:[]
+  };
+}
+
+// ================== DB & SESSION ==================
+// Start with localStorage cache immediately (instant UI), then sync from Firebase
+let db = (()=>{
+  try{
+    const s=localStorage.getItem(DB_KEY);
+    if(!s) return defaultDB();
+    const parsed = JSON.parse(s);
+    // _fixArrays called after it's defined below — patched via initDB on first run
+    return parsed;
+  }catch(e){ return defaultDB(); }
+})();
+let session = (()=>{ try{ const s=localStorage.getItem(SES_KEY); return s ? JSON.parse(s) : null; }catch(e){ return null; }})();
+
+let _fbEvtSrc      = null;   // SSE EventSource for real-time sync
+let _fbOnline      = false;  // is Firebase reachable?
+let _ownSaveTs     = 0;      // timestamp of our last save (to suppress echo)
+let _fbFirstEvent  = true;   // skip the initial full-db SSE event (already loaded via initDB)
+let _pendingRender = false;  // SSE update arrived while modal was open — re-render on close
+let _sseHasData    = false;  // true once SSE has delivered a real (non-first) update — guards against stale initDB() overwrite
+
+// ---- Firebase Auth token state ----
+let _fbToken        = null;  // current ID token
+let _fbRefreshTok   = null;  // refresh token (long-lived)
+let _fbTokenExpiry  = 0;     // ms timestamp when token expires
+
+async function _fbSignIn(){
+  const res = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FB_API_KEY}`,
+    { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email:FB_AUTH_EMAIL, password:FB_AUTH_PASS, returnSecureToken:true}) }
+  );
+  if(!res.ok) throw new Error('Firebase sign-in failed: '+res.status);
+  const d = await res.json();
+  _fbToken       = d.idToken;
+  _fbRefreshTok  = d.refreshToken;
+  _fbTokenExpiry = Date.now() + (parseInt(d.expiresIn,10) - 60) * 1000; // refresh 1 min early
+  return _fbToken;
+}
+
+async function _fbRefresh(){
+  const res = await fetch(
+    `https://securetoken.googleapis.com/v1/token?key=${FB_API_KEY}`,
+    { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({grant_type:'refresh_token', refresh_token:_fbRefreshTok}) }
+  );
+  if(!res.ok) throw new Error('Token refresh failed: '+res.status);
+  const d = await res.json();
+  _fbToken       = d.id_token;
+  _fbRefreshTok  = d.refresh_token;
+  _fbTokenExpiry = Date.now() + (parseInt(d.expires_in,10) - 60) * 1000;
+  return _fbToken;
+}
+
+async function _getToken(){
+  if(!_fbToken)                    return _fbSignIn();
+  if(Date.now() >= _fbTokenExpiry) return _fbRefresh();
+  return _fbToken;
+}
+
+// ---- saveDB: write to localStorage cache AND Firebase ----
+function saveDB(){
+  db._ts = Date.now();  // freshness timestamp — used to detect stale initDB() vs SSE race
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+  _ownSaveTs = Date.now();
+  _getToken().then(tok=>{
+    return fetch(`${FIREBASE_URL}/${FB_NODE}.json?auth=${tok}`, {
+      method : 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body   : JSON.stringify(db)
+    });
+  })
+  .then(()=>{ _fbOnline=true; })
+  .catch(e=>{ console.warn('Firebase write failed:', e); });
+}
+
+// ---- saveNodes: PATCH only specified paths — prevents cross-company data loss ----
+// Uses HTTP PATCH on the root node, so ONLY the listed keys are touched in Firebase.
+// All other companies/sections remain completely untouched.
+function saveNodes(updates){
+  db._ts = Date.now();
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+  _ownSaveTs = Date.now();
+  const patch = Object.assign({ _ts: db._ts }, updates);
+  _getToken().then(tok=>{
+    return fetch(`${FIREBASE_URL}/${FB_NODE}.json?auth=${tok}`, {
+      method : 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body   : JSON.stringify(patch)
+    });
+  })
+  .then(()=>{ _fbOnline=true; })
+  .catch(e=>{ console.warn('Firebase write failed:', e); });
+}
+// Convenience: save a single top-level key (e.g. 'liderStroy', 'users')
+function saveNode(path, data){ const u={}; u[path]=data; saveNodes(u); }
+
+// ---- Convert a Firebase value back to a proper JS array ----
+// Firebase stores [] as null, and arrays as {0:{..},1:{..}} objects.
+function _toArr(val){
+  if(!val) return [];                        // null / undefined → []
+  if(Array.isArray(val)) return val;         // already fine
+  if(typeof val==='object')                  // Firebase numeric-key object
+    return Object.keys(val)
+      .sort((a,b)=>Number(a)-Number(b))
+      .map(k=>val[k])
+      .filter(v=>v!=null);
+  return [];
+}
+
+// ---- Re-hydrate all known array fields after a Firebase load ----
+function _fixArrays(data){
+  // top-level arrays
+  data.users                    = _toArr(data.users);
+  data.resetTokens              = _toArr(data.resetTokens);
+  // meta8
+  if(data.meta8){
+    data.meta8.productions      = _toArr(data.meta8.productions);
+    data.meta8.entries          = _toArr(data.meta8.entries);
+  }
+  // liderStroy
+  if(data.liderStroy){
+    data.liderStroy.objects     = _toArr(data.liderStroy.objects);
+    data.liderStroy.entries     = _toArr(data.liderStroy.entries);
+    data.liderStroy.objects.forEach(o=>{ if(o) o.subObjects=_toArr(o.subObjects); });
+  }
+  // bso
+  if(data.bso){
+    data.bso.subcategories      = _toArr(data.bso.subcategories);
+    data.bso.entries            = _toArr(data.bso.entries);
+    data.bso.subcategories.forEach(s=>{ if(s) s.subObjects=_toArr(s.subObjects); });
+  }
+  // metaPlan
+  if(data.metaPlan)             data.metaPlan.entries       = _toArr(data.metaPlan.entries);
+  // kasaVarna
+  if(data.kasaVarna)            data.kasaVarna.entries      = _toArr(data.kasaVarna.entries);
+  // kasaPavlikeni
+  if(data.kasaPavlikeni)        data.kasaPavlikeni.entries  = _toArr(data.kasaPavlikeni.entries);
+  // investments
+  if(data.investments){
+    data.investments.objects    = _toArr(data.investments.objects);
+    data.investments.entries    = _toArr(data.investments.entries);
+    data.investments.objects.forEach(o=>{ if(o) o.subObjects=_toArr(o.subObjects); });
+  }
+  // bsoDzzd
+  if(data.bsoDzzd){
+    data.bsoDzzd.objects        = _toArr(data.bsoDzzd.objects);
+    data.bsoDzzd.entries        = _toArr(data.bsoDzzd.entries);
+    data.bsoDzzd.objects.forEach(o=>{ if(o) o.subObjects=_toArr(o.subObjects); });
+  }
+  return data;
+}
+
+// ---- Merge helper: fill any missing top-level keys after loading from FB ----
+function _mergeDefaults(remote){
+  const d = defaultDB();
+  Object.keys(d).forEach(k=>{ if(remote[k]===undefined) remote[k]=d[k]; });
+  return _fixArrays(remote);   // always re-hydrate arrays after merge
+}
+
+// ---- seedData: clean up duplicate productions and ensure users exist ----
+function seedData(){
+  let usersChanged = false;
+  let meta8Changed = false;
+
+  // 1. Remove any p_* productions that were erroneously seeded in a previous deployment
+  const before = db.meta8.productions.length;
+  db.meta8.productions = db.meta8.productions.filter(p=>!p.id.startsWith('p_'));
+  if(db.meta8.productions.length !== before) meta8Changed = true;
+
+  // 2. Patch passwords if changed
+  const adminUser = db.users.find(u=>u.id==='u_admin');
+  if(adminUser && adminUser.password !== 'FinancePro_2026'){
+    adminUser.password = 'FinancePro_2026'; usersChanged = true;
+  }
+  const petrovUser = db.users.find(u=>u.id==='u_petrov');
+  if(petrovUser && petrovUser.password !== 'Petr@67'){
+    petrovUser.password = 'Petr@67'; usersChanged = true;
+  }
+
+  // 3. Seed users (insert if missing; patch role/company/meta8Prods if changed)
+  SEED_USERS.forEach(su=>{
+    const existing = db.users.find(u=>u.email.toLowerCase()===su.email.toLowerCase());
+    if(!existing){
+      db.users.push({...su});
+      usersChanged = true;
+    } else {
+      // Patch role/company/meta8Prods if seed definition changed
+      if((existing.meta8Prods||[]).some(p=>p.startsWith('p_'))){
+        existing.meta8Prods = su.meta8Prods; usersChanged = true;
+      }
+      if(existing.role !== su.role){ existing.role = su.role; usersChanged = true; }
+      if(JSON.stringify(existing.company) !== JSON.stringify(su.company)){ existing.company = su.company; usersChanged = true; }
+      if(su.manageLiderStroy && !existing.manageLiderStroy){ existing.manageLiderStroy = true; usersChanged = true; }
+      if(su.manager && !existing.manager){ existing.manager = true; usersChanged = true; }
+    }
+  });
+
+  // Save ONLY the sections that actually changed — never touch other companies' data
+  const upd = {};
+  if(usersChanged) upd.users = db.users;
+  if(meta8Changed) upd.meta8 = db.meta8;
+  if(Object.keys(upd).length > 0) saveNodes(upd);
+}
+
+// ---- initDB: load latest data from Firebase on startup ----
+async function initDB(){
+  try {
+    const tok = await _getToken();
+    const res = await fetch(`${FIREBASE_URL}/${FB_NODE}.json?auth=${tok}`);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    if(data && data.users){
+      // Guard against race condition: SSE may have already delivered FRESHER data
+      // while this fetch was in-flight. Compare timestamps (_ts) — use whichever is newer.
+      // If _sseHasData is true and the current db._ts is >= the fetched data's _ts,
+      // the SSE version is at least as fresh — do NOT overwrite it.
+      const fetchedTs = (data._ts) || 0;
+      const currentTs = (db._ts)   || 0;
+      if(!_sseHasData || fetchedTs >= currentTs){
+        // Safe to use fetched data: SSE hasn't fired yet, OR fetched data is newer
+        db = _mergeDefaults(data);
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+      }
+      // Either way, Firebase is reachable
+      _fbOnline = true;
+    } else {
+      // Firebase is empty → push our local/default data up
+      saveDB();
+    }
+    // Ensure seed data exists (idempotent — only writes if something changed)
+    seedData();
+  } catch(e){
+    console.warn('Firebase init failed, using local cache:', e);
+    _fbOnline = false;
+  }
+}
+
+// ---- startRealtimeSync: SSE listener — fires whenever any device saves ----
+async function startRealtimeSync(){
+  if(_fbEvtSrc){ _fbEvtSrc.close(); }
+  _fbFirstEvent = true;
+  try {
+    const tok = await _getToken();
+    _fbEvtSrc = new EventSource(`${FIREBASE_URL}/${FB_NODE}.json?auth=${tok}`);
+  } catch(e){
+    console.warn('SSE auth failed, retrying in 15s:', e);
+    setTimeout(startRealtimeSync, 15000);
+    return;
+  }
+
+  _fbEvtSrc.addEventListener('put', evt=>{
+    // 1. Skip the very first event — it's the initial full-db snapshot we
+    //    already loaded in initDB(). Processing it causes an immediate re-render
+    //    that resets any open modal the user might have started filling in.
+    if(_fbFirstEvent){ _fbFirstEvent = false; return; }
+
+    // 2. Suppress echo of our own saves for up to 6 seconds
+    if(Date.now() - _ownSaveTs < 6000) return;
+
+    try {
+      const pl = JSON.parse(evt.data);
+      const incoming = pl.data;
+      if(incoming && incoming.users){
+        // Mark that SSE has delivered real data — initDB() must not overwrite this
+        _sseHasData = true;
+        db = _mergeDefaults(incoming);
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+        _fbOnline = true;
+        // 3. If a modal is open, defer the render so we don't wipe the user's form
+        if(S.modal){
+          _pendingRender = true;
+        } else {
+          render(); // safe to re-render — no modal is open
+        }
+      }
+    } catch(_){}
+  });
+
+  _fbEvtSrc.addEventListener('error', ()=>{
+    _fbOnline = false;
+    _fbEvtSrc.close();
+    // Token may have expired — get a fresh one before reconnecting
+    setTimeout(startRealtimeSync, 10000);
+  });
+}
+
+function saveSession(){ if(session) localStorage.setItem(SES_KEY, JSON.stringify(session)); else localStorage.removeItem(SES_KEY); }
+
+// ================== STATE ==================
+let S = {
+  view: session ? 'dashboard' : 'login',
+  company: null,
+  selEntity: null,
+  selSubEntity: null, // selected sub-object id (LiderStroy)
+  month: new Date().getMonth()+1,
+  year: new Date().getFullYear(),
+  sidebarOpen: false,
+  modal: null,
+  mdata: {},
+  periodMode: 'ytd'  // 'ytd' | 'alltime'
+};
+
+// ================== UTILS ==================
+function genId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+function fmt(n){
+  if(n===undefined||n===null||isNaN(n)) return '0.00';
+  return Number(n).toLocaleString('bg-BG',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function fmtShort(n){
+  const abs=Math.abs(Number(n)||0);
+  if(abs>=1000000) return (n/1000000).toFixed(1)+'M';
+  if(abs>=1000) return (n/1000).toFixed(0)+'К';
+  return fmt(n);
+}
+
+function resultClass(n){ return n>0 ? 'text-pos' : n<0 ? 'text-neg' : 'text-neu'; }
+function resultBadge(n){ return n>0 ? 'badge-green' : n<0 ? 'badge-red' : 'badge-gray'; }
+
+// Period summary card — YTD (Jan→current month) or All-time toggle
+function ytdPeriodCard(ytdI, ytdE, atI, atE){
+  const mode = S.periodMode || 'ytd';
+  const income   = mode === 'ytd' ? ytdI : atI;
+  const expenses = mode === 'ytd' ? ytdE : atE;
+  const result   = income - expenses;
+  const ytdLabel = S.month > 1 ? `${MONTHS[0]} — ${MONTHS[S.month-1]} ${S.year}` : `${MONTHS[0]} ${S.year}`;
+  const atLabel  = 'Целият период';
+  const label    = mode === 'ytd' ? ytdLabel : atLabel;
+  const btnBase  = 'padding:3px 11px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid';
+  const btnActive   = `${btnBase} #c00;background:#c00;color:#fff`;
+  const btnInactive = `${btnBase} #d1d5db;background:#f9fafb;color:#6b7280`;
+  return `
+  <div style="background:#fff;border:1px solid #e5e7eb;border-left:4px solid #c00;border-radius:10px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(0,0,0,.05)">
+    <div style="min-width:130px">
+      <div style="display:flex;gap:5px;margin-bottom:8px">
+        <button onclick="S.periodMode='ytd';render()" style="${mode==='ytd'?btnActive:btnInactive}">YTD</button>
+        <button onclick="S.periodMode='alltime';render()" style="${mode==='alltime'?btnActive:btnInactive}">Всички</button>
+      </div>
+      <div style="font-size:10px;color:#c00;text-transform:uppercase;font-weight:700;letter-spacing:.5px;margin-bottom:2px"><i class="fa fa-calendar-check" style="margin-right:4px"></i>Период</div>
+      <div style="font-size:13px;font-weight:700;color:#1f2937">${label}</div>
+    </div>
+    <div style="display:flex;gap:28px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:10px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:3px">Приходи</div>
+        <div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(income)}<span style="font-size:11px;color:#6b7280"> €</span></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:3px">Разходи</div>
+        <div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:3px">Резултат</div>
+        <div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function notify(msg, type='ok'){
+  const el = document.createElement('div');
+  el.className = `notice notice-${type==='ok'?'ok':type==='err'?'err':'info'}`;
+  el.innerHTML = `<i class="fa ${type==='ok'?'fa-check-circle text-pos':type==='err'?'fa-times-circle text-neg':'fa-info-circle text-red'}"></i><span style="font-size:13px;color:#374151;flex:1">${msg}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer;font-size:12px" onclick="this.parentElement.remove()"></i>`;
+  document.body.appendChild(el);
+  setTimeout(()=>{ el.style.animation='nIn .3s ease reverse'; setTimeout(()=>el.remove(),280); }, 3200);
+}
+
+// ================== AUTH ==================
+function login(email, password){
+  const u = db.users.find(u=>u.email.toLowerCase()===email.toLowerCase() && u.password===password);
+  if(!u) return {ok:false, msg:'Грешен имейл или парола'};
+  if(!u.confirmed) return {ok:false, msg:'Акаунтът не е потвърден'};
+  session = {userId:u.id, email:u.email, name:u.name, role:u.role, company:u.company||[], meta8Prods:u.meta8Prods||[]};
+  saveSession();
+  return {ok:true};
+}
+
+function logout(){
+  session = null;
+  saveSession();
+  S.view='login'; S.company=null; S.selEntity=null;
+  render();
+}
+
+function register(email, password, name, company){
+  if(db.users.find(u=>u.email.toLowerCase()===email.toLowerCase()))
+    return {ok:false, msg:'Имейлът вече е регистриран'};
+  // company is always stored as array
+  const compArr = Array.isArray(company) ? company : (company ? [company] : []);
+  const u = {id:genId(), email, password, name, role:'user', confirmed:false, company:compArr, createdAt:new Date().toISOString()};
+  db.users.push(u);
+  saveNode('users',db.users);
+  return {ok:true};
+}
+
+function isAdmin(){ return session && session.role==='admin'; }
+// canWrite: any logged-in user who can view a company can also add/edit entries in it
+function canWrite(comp){ return canView(comp); }
+// canManageLSObjects: admin OR user with manageLiderStroy flag can add objects/sub-objects
+function canManageLSObjects(){
+  if(isAdmin()) return true;
+  const u = session ? db.users.find(u=>u.id===session.userId) : null;
+  return !!(u && u.manageLiderStroy);
+}
+// canDeleteEntry: admin OR manager user who can already write to that company
+function canDeleteEntry(comp){
+  if(isAdmin()) return true;
+  const u = session ? db.users.find(u=>u.id===session.userId) : null;
+  return !!(u && u.manager) && canWrite(comp);
+}
+function canView(comp){
+  if(isAdmin()) return true;
+  if(!session) return false;
+  const c = session.company;
+  if(!c) return false;
+  if(c==='all') return true;
+  if(c===comp) return true; // legacy single string
+  if(Array.isArray(c)) return c.includes('all') || c.includes(comp);
+  return false;
+}
+
+// Returns null (= full access) or array of lowercase keyword strings for this user's Meta8 access
+function getAccessibleMeta8ProdIds(){
+  if(isAdmin()) return null;
+  // Always read fresh from DB to avoid stale session data (e.g. old p_* IDs from before patching)
+  const u = session ? db.users.find(u=>u.id===session.userId) : null;
+  const kws = (u ? (u.meta8Prods||[]) : (session?.meta8Prods||[]));
+  if(kws.length === 0) return null; // no restriction → full access
+  // Safety: if ALL keywords look like old p_* IDs (stale data), fall back to full access
+  if(kws.every(k => k.startsWith('p_'))) return null;
+  return kws;
+}
+
+// Match by name substring (case-insensitive) so access doesn't depend on production IDs
+function canViewMeta8Prod(prodId){
+  const keywords = getAccessibleMeta8ProdIds();
+  if(keywords === null) return true;
+  const prod = db.meta8.productions.find(p=>p.id===prodId);
+  if(!prod) return false;
+  const name = prod.name.toLowerCase();
+  return keywords.some(kw=>name.includes(kw.toLowerCase()));
+}
+
+// ================== RESET TOKEN URL CHECK ==================
+const _urlReset = new URLSearchParams(window.location.search).get('reset');
+
+// ================== PASSWORD / COMPANY HELPERS ==================
+function togglePwd(inputId, iconEl){
+  const inp = document.getElementById(inputId);
+  if(!inp) return;
+  if(inp.type==='password'){ inp.type='text'; iconEl.className='fa fa-eye-slash'; }
+  else { inp.type='password'; iconEl.className='fa fa-eye'; }
+}
+
+function toggleAllCompanies(el){
+  document.querySelectorAll('input[name="companies"]').forEach(cb=>{ if(cb.value!=='all') cb.checked=el.checked; });
+}
+
+function updateAllCheckbox(){
+  const cbs = Array.from(document.querySelectorAll('input[name="companies"]:not([value="all"])'));
+  const allCb = document.getElementById('fc-all');
+  if(allCb) allCb.checked = cbs.length>0 && cbs.every(cb=>cb.checked);
+}
+
+function getSelectedCompanies(){
+  const allCb = document.getElementById('fc-all');
+  if(allCb?.checked) return ['all'];
+  return Array.from(document.querySelectorAll('input[name="companies"]:not([value="all"])')).filter(cb=>cb.checked).map(cb=>cb.value);
+}
+
+function companiesLabel(company){
+  const map = {all:'Всички',meta8:'Мета 8',liderStroy:'Лидерстрой',bso:'БСО',bsoDzzd:'БСО - ДЗЗД',metaPlan:'Мета План',investments:'Инвестиции',kasaVarna:'Каса Варна',kasaPavlikeni:'Каса Павликени'};
+  if(!company) return '—';
+  if(company==='all') return 'Всички';
+  if(typeof company==='string') return map[company]||company;
+  if(Array.isArray(company)){
+    if(company.includes('all')) return 'Всички';
+    return company.map(c=>map[c]||c).join(', ');
+  }
+  return '—';
+}
+
+function companyCheckboxes(selected){
+  const list=[
+    {v:'all',   l:'Всички'},
+    {v:'meta8', l:'Мета 8'},
+    {v:'liderStroy', l:'Лидерстрой'},
+    {v:'bso',   l:'БСО'},
+    {v:'bsoDzzd', l:'БСО - ДЗЗД'},
+    {v:'metaPlan', l:'Мета План'},
+    {v:'investments',l:'Инвестиции'},
+    {v:'kasaVarna', l:'Каса Варна'},
+    {v:'kasaPavlikeni',l:'Каса Павликени'},
+  ];
+  const isAll = Array.isArray(selected)?selected.includes('all'):selected==='all';
+  return list.map(item=>{
+    const checked = isAll || (Array.isArray(selected)?selected.includes(item.v):selected===item.v);
+    const extra = item.v==='all' ? `id="fc-all" onchange="toggleAllCompanies(this)"` : `onchange="updateAllCheckbox()"`;
+    return `<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#374151;padding:4px 0">
+      <input type="checkbox" ${extra} name="companies" value="${item.v}" ${checked?'checked':''} style="width:14px;height:14px;accent-color:#c00;cursor:pointer">
+      ${item.l}
+    </label>`;
+  }).join('');
+}
+
+// ================== CALCULATIONS ==================
+function getEntries(company, entityId, year, month){
+  const src = db[company]?.entries || [];
+  return src.filter(e=>{
+    if(e.year!==year||e.month!==month) return false;
+    if(entityId!==null && e.entityId!==entityId) return false;
+    return true;
+  });
+}
+
+function getAllEntries(company, entityId){
+  const src = db[company]?.entries || [];
+  if(entityId===null) return src;
+  return src.filter(e=>e.entityId===entityId);
+}
+
+function sumEntries(entries){
+  return entries.reduce((a,e)=>({
+    income:a.income+(e.income||0),
+    expenses:a.expenses+(e.expenses||0),
+    tonnage:a.tonnage+(e.tonnage||0),
+    expWorkers:a.expWorkers+(e.expWorkers||0),
+    expAdditional:a.expAdditional+(e.expAdditional||0)
+  }), {income:0,expenses:0,tonnage:0,expWorkers:0,expAdditional:0});
+}
+
+function getMonthTotals(company, entityId, year, month){
+  return sumEntries(getEntries(company, entityId, year, month));
+}
+
+function getYearTotals(company, entityId, year){
+  const src = (db[company]?.entries||[]).filter(e=>e.year===year && (entityId===null||e.entityId===entityId));
+  return sumEntries(src);
+}
+
+function getCompanyMonthTotals(company, year, month){
+  const src = (db[company]?.entries||[]).filter(e=>e.year===year&&e.month===month);
+  return sumEntries(src);
+}
+
+function getHoldingTotals(year, month){
+  const comps = ['meta8','liderStroy','bso','metaPlan','investments','kasaVarna','kasaPavlikeni','bsoDzzd'];
+  return comps.reduce((a,c)=>{
+    const t=getCompanyMonthTotals(c,year,month);
+    return {income:a.income+t.income, expenses:a.expenses+t.expenses};
+  },{income:0,expenses:0});
+}
+
+function getLSRemainder(objId){
+  const budget = db.liderStroy.objects.find(o=>o.id===objId)?.budget||0;
+  const allExp = (db.liderStroy.entries||[]).filter(e=>e.entityId===objId).reduce((a,e)=>a+(e.expenses||0),0);
+  return budget - allExp;
+}
+
+function getBSORemainder(subcatId){
+  const budget = db.bso.subcategories.find(s=>s.id===subcatId)?.budget||0;
+  const allExp = (db.bso.entries||[]).filter(e=>e.entityId===subcatId).reduce((a,e)=>a+(e.expenses||0),0);
+  return budget - allExp;
+}
+
+function getInvEntriesBySubObj(objId, subObjId, year, month){
+  return (db.investments.entries||[]).filter(e=>
+    e.entityId===objId && e.year===year && e.month===month &&
+    (subObjId ? e.subEntityId===subObjId : true)
+  );
+}
+
+function getBSOEntriesBySubObj(catId, subObjId, year, month){
+  return (db.bso.entries||[]).filter(e=>
+    e.entityId===catId && e.year===year && e.month===month &&
+    (subObjId ? e.subEntityId===subObjId : true)
+  );
+}
+
+function getBsoDzzdRemainder(objId){
+  const budget = (db.bsoDzzd.objects||[]).find(o=>o.id===objId)?.budget||0;
+  const allExp = (db.bsoDzzd.entries||[]).filter(e=>e.entityId===objId).reduce((a,e)=>a+(e.expenses||0),0);
+  return budget - allExp;
+}
+
+function getBsoDzzdEntriesBySubObj(objId, subObjId, year, month){
+  return (db.bsoDzzd.entries||[]).filter(e=>
+    e.entityId===objId && e.year===year && e.month===month &&
+    (subObjId ? e.subEntityId===subObjId : true)
+  );
+}
+
+// ================== RENDERING ==================
+function render(){
+  const app=document.getElementById('app');
+  if(!session){
+    if(_urlReset) app.innerHTML = renderResetPassword(_urlReset);
+    else if(S.view==='register') app.innerHTML = renderRegister();
+    else if(S.view==='forgotPassword') app.innerHTML = renderForgotPassword();
+    else app.innerHTML = renderLogin();
+  } else {
+    app.innerHTML = renderApp();
+  }
+  bindEvents();
+  renderCharts();
+}
+
+function renderLogin(){
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:20px">
+          <div class="logo-icon" style="width:52px;height:52px;font-size:22px">FP</div>
+          <div style="text-align:left">
+            <div style="font-size:17px;font-weight:800;color:#fff">Finance Pro</div>
+            <div style="font-size:11px;color:#6b7280;letter-spacing:.5px">HOLDING PORTAL</div>
+          </div>
+        </div>
+        <h2 style="font-size:22px;font-weight:700;margin-bottom:6px">Добре дошли</h2>
+        <p style="color:#6b7280;font-size:13px">Влезте в акаунта си, за да продължите</p>
+      </div>
+      <form id="login-form">
+        <div class="fgroup">
+          <label class="lbl">Имейл адрес</label>
+          <input type="email" id="l-email" class="input input-lg" placeholder="name@company.bg" required>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Парола</label>
+          <div style="position:relative">
+            <input type="password" id="l-pass" class="input input-lg" placeholder="••••••••" required style="padding-right:44px">
+            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer;font-size:15px" onclick="togglePwd('l-pass',this)"></i>
+          </div>
+        </div>
+        <div style="text-align:right;margin-bottom:10px">
+          <span style="font-size:12px;color:#6b7280;cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="S.view='forgotPassword';render()">Забравена парола?</span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">
+          <i class="fa fa-sign-in-alt"></i> Вход
+        </button>
+      </form>
+      <div class="divider">или</div>
+      <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="S.view='register';render()">
+        <i class="fa fa-user-plus"></i> Регистрация на нов потребител
+      </button>
+    </div>
+  </div>`;
+}
+
+function renderRegister(){
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card" style="max-width:460px">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div class="logo-icon">FP</div>
+          <div style="text-align:left">
+            <div style="font-size:16px;font-weight:800;color:#fff">Finance Pro</div>
+            <div style="font-size:10px;color:#6b7280">HOLDING PORTAL</div>
+          </div>
+        </div>
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:5px">Регистрация</h2>
+        <p style="color:#6b7280;font-size:13px">Акаунтът изисква потвърждение от администратор</p>
+      </div>
+      <form id="reg-form">
+        <div class="fgroup">
+          <label class="lbl">Пълно ime</label>
+          <input id="r-name" class="input" placeholder="Иван Иванов" required>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Имейл адрес</label>
+          <input type="email" id="r-email" class="input" placeholder="name@company.bg" required>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Парола</label>
+          <div style="position:relative">
+            <input type="password" id="r-pass" class="input" placeholder="Минимум 6 символа" required minlength="6" style="padding-right:40px">
+            <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer" onclick="togglePwd('r-pass',this)"></i>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Повтори парола</label>
+          <div style="position:relative">
+            <input type="password" id="r-pass2" class="input" placeholder="Повторете паролата" required style="padding-right:40px">
+            <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer" onclick="togglePwd('r-pass2',this)"></i>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Достъп до фирми</label>
+          <div style="padding:10px 14px;background:#f9fafb;border:1px solid #d1d5db;border-radius:7px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
+            ${companyCheckboxes([])}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:4px;justify-content:center">
+          <i class="fa fa-paper-plane"></i> Изпрати заявка
+        </button>
+      </form>
+      <div style="margin-top:14px;text-align:center">
+        <button class="btn btn-secondary btn-sm" onclick="S.view='login';render()">
+          <i class="fa fa-arrow-left"></i> Обратно към вход
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderForgotPassword(){
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div class="logo-icon">FP</div>
+          <div style="text-align:left">
+            <div style="font-size:16px;font-weight:800;color:#fff">Finance Pro</div>
+            <div style="font-size:10px;color:#6b7280">HOLDING PORTAL</div>
+          </div>
+        </div>
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:5px">Забравена парола</h2>
+        <p style="color:#6b7280;font-size:13px">Въведете имейла си за да получите линк за възстановяване</p>
+      </div>
+      <form id="forgot-form">
+        <div class="fgroup">
+          <label class="lbl">Имейл адрес</label>
+          <input type="email" id="fp-email" class="input input-lg" placeholder="name@company.bg" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">
+          <i class="fa fa-paper-plane"></i> Изпрати линк
+        </button>
+      </form>
+      <div id="fp-result" style="margin-top:14px"></div>
+      <div style="margin-top:14px;text-align:center">
+        <button class="btn btn-secondary btn-sm" onclick="S.view='login';render()">
+          <i class="fa fa-arrow-left"></i> Обратно към вход
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderResetPassword(token){
+  const rec = (db.resetTokens||[]).find(t=>t.token===token && new Date(t.expiresAt)>new Date());
+  if(!rec){
+    return `
+    <div class="auth-wrap"><div class="auth-card" style="text-align:center">
+      <div class="logo-icon" style="margin:0 auto 20px;width:52px;height:52px;font-size:22px">FP</div>
+      <h2 style="font-size:20px;font-weight:700;color:#ef4444;margin-bottom:10px"><i class="fa fa-times-circle"></i> Невалиден линк</h2>
+      <p style="color:#6b7280;font-size:13px;margin-bottom:20px">Линкът е изтекъл или вече е използван. Моля поискайте нов.</p>
+      <button class="btn btn-secondary" onclick="window.location.href=window.location.pathname">
+        <i class="fa fa-arrow-left"></i> Към вход
+      </button>
+    </div></div>`;
+  }
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:24px">
+        <div class="logo-icon" style="margin:0 auto 16px;width:52px;height:52px;font-size:22px">FP</div>
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:5px">Нова парола</h2>
+        <p style="color:#6b7280;font-size:13px">Въведете и потвърдете новата си парола</p>
+      </div>
+      <form id="reset-form" data-token="${token}">
+        <div class="fgroup">
+          <label class="lbl">Нова парола</label>
+          <div style="position:relative">
+            <input type="password" id="rp-pass" class="input input-lg" placeholder="Минимум 6 символа" required minlength="6" style="padding-right:44px">
+            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer;font-size:15px" onclick="togglePwd('rp-pass',this)"></i>
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Повтори новата парола</label>
+          <div style="position:relative">
+            <input type="password" id="rp-pass2" class="input input-lg" placeholder="Повторете паролата" required style="padding-right:44px">
+            <i class="fa fa-eye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer;font-size:15px" onclick="togglePwd('rp-pass2',this)"></i>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">
+          <i class="fa fa-save"></i> Запази новата парола
+        </button>
+      </form>
+    </div>
+  </div>`;
+}
+
+function renderApp(){
+  const navItems = [
+    {id:'dashboard', label:'Табло', icon:'fa-tachometer-alt'},
+    {id:'meta8', label:'Мета 8', icon:'fa-industry', comp:true},
+    {id:'liderStroy', label:'Лидерстрой Монтаж', icon:'fa-building-user', comp:true},
+    {id:'bso', label:'БСО', icon:'fa-city', comp:true},
+    {id:'bsoDzzd', label:'БСО - ДЗЗД', icon:'fa-city', comp:true},
+    {id:'metaPlan', label:'Мета План', icon:'fa-chart-line', comp:true},
+    {id:'investments', label:'Инвестиции', icon:'fa-coins', comp:true},
+    {id:'kasaVarna', label:'Каса Варна', icon:'fa-cash-register', comp:true},
+    {id:'kasaPavlikeni', label:'Каса Павликени', icon:'fa-cash-register', comp:true},
+  ];
+  const adminItems = [
+    {id:'users', label:'Потребители', icon:'fa-users'},
+  ];
+
+  const sidebarNav = navItems.filter(n=>!n.comp || canView(n.id) || isAdmin())
+    .map(n=>`<div class="nav-item ${S.view===n.id?'active':''}" onclick="nav('${n.id}')">
+      <i class="fa ${n.icon}"></i><span>${n.label}</span>
+    </div>`).join('');
+
+  const adminNav = isAdmin() ? `
+    <div class="sidebar-section">Администрация</div>
+    ${adminItems.map(n=>`<div class="nav-item ${S.view===n.id?'active':''}" onclick="nav('${n.id}')">
+      <i class="fa ${n.icon}"></i><span>${n.label}</span>
+    </div>`).join('')}` : '';
+
+  const userInitial = (session.name||'?')[0].toUpperCase();
+  const roleLabel = isAdmin() ? 'Администратор' : 'Потребител';
+
+  return `
+  <div class="sidebar-overlay ${S.sidebarOpen?'show':''}" onclick="closeSidebar()"></div>
+  <div class="sidebar ${S.sidebarOpen?'open':''}">
+    <div class="logo-area">
+      <div class="logo-icon ring-anim">FP</div>
+      <div class="logo-text">
+        <div class="t1">Finance Pro</div>
+        <div class="t2">HOLDING PORTAL</div>
+      </div>
+    </div>
+    <div class="sidebar-section">Навигация</div>
+    <nav style="flex:1;overflow-y:auto;padding:0 0 12px">
+      ${sidebarNav}
+      ${adminNav}
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="user-chip">
+        <div class="user-avatar">${userInitial}</div>
+        <div class="user-info">
+          <div class="user-name">${session.name||session.email}</div>
+          <div class="user-role">${roleLabel}</div>
+        </div>
+        <i class="fa fa-sign-out-alt" style="color:#9ca3af;cursor:pointer;font-size:14px" onclick="logout()" title="Изход"></i>
+      </div>
+      <div style="text-align:center;font-size:9px;color:#374151;margin-top:8px;opacity:.5">v10 · 2026-05-27</div>
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="mob-menu" onclick="toggleSidebar()"><i class="fa fa-bars" style="color:#6b7280"></i></div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#fff">${viewTitle()}</div>
+          <div style="font-size:11px;color:#9ca3af">Finance Pro Holding</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div title="${_fbOnline?'Firebase: свързано':'Firebase: без връзка'}" style="display:flex;align-items:center;gap:5px;font-size:10px;color:#9ca3af;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px">
+          <div style="width:7px;height:7px;border-radius:50%;background:${_fbOnline?'#22c55e':'#ef4444'};box-shadow:0 0 6px ${_fbOnline?'#22c55e':'#ef4444'}44"></div>
+          <span class="hide-mob">${_fbOnline?'Онлайн':'Офлайн'}</span>
+        </div>
+        ${renderMonthNav()}
+      </div>
+    </div>
+    <div class="page-area">
+      ${renderView()}
+    </div>
+  </div>
+  ${S.modal ? renderModal() : ''}`;
+}
+
+function viewTitle(){
+  const map = {dashboard:'Главно Табло',meta8:'Мета 8',liderStroy:'Лидерстрой Монтаж',bso:'БСО',bsoDzzd:'БСО - ДЗЗД',metaPlan:'Мета План',investments:'Инвестиции',kasaVarna:'Каса Варна',kasaPavlikeni:'Каса Павликени',users:'Управление на потребители'};
+  return map[S.view]||'Табло';
+}
+
+function renderMonthNav(){
+  const yrs = [2023,2024,2025,2026];
+  const yearOpts = yrs.map(y=>`<option value="${y}" ${S.year===y?'selected':''}>${y}</option>`).join('');
+  const monOpts = MONTHS.map((m,i)=>`<option value="${i+1}" ${S.month===i+1?'selected':''}>${m}</option>`).join('');
+  return `
+  <div class="month-nav">
+    <i class="fa fa-calendar-alt" style="color:#c00;font-size:13px"></i>
+    <select onchange="S.month=+this.value;render()">${monOpts}</select>
+    <select onchange="S.year=+this.value;render()">${yearOpts}</select>
+  </div>`;
+}
+
+function renderView(){
+  switch(S.view){
+    case 'dashboard':   return renderDashboard();
+    case 'meta8':       return renderMeta8();
+    case 'liderStroy':  return renderLiderStroy();
+    case 'bso':         return renderBSO();
+    case 'bsoDzzd':     return renderBSODZZD();
+    case 'metaPlan':    return renderMetaPlan();
+    case 'investments': return renderInvestments();
+    case 'kasaVarna':   return renderKasa('kasaVarna','Каса Варна','fa-cash-register');
+    case 'kasaPavlikeni': return renderKasa('kasaPavlikeni','Каса Павликени','fa-cash-register');
+    case 'users':       return renderUsers();
+    default:            return renderDashboard();
+  }
+}
+
+// =================== DASHBOARD ===================
+function renderDashboard(){
+  const ht = getHoldingTotals(S.year, S.month);
+  const profit = ht.income - ht.expenses;
+  const comps = [
+    {id:'meta8', label:'Мета 8', icon:'fa-industry', color:'#c00'},
+    {id:'liderStroy', label:'Лидерстрой', icon:'fa-building-user', color:'#e67e22'},
+    {id:'bso', label:'БСО', icon:'fa-city', color:'#8e44ad'},
+    {id:'bsoDzzd', label:'БСО - ДЗЗД', icon:'fa-city', color:'#7c3aed'},
+    {id:'metaPlan', label:'Мета План', icon:'fa-chart-line', color:'#27ae60'},
+    {id:'investments', label:'Инвестиции', icon:'fa-coins', color:'#2980b9'},
+    {id:'kasaVarna', label:'Каса Варна', icon:'fa-cash-register', color:'#0891b2'},
+    {id:'kasaPavlikeni', label:'Каса Павликени', icon:'fa-cash-register', color:'#059669'},
+  ];
+  const compRows = comps.map(c=>{
+    const t=getCompanyMonthTotals(c.id, S.year, S.month);
+    const p=t.income-t.expenses;
+    const pct = t.income>0 ? Math.min(100,Math.round(t.expenses/t.income*100)) : 0;
+    return `<div class="obj-card" onclick="nav('${c.id}')" style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="icon-box" style="background:rgba(255,255,255,.05);color:${c.color}"><i class="fa ${c.icon}"></i></div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#1f2937">${c.label}</div>
+        <div style="font-size:11px;color:#6b7280">Приходи: <span style="color:#22c55e">${fmt(t.income)} €</span></div></div>
+        <span class="badge ${resultBadge(p)}">${fmtShort(p)} €</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${c.color};opacity:.6"></div></div>
+    </div>`;
+  }).join('');
+
+  // month trend: last 6 months
+  const trendData = [];
+  for(let i=5;i>=0;i--){
+    let m=S.month-i; let y=S.year;
+    if(m<=0){m+=12;y--;}
+    const t=getHoldingTotals(y,m);
+    trendData.push({label:MONTHS[m-1].slice(0,3),income:t.income,expenses:t.expenses});
+  }
+
+  return `
+  <div class="section-hd">
+    <h2>Главно Табло</h2>
+    <p>${MONTHS[S.month-1]} ${S.year} — Консолидиран преглед на холдинга</p>
+  </div>
+
+  <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+    <div class="stat-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Общо приходи</span>
+        <div class="icon-box" style="width:36px;height:36px;background:rgba(34,197,94,.1);color:#22c55e;font-size:14px"><i class="fa fa-arrow-trend-up"></i></div>
+      </div>
+      <div style="font-size:26px;font-weight:800;color:#22c55e;font-family:'SF Mono',monospace">${fmtShort(ht.income)}</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:2px">евро</div>
+    </div>
+    <div class="stat-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Общо разходи</span>
+        <div class="icon-box" style="width:36px;height:36px;background:rgba(239,68,68,.1);color:#ef4444;font-size:14px"><i class="fa fa-arrow-trend-down"></i></div>
+      </div>
+      <div style="font-size:26px;font-weight:800;color:#ef4444;font-family:'SF Mono',monospace">${fmtShort(ht.expenses)}</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:2px">евро</div>
+    </div>
+    <div class="stat-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Печалба</span>
+        <div class="icon-box" style="width:36px;height:36px;background:rgba(204,0,0,.1);color:#c00;font-size:14px"><i class="fa fa-scale-balanced"></i></div>
+      </div>
+      <div style="font-size:26px;font-weight:800;font-family:'SF Mono',monospace" class="${resultClass(profit)}">${fmtShort(profit)}</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:2px">евро</div>
+    </div>
+    <div class="stat-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Рентабилност</span>
+        <div class="icon-box" style="width:36px;height:36px;background:rgba(59,130,246,.1);color:#60a5fa;font-size:14px"><i class="fa fa-percent"></i></div>
+      </div>
+      <div style="font-size:26px;font-weight:800;color:#60a5fa;font-family:'SF Mono',monospace">${ht.income>0?Math.round(profit/ht.income*100):0}%</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:2px">марж на печалбата</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px">
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-bar text-red" style="margin-right:7px"></i>Тренд — последни 6 месеца</div>
+      <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-pie text-red" style="margin-right:7px"></i>Разпределение на приходите</div>
+      <div class="chart-wrap"><canvas id="chart-pie"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-building text-red" style="margin-right:7px"></i>Преглед по фирми — ${MONTHS[S.month-1]} ${S.year}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
+      ${compRows}
+    </div>
+  </div>
+
+  <script type="app/data" id="trend-data">${JSON.stringify(trendData)}<\/script>
+  <script type="app/data" id="pie-data">${JSON.stringify(comps.map(c=>{const t=getCompanyMonthTotals(c.id,S.year,S.month);return{label:c.label,income:t.income,color:c.color};}))}<\/script>
+  `;
+}
+
+// =================== META 8 ===================
+function renderMeta8(){
+  if(!canView('meta8')) return noAccess();
+  // Filter productions by what this user is allowed to see (name-keyword match)
+  const prods = db.meta8.productions.filter(p=>canViewMeta8Prod(p.id));
+  // Overall totals only for accessible productions
+  const overallEntries = (db.meta8.entries||[]).filter(e=>
+    e.year===S.year && e.month===S.month && canViewMeta8Prod(e.entityId)
+  );
+  const overall = sumEntries(overallEntries);
+  const overallResult = overall.income - overall.expenses;
+
+  // If the previously selected production is not accessible, fall back to first visible one
+  const selProd = (S.selEntity && prods.find(p=>p.id===S.selEntity))
+    ? S.selEntity
+    : (prods[0]?.id||null);
+
+  const prodTabs = prods.map(p=>`
+    <div class="tab ${selProd===p.id?'active':''}" onclick="S.selEntity='${p.id}';render()">${p.name}</div>
+  `).join('');
+
+  const prodData = selProd ? getMonthTotals('meta8', selProd, S.year, S.month) : null;
+  const entries = selProd ? getEntries('meta8', selProd, S.year, S.month) : [];
+
+  const prodResult = prodData ? prodData.income - prodData.expenses : 0;
+  const totalExp = prodData ? prodData.expWorkers + prodData.expAdditional : 0;
+
+  const entryRows = entries.length ? entries.map(e=>{
+    const avgP = (e.tonnage||0)>0 ? (e.income||0)/(e.tonnage||1) : (e.avgPrice||0);
+    return `<tr>
+      <td>${e.description||'—'}</td>
+      <td><span class="badge badge-blue">${fmt(e.tonnage||0)} т</span></td>
+      <td style="color:#a78bfa;font-weight:600">${avgP>0?fmt(avgP)+' €/т':'—'}</td>
+      <td class="text-pos">+${fmt(e.income||0)}</td>
+      <td class="text-neg">-${fmt(e.expWorkers||0)}</td>
+      <td class="text-neg">-${fmt(e.expAdditional||0)}</td>
+      <td class="${resultClass(e.income-(e.expWorkers||0)-(e.expAdditional||0))}">${fmt(e.income-(e.expWorkers||0)-(e.expAdditional||0))}</td>
+      ${canWrite('meta8')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('meta8','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('meta8')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('meta8','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+    </tr>`;
+  }).join('') : `<tr><td colspan="8"><div class="empty-state"><i class="fa fa-inbox"></i><p>Няма записи за ${MONTHS[S.month-1]} ${S.year}</p></div></td></tr>`;
+
+  // YTD trend
+  const ytdData = [];
+  for(let m=1;m<=12;m++){
+    const t=getMonthTotals('meta8',selProd,S.year,m);
+    ytdData.push({label:MONTHS[m-1].slice(0,3),income:t.income,expenses:t.expWorkers+t.expAdditional,tonnage:t.tonnage});
+  }
+
+  return `
+  <div class="section-hd">
+    <h2>Мета 8 <span style="font-size:13px;color:#6b7280;font-weight:400">— Индустриални решения</span></h2>
+    <p>Управление на производства, тонаж, приходи и разходи</p>
+  </div>
+
+  <div class="grid-stats">
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overall.income)}<span style="font-size:12px;font-weight:400;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overall.expenses)}<span style="font-size:12px;font-weight:400;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallResult)}">${fmtShort(overallResult)}<span style="font-size:12px;font-weight:400;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Тонаж</div><div style="font-size:22px;font-weight:800;color:#60a5fa">${fmtShort(overall.tonnage)}<span style="font-size:12px;font-weight:400;color:#6b7280"> т.</span></div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="tabs" style="flex-wrap:wrap">${prodTabs}</div>
+        ${isAdmin()?`<button class="btn btn-secondary btn-sm" onclick="openModal('addProduction')"><i class="fa fa-plus"></i> Производство</button>`:''}
+      </div>
+      ${canWrite('meta8')&&selProd?`<button class="btn btn-primary btn-sm" onclick="openModal('addMeta8Entry','${selProd}')"><i class="fa fa-plus"></i> Добави запис</button>`:''}
+    </div>
+
+    ${selProd ? `
+    <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px">
+      <div class="summary-box"><i class="fa fa-weight-hanging" style="color:#60a5fa;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Тонаж</div><div style="font-weight:700;color:#60a5fa">${fmt(prodData?.tonnage||0)} т.</div></div></div>
+      <div class="summary-box"><i class="fa fa-tag" style="color:#a78bfa;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Ср. продажна цена</div><div style="font-weight:700;color:#a78bfa">${prodData?.tonnage>0?fmt((prodData.income||0)/(prodData.tonnage||1)):'—'} €/т.</div></div></div>
+      <div class="summary-box"><i class="fa fa-arrow-up" style="color:#22c55e;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Приходи</div><div style="font-weight:700;color:#22c55e">+${fmt(prodData?.income||0)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-user-hard-hat" style="color:#ef4444;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Работници</div><div style="font-weight:700;color:#ef4444">-${fmt(prodData?.expWorkers||0)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-plus-circle" style="color:#f59e0b;width:20px"></i><div><div style="font-size:11px;color:#6b7280">Допълнителни</div><div style="font-weight:700;color:#f59e0b">-${fmt(prodData?.expAdditional||0)} €</div></div></div>
+      <div class="summary-box"><i class="fa fa-balance-scale" style="color:${prodResult>=0?'#22c55e':'#ef4444'};width:20px"></i><div><div style="font-size:11px;color:#6b7280">Резултат</div><div style="font-weight:700" class="${resultClass(prodResult)}">${fmt(prodResult)} €</div></div></div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th>Описание</th><th>Тонаж</th><th>Ср. продажна цена</th><th>Приходи</th><th>Работници</th><th>Допълнителни</th><th>Резултат</th>
+          ${canWrite('meta8')?'<th></th>':''}
+        </tr></thead>
+        <tbody>${entryRows}</tbody>
+      </table>
+    </div>` : '<div class="empty-state"><i class="fa fa-industry"></i><p>Изберете производство</p></div>'}
+  </div>
+
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-bar text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
+    <div class="chart-wrap"><canvas id="chart-meta8"></canvas></div>
+  </div>
+  <script type="app/data" id="meta8-trend">${JSON.stringify(ytdData)}<\/script>`;
+}
+
+// =================== ЛИДЕРСТРОЙ ===================
+function getLSEntriesBySubObj(objId, subObjId, year, month){
+  return (db.liderStroy.entries||[]).filter(e=>
+    e.entityId===objId && e.year===year && e.month===month &&
+    (subObjId ? e.subEntityId===subObjId : true)
+  );
+}
+
+function renderLiderStroy(){
+  if(!canView('liderStroy')) return noAccess();
+  const objects = db.liderStroy.objects;
+  const selObj = S.selEntity || (objects[0]?.id||null);
+  const obj = selObj ? objects.find(o=>o.id===selObj) : null;
+  const subObjects = obj?.subObjects || [];
+  const selSub = S.selSubEntity;
+  const selSubObj = selSub ? subObjects.find(s=>s.id===selSub) : null;
+
+  // If sub-object selected, show its data; else show object totals
+  const activeEntries = selObj ? getLSEntriesBySubObj(selObj, selSub||undefined, S.year, S.month) : [];
+  const monthTotals = sumEntries(activeEntries);
+  const remainder = selObj ? getLSRemainder(selObj) : 0;
+  const result = monthTotals.income - monthTotals.expenses;
+
+  // YTD: Jan → S.month
+  let _ytdI=0,_ytdE=0;
+  if(selObj){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getLSEntriesBySubObj(selObj,selSub||undefined,S.year,m)); _ytdI+=t.income; _ytdE+=t.expenses; } }
+  // All-time
+  const _atEnts = selObj ? (db.liderStroy.entries||[]).filter(e=>e.entityId===selObj&&(!selSub||e.subEntityId===selSub)) : [];
+  const _at = sumEntries(_atEnts);
+  const lsYtdCard = selObj ? ytdPeriodCard(_ytdI,_ytdE,_at.income,_at.expenses) : '';
+
+  const monthRows = MONTHS.map((mn,i)=>{
+    const ents = selObj ? getLSEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
+    const t = sumEntries(ents);
+    const r = t.income-t.expenses;
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
+      <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('liderStroy')&&selObj?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addLSEntry','${selObj}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
+    </tr>`;
+  }).join('');
+
+  const entryRows = activeEntries.length ? activeEntries.map(e=>`
+    <tr>
+      <td>${e.description||'—'}${e.subEntityId&&!selSub?`<span class="badge badge-gray" style="margin-left:6px;font-size:10px">${subObjects.find(s=>s.id===e.subEntityId)?.name||''}</span>`:''}</td>
+      <td class="text-pos">+${fmt(e.income||0)}</td>
+      <td class="text-neg">-${fmt(e.expenses||0)}</td>
+      <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
+      ${canWrite('liderStroy')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('liderStroy','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('liderStroy')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('liderStroy','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+    </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
+
+  // Sub-objects summary table
+  const subObjRows = subObjects.map(s=>{
+    const ents = selObj ? getLSEntriesBySubObj(selObj, s.id, S.year, S.month) : [];
+    const t=sumEntries(ents); const r=t.income-t.expenses;
+    return `<tr onclick="S.selSubEntity='${s.id}';render()" style="cursor:pointer;${selSub===s.id?'background:rgba(204,0,0,.06)':''}">
+      <td style="font-weight:600;color:${selSub===s.id?'#ff4444':'#ddd'}">${s.name}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canManageLSObjects()?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editLSSubObj','${selObj}',null,null,'${s.id}')"><i class="fa fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLSSubObj('${selObj}','${s.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="section-hd">
+    <h2>Лидерстрой Монтаж</h2>
+    <p>Управление на обекти, подобекти и финансови резултати</p>
+  </div>
+
+  <div style="display:flex;gap:16px;flex-wrap:wrap">
+    <!-- Object list -->
+    <div style="width:230px;flex-shrink:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase">Обекти</span>
+        ${canManageLSObjects()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSObject')"><i class="fa fa-plus"></i></button>`:''}
+      </div>
+      ${objects.map(o=>{
+        const allEnts=getAllEntries('liderStroy',o.id);
+        const rem=getLSRemainder(o.id);
+        const subCount=(o.subObjects||[]).length;
+        return `<div class="obj-card ${selObj===o.id?'sel':''}" style="margin-bottom:8px" onclick="S.selEntity='${o.id}';S.selSubEntity=null;render()">
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:5px">${o.name}</div>
+          <div style="font-size:11px;color:#6b7280">Бюджет: <span style="color:#1f2937">${fmtShort(o.budget)} €</span></div>
+          <div style="font-size:11px;margin-top:2px;color:${rem>=0?'#22c55e':'#ef4444'}">Остатък: ${fmtShort(rem)} €</div>
+          ${subCount>0?`<div style="font-size:10px;color:#6b7280;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
+          ${canManageLSObjects()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editLSObject','${o.id}')"><i class="fa fa-edit"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLSObject('${o.id}')"><i class="fa fa-trash"></i></button>
+          </div>`:''}
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Object detail -->
+    <div style="flex:1;min-width:0">
+      ${obj ? `
+      ${lsYtdCard}
+      <!-- KPI row -->
+      <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#1f2937">${fmtShort(obj.budget)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(remainder)}">${fmtShort(remainder)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+      </div>
+
+      <!-- Sub-objects panel -->
+      ${subObjects.length>0||canManageLSObjects() ? `
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:13px;font-weight:700;color:#1f2937"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
+            ${selSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
+          </div>
+          ${canManageLSObjects()?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSSubObj','${selObj}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
+        </div>
+        ${subObjects.length>0?`
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canManageLSObjects()?'<th></th>':''}</tr></thead>
+            <tbody>${subObjRows}</tbody>
+          </table>
+        </div>`:`<div style="color:#6b7280;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
+      </div>` : ''}
+
+      <div class="grid-2">
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <span style="font-size:13px;font-weight:700;color:#1f2937">${selSubObj?selSubObj.name+' — ':''}Записи — ${MONTHS[S.month-1]}</span>
+            ${canWrite('liderStroy')?`<button class="btn btn-primary btn-sm" onclick="openModal('addLSEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+          </div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('liderStroy')?'<th></th>':''}</tr></thead>
+              <tbody>${entryRows}</tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
+          <div class="table-wrap" style="max-height:320px;overflow-y:auto">
+            <table class="tbl">
+              <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
+              <tbody>${monthRows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>` : `<div class="card"><div class="empty-state"><i class="fa fa-building-user"></i><p>Изберете обект от списъка</p></div></div>`}
+    </div>
+  </div>`;
+}
+
+// =================== БСО ===================
+function renderBSO(){
+  if(!canView('bso')) return noAccess();
+  const subcats = db.bso.subcategories;
+  const selSub = S.selEntity || subcats[0]?.id || null;
+  const subcat = selSub ? subcats.find(s=>s.id===selSub) : null;
+  const subObjects = subcat?.subObjects || [];
+  const selBSOSub = S.selSubEntity;
+  const selBSOSubObj = selBSOSub ? subObjects.find(s=>s.id===selBSOSub) : null;
+
+  const activeEntries = selSub ? getBSOEntriesBySubObj(selSub, selBSOSub||undefined, S.year, S.month) : [];
+  const mt = sumEntries(activeEntries);
+  const result = mt.income - mt.expenses;
+  const bsoBudget = subcat?.budget||0;
+  const bsoRemainder = selSub ? getBSORemainder(selSub) : 0;
+  const overallMonth = getCompanyMonthTotals('bso', S.year, S.month);
+  let _bytdI=0,_bytdE=0;
+  if(selSub){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getBSOEntriesBySubObj(selSub,selBSOSub||undefined,S.year,m)); _bytdI+=t.income; _bytdE+=t.expenses; } }
+  const _batEnts = selSub ? (db.bso.entries||[]).filter(e=>e.entityId===selSub&&(!selBSOSub||e.subEntityId===selBSOSub)) : [];
+  const _bat = sumEntries(_batEnts);
+  const bsoYtdCard = selSub ? ytdPeriodCard(_bytdI,_bytdE,_bat.income,_bat.expenses) : '';
+
+  const entryRows = activeEntries.length ? activeEntries.map(e=>`
+    <tr>
+      <td>${e.description||'—'}${e.subEntityId&&!selBSOSub?`<span class="badge badge-gray" style="margin-left:6px;font-size:10px">${subObjects.find(s=>s.id===e.subEntityId)?.name||''}</span>`:''}</td>
+      <td class="text-pos">+${fmt(e.income||0)}</td>
+      <td class="text-neg">-${fmt(e.expenses||0)}</td>
+      <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
+      ${canWrite('bso')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bso','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('bso')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('bso','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+    </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
+
+  const monthRows = MONTHS.map((mn,i)=>{
+    const ents = selSub ? getBSOEntriesBySubObj(selSub, selBSOSub||undefined, S.year, i+1) : [];
+    const t = sumEntries(ents);
+    const r = t.income-t.expenses;
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
+      <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('bso')&&selSub?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addBSOEntry','${selSub}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
+    </tr>`;
+  }).join('');
+
+  const subcatSummary = subcats.map(s=>{
+    const t=getMonthTotals('bso',s.id,S.year,S.month);
+    const r=t.income-t.expenses;
+    const rem=getBSORemainder(s.id);
+    const subCount=(s.subObjects||[]).length;
+    return `<tr onclick="S.selEntity='${s.id}';S.selSubEntity=null;render()" style="cursor:pointer;${selSub===s.id?'background:rgba(204,0,0,.06)':''}">
+      <td style="font-weight:600;color:${selSub===s.id?'#ff4444':'#ddd'}">${s.name}${subCount>0?`<span class="badge badge-gray" style="margin-left:6px;font-size:10px"><i class="fa fa-layer-group"></i> ${subCount}</span>`:''}</td>
+      <td style="color:#9ca3af">${(s.budget||0)>0?fmtShort(s.budget)+' €':'—'}</td>
+      <td style="color:${rem>=0?'#22c55e':'#ef4444'};font-weight:600">${(s.budget||0)>0?fmtShort(rem)+' €':'—'}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${isAdmin()?`<td style="white-space:nowrap">
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editBSOBudget','${s.id}')"><i class="fa fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteBSOSubcat('${s.id}')"><i class="fa fa-trash"></i></button>
+      </td>`:''}
+    </tr>`;
+  }).join('');
+
+  // Sub-objects rows for selected subcategory
+  const subObjRows = subObjects.map(s=>{
+    const ents = selSub ? getBSOEntriesBySubObj(selSub, s.id, S.year, S.month) : [];
+    const t=sumEntries(ents); const r=t.income-t.expenses;
+    return `<tr onclick="S.selSubEntity='${s.id}';render()" style="cursor:pointer;${selBSOSub===s.id?'background:rgba(204,0,0,.06)':''}">
+      <td style="font-weight:600;color:${selBSOSub===s.id?'#ff4444':'#ddd'}">${s.name}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteBSOSubObj('${selSub}','${s.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="section-hd">
+    <h2>Българска Строителна Организация</h2>
+    <p>Финансов преглед на обекти и подразделения</p>
+  </div>
+
+  <div class="grid-stats" style="margin-bottom:16px">
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <span style="font-size:13px;font-weight:700;color:#1f2937">Всички обекти — ${MONTHS[S.month-1]} ${S.year}</span>
+      ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSOObject',null)"><i class="fa fa-plus"></i> Нов обект</button>`:''}
+    </div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>Обект</th><th>Бюджет</th><th>Остатък</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+        <tbody>
+          ${subcatSummary}
+          <tr class="tbl-total">
+            <td>ОБЩО</td><td></td><td></td>
+            <td class="text-pos">+${fmt(overallMonth.income)}</td>
+            <td class="text-neg">-${fmt(overallMonth.expenses)}</td>
+            <td class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmt(overallMonth.income-overallMonth.expenses)}</td>
+            ${isAdmin()?'<td></td>':''}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  ${subcat ? `
+  ${bsoYtdCard}
+  <!-- KPI row -->
+  <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#1f2937">${fmtShort(bsoBudget)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(bsoRemainder)}">${fmtShort(bsoRemainder)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selBSOSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selBSOSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:14px">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span style="font-size:13px;font-weight:700;color:#1f2937">${selBSOSubObj?selBSOSubObj.name+' — ':subcat.name+' — '}${MONTHS[S.month-1]}</span>
+        ${canWrite('bso')?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSOEntry','${selSub}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('bso')?'<th></th>':''}</tr></thead>
+          <tbody>${entryRows}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
+      <div class="table-wrap" style="max-height:320px;overflow-y:auto">
+        <table class="tbl">
+          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
+          <tbody>${monthRows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sub-objects panel -->
+  ${subObjects.length>0||isAdmin() ? `
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:13px;font-weight:700;color:#1f2937"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти — ${subcat.name}</span>
+        ${selBSOSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
+      </div>
+      ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSOSubObj','${selSub}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
+    </div>
+    ${subObjects.length>0?`
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+        <tbody>${subObjRows}</tbody>
+      </table>
+    </div>`:`<div style="color:#6b7280;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
+  </div>` : ''}
+  ` : ''}`;
+}
+
+// =================== БСО - ДЗЗД ===================
+function renderBSODZZD(){
+  if(!canView('bsoDzzd')) return noAccess();
+  const objects = (db.bsoDzzd.objects||[]);
+  const selObj = S.selEntity || (objects[0]?.id||null);
+  const obj = selObj ? objects.find(o=>o.id===selObj) : null;
+  const subObjects = obj?.subObjects || [];
+  const selSub = S.selSubEntity;
+  const selSubObj = selSub ? subObjects.find(s=>s.id===selSub) : null;
+
+  const activeEntries = selObj ? getBsoDzzdEntriesBySubObj(selObj, selSub||undefined, S.year, S.month) : [];
+  const monthTotals = sumEntries(activeEntries);
+  const remainder = selObj ? getBsoDzzdRemainder(selObj) : 0;
+  const result = monthTotals.income - monthTotals.expenses;
+  const overallMonth = getCompanyMonthTotals('bsoDzzd', S.year, S.month);
+  let _dytdI=0,_dytdE=0;
+  if(selObj){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getBsoDzzdEntriesBySubObj(selObj,selSub||undefined,S.year,m)); _dytdI+=t.income; _dytdE+=t.expenses; } }
+  const _datEnts = selObj ? (db.bsoDzzd.entries||[]).filter(e=>e.entityId===selObj&&(!selSub||e.subEntityId===selSub)) : [];
+  const _dat = sumEntries(_datEnts);
+  const dzzdYtdCard = selObj ? ytdPeriodCard(_dytdI,_dytdE,_dat.income,_dat.expenses) : '';
+
+  const monthRows = MONTHS.map((mn,i)=>{
+    const ents = selObj ? getBsoDzzdEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
+    const t = sumEntries(ents);
+    const r = t.income-t.expenses;
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
+      <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('bsoDzzd')&&selObj?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addBSODzzdEntry','${selObj}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
+    </tr>`;
+  }).join('');
+
+  const entryRows = activeEntries.length ? activeEntries.map(e=>`
+    <tr>
+      <td>${e.description||'—'}${e.subEntityId&&!selSub?`<span class="badge badge-gray" style="margin-left:6px;font-size:10px">${subObjects.find(s=>s.id===e.subEntityId)?.name||''}</span>`:''}</td>
+      <td class="text-pos">+${fmt(e.income||0)}</td>
+      <td class="text-neg">-${fmt(e.expenses||0)}</td>
+      <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
+      ${canWrite('bsoDzzd')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('bsoDzzd','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('bsoDzzd')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('bsoDzzd','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+    </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
+
+  const subObjRows = subObjects.map(s=>{
+    const ents = selObj ? getBsoDzzdEntriesBySubObj(selObj, s.id, S.year, S.month) : [];
+    const t=sumEntries(ents); const r=t.income-t.expenses;
+    return `<tr onclick="S.selSubEntity='${s.id}';render()" style="cursor:pointer;${selSub===s.id?'background:rgba(204,0,0,.06)':''}">
+      <td style="font-weight:600;color:${selSub===s.id?'#ff4444':'#ddd'}">${s.name}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteBSODzzdSubObj('${selObj}','${s.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="section-hd">
+    <h2>БСО - ДЗЗД</h2>
+    <p>Управление на обекти, подобекти и финансови резултати</p>
+  </div>
+
+  <div class="grid-stats" style="margin-bottom:16px">
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+  </div>
+
+  <div style="display:flex;gap:16px;flex-wrap:wrap">
+    <!-- Object list -->
+    <div style="width:230px;flex-shrink:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase">Обекти</span>
+        ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSODzzdObject')"><i class="fa fa-plus"></i></button>`:''}
+      </div>
+      ${objects.map(o=>{
+        const rem=getBsoDzzdRemainder(o.id);
+        const subCount=(o.subObjects||[]).length;
+        return `<div class="obj-card ${selObj===o.id?'sel':''}" style="margin-bottom:8px" onclick="S.selEntity='${o.id}';S.selSubEntity=null;render()">
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:5px">${o.name}</div>
+          <div style="font-size:11px;color:#6b7280">Бюджет: <span style="color:#1f2937">${fmtShort(o.budget||0)} €</span></div>
+          <div style="font-size:11px;margin-top:2px;color:${rem>=0?'#22c55e':'#ef4444'}">Остатък: ${fmtShort(rem)} €</div>
+          ${subCount>0?`<div style="font-size:10px;color:#6b7280;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
+          ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openModal('editBSODzzdBudget','${o.id}')"><i class="fa fa-edit"></i> Бюджет</button>
+            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteBSODzzdObject('${o.id}')"><i class="fa fa-trash"></i></button>
+          </div>`:''}
+        </div>`;
+      }).join('')}
+      ${objects.length===0?`<div class="empty-state" style="padding:30px 10px"><i class="fa fa-city"></i><p>Няма обекти</p></div>`:''}
+    </div>
+
+    <!-- Object detail -->
+    <div style="flex:1;min-width:0">
+      ${obj ? `
+      ${dzzdYtdCard}
+      <!-- KPI row -->
+      <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Бюджет</div><div style="font-size:20px;font-weight:800;color:#1f2937">${fmtShort(obj.budget||0)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Остатък</div><div style="font-size:20px;font-weight:800" class="${resultClass(remainder)}">${fmtShort(remainder)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+      </div>
+
+      <!-- Sub-objects panel -->
+      ${subObjects.length>0||isAdmin() ? `
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:13px;font-weight:700;color:#1f2937"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
+            ${selSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
+          </div>
+          ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSODzzdSubObj','${selObj}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
+        </div>
+        ${subObjects.length>0?`
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+            <tbody>${subObjRows}</tbody>
+          </table>
+        </div>`:`<div style="color:#6b7280;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
+      </div>` : ''}
+
+      <div class="grid-2">
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <span style="font-size:13px;font-weight:700;color:#1f2937">${selSubObj?selSubObj.name+' — ':obj.name+' — '}${MONTHS[S.month-1]}</span>
+            ${canWrite('bsoDzzd')?`<button class="btn btn-primary btn-sm" onclick="openModal('addBSODzzdEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+          </div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('bsoDzzd')?'<th></th>':''}</tr></thead>
+              <tbody>${entryRows}</tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
+          <div class="table-wrap" style="max-height:320px;overflow-y:auto">
+            <table class="tbl">
+              <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
+              <tbody>${monthRows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>` : `<div class="card"><div class="empty-state"><i class="fa fa-city"></i><p>Изберете обект от списъка</p></div></div>`}
+    </div>
+  </div>`;
+}
+
+// =================== МЕТА ПЛАН ===================
+function renderMetaPlan(){
+  if(!canView('metaPlan')) return noAccess();
+  const mt = getCompanyMonthTotals('metaPlan', S.year, S.month);
+  const result = mt.income - mt.expenses;
+  const entries = getEntries('metaPlan', null, S.year, S.month);
+  let _mpI=0,_mpE=0; for(let m=1;m<=S.month;m++){ const t=getCompanyMonthTotals('metaPlan',S.year,m); _mpI+=t.income; _mpE+=t.expenses; }
+  const _mpAt = sumEntries(db.metaPlan?.entries||[]);
+  const mpYtdCard = ytdPeriodCard(_mpI,_mpE,_mpAt.income,_mpAt.expenses);
+
+  const entryRows = entries.length ? entries.map(e=>`
+    <tr>
+      <td>${e.description||'—'}</td>
+      <td class="text-pos">+${fmt(e.income||0)}</td>
+      <td class="text-neg">-${fmt(e.expenses||0)}</td>
+      <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
+      ${canWrite('metaPlan')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('metaPlan','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('metaPlan')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('metaPlan','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+    </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
+
+  const monthRows = MONTHS.map((mn,i)=>{
+    const t=getCompanyMonthTotals('metaPlan',S.year,i+1);
+    const r=t.income-t.expenses;
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
+      <td style="color:${i+1===S.month?'#c00':'#374151'}">${mn}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('metaPlan')?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addMetaPlanEntry',null)"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
+    </tr>`;
+  }).join('');
+
+  const ytdData = MONTHS.map((mn,i)=>{
+    const t=getCompanyMonthTotals('metaPlan',S.year,i+1);
+    return {label:mn.slice(0,3),income:t.income,expenses:t.expenses};
+  });
+
+  return `
+  <div class="section-hd">
+    <h2>Мета План</h2>
+    <p>Приходи, разходи и финансов резултат</p>
+  </div>
+
+  ${mpYtdCard}
+  <div class="grid-stats">
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span style="font-size:13px;font-weight:700;color:#1f2937">Записи — ${MONTHS[S.month-1]} ${S.year}</span>
+        ${canWrite('metaPlan')?`<button class="btn btn-primary btn-sm" onclick="openModal('addMetaPlanEntry',null)"><i class="fa fa-plus"></i> Добави</button>`:''}
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('metaPlan')?'<th></th>':''}</tr></thead>
+          <tbody>${entryRows}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
+      <div class="table-wrap" style="max-height:340px;overflow-y:auto">
+        <table class="tbl">
+          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
+          <tbody>${monthRows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-area text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
+    <div class="chart-wrap"><canvas id="chart-metaplan"></canvas></div>
+  </div>
+  <script type="app/data" id="metaplan-trend">${JSON.stringify(ytdData)}<\/script>`;
+}
+
+// =================== ИНВЕСТИЦИИ ===================
+function renderInvestments(){
+  if(!canView('investments')) return noAccess();
+  const objects = db.investments.objects;
+  const selObj = S.selEntity || (objects[0]?.id||null);
+  const obj = selObj ? objects.find(o=>o.id===selObj) : null;
+  const subObjects = obj?.subObjects || [];
+  const selSub = S.selSubEntity;
+  const selSubObj = selSub ? subObjects.find(s=>s.id===selSub) : null;
+
+  const activeEntries = selObj ? getInvEntriesBySubObj(selObj, selSub||undefined, S.year, S.month) : [];
+  const monthTotals = sumEntries(activeEntries);
+  const result = monthTotals.income - monthTotals.expenses;
+  const overallMonth = getCompanyMonthTotals('investments', S.year, S.month);
+  let _iytdI=0,_iytdE=0;
+  if(selObj){ for(let m=1;m<=S.month;m++){ const t=sumEntries(getInvEntriesBySubObj(selObj,selSub||undefined,S.year,m)); _iytdI+=t.income; _iytdE+=t.expenses; } }
+  const _iatEnts = selObj ? (db.investments.entries||[]).filter(e=>e.entityId===selObj&&(!selSub||e.subEntityId===selSub)) : [];
+  const _iat = sumEntries(_iatEnts);
+  const invYtdCard = selObj ? ytdPeriodCard(_iytdI,_iytdE,_iat.income,_iat.expenses) : '';
+
+  const monthRows = MONTHS.map((mn,i)=>{
+    const ents = selObj ? getInvEntriesBySubObj(selObj, selSub||undefined, S.year, i+1) : [];
+    const t = sumEntries(ents);
+    const r = t.income-t.expenses;
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
+      <td style="color:${i+1===S.month?'#c00':'#374151'};font-weight:${i+1===S.month?700:400}">${mn}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite('investments')&&selObj?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addInvEntry','${selObj}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
+    </tr>`;
+  }).join('');
+
+  const entryRows = activeEntries.length ? activeEntries.map(e=>`
+    <tr>
+      <td>${e.description||'—'}${e.subEntityId&&!selSub?`<span class="badge badge-gray" style="margin-left:6px;font-size:10px">${subObjects.find(s=>s.id===e.subEntityId)?.name||''}</span>`:''}</td>
+      <td class="text-pos">+${fmt(e.income||0)}</td>
+      <td class="text-neg">-${fmt(e.expenses||0)}</td>
+      <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
+      ${canWrite('investments')?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('investments','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry('investments')?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('investments','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+    </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
+
+  const subObjRows = subObjects.map(s=>{
+    const ents = selObj ? getInvEntriesBySubObj(selObj, s.id, S.year, S.month) : [];
+    const t=sumEntries(ents); const r=t.income-t.expenses;
+    return `<tr onclick="S.selSubEntity='${s.id}';render()" style="cursor:pointer;${selSub===s.id?'background:rgba(204,0,0,.06)':''}">
+      <td style="font-weight:600;color:${selSub===s.id?'#ff4444':'#ddd'}">${s.name}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${isAdmin()?`<td><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteInvSubObj('${selObj}','${s.id}')"><i class="fa fa-trash"></i></button></td>`:''}
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="section-hd">
+    <h2>Инвестиции</h2>
+    <p>Управление на обекти, подобекти и финансови резултати</p>
+  </div>
+
+  <div class="grid-stats" style="margin-bottom:16px">
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо приходи</div><div style="font-size:22px;font-weight:800;color:#22c55e">${fmtShort(overallMonth.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Общо разходи</div><div style="font-size:22px;font-weight:800;color:#ef4444">${fmtShort(overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:22px;font-weight:800" class="${resultClass(overallMonth.income-overallMonth.expenses)}">${fmtShort(overallMonth.income-overallMonth.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+  </div>
+
+  <div style="display:flex;gap:16px;flex-wrap:wrap">
+    <!-- Object list -->
+    <div style="width:230px;flex-shrink:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:12px;color:#6b7280;font-weight:700;text-transform:uppercase">Обекти</span>
+        ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addInvObject')"><i class="fa fa-plus"></i></button>`:''}
+      </div>
+      ${objects.map(o=>{
+        const omt=getMonthTotals('investments',o.id,S.year,S.month);
+        const or=omt.income-omt.expenses;
+        const subCount=(o.subObjects||[]).length;
+        return `<div class="obj-card ${selObj===o.id?'sel':''}" style="margin-bottom:8px" onclick="S.selEntity='${o.id}';S.selSubEntity=null;render()">
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:5px">${o.name}</div>
+          <div style="display:flex;gap:10px;font-size:11px;margin-top:2px">
+            <span style="color:#22c55e">+${fmtShort(omt.income)}</span>
+            <span style="color:#ef4444">-${fmtShort(omt.expenses)}</span>
+          </div>
+          <div style="font-size:11px;margin-top:3px" class="${resultClass(or)}">Резултат: ${fmtShort(or)} €</div>
+          ${subCount>0?`<div style="font-size:10px;color:#6b7280;margin-top:3px"><i class="fa fa-layer-group" style="margin-right:4px"></i>${subCount} подобект${subCount===1?'':'а'}</div>`:''}
+          ${isAdmin()?`<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteInvObject('${o.id}')"><i class="fa fa-trash"></i></button>
+          </div>`:''}
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Object detail -->
+    <div style="flex:1;min-width:0">
+      ${obj ? `
+      ${invYtdCard}
+      <div class="grid-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:14px">
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Приходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmtShort(monthTotals.income)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Разходи${selSubObj?' (подобект)':' (месец)'}</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmtShort(monthTotals.expenses)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+        <div class="stat-card"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:700;margin-bottom:8px">Резултат</div><div style="font-size:20px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:11px;color:#6b7280"> €</span></div></div>
+      </div>
+
+      <!-- Sub-objects panel -->
+      ${subObjects.length>0||isAdmin() ? `
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:13px;font-weight:700;color:#1f2937"><i class="fa fa-layer-group text-red" style="margin-right:6px"></i>Подобекти</span>
+            ${selSub?`<button class="btn btn-secondary btn-sm" onclick="S.selSubEntity=null;render()"><i class="fa fa-times"></i> Покажи всички</button>`:''}
+          </div>
+          ${isAdmin()?`<button class="btn btn-primary btn-sm" onclick="openModal('addInvSubObj','${selObj}')"><i class="fa fa-plus"></i> Подобект</button>`:''}
+        </div>
+        ${subObjects.length>0?`
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Подобект</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${isAdmin()?'<th></th>':''}</tr></thead>
+            <tbody>${subObjRows}</tbody>
+          </table>
+        </div>`:`<div style="color:#6b7280;font-size:13px;padding:10px 0">Няма добавени подобекти. Използвайте бутона „+ Подобект" за да добавите.</div>`}
+      </div>` : ''}
+
+      <div class="grid-2">
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <span style="font-size:13px;font-weight:700;color:#1f2937">${selSubObj?selSubObj.name+' — ':obj.name+' — '}${MONTHS[S.month-1]}</span>
+            ${canWrite('investments')?`<button class="btn btn-primary btn-sm" onclick="openModal('addInvEntry','${selObj}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+          </div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite('investments')?'<th></th>':''}</tr></thead>
+              <tbody>${entryRows}</tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
+          <div class="table-wrap" style="max-height:320px;overflow-y:auto">
+            <table class="tbl">
+              <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
+              <tbody>${monthRows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>` : `<div class="card"><div class="empty-state"><i class="fa fa-coins"></i><p>Изберете обект от списъка</p></div></div>`}
+    </div>
+  </div>`;
+}
+
+// =================== КАСА ===================
+function renderKasa(company, title, icon){
+  if(!canView(company)) return noAccess();
+  const mt = getCompanyMonthTotals(company, S.year, S.month);
+  const result = mt.income - mt.expenses;
+  const entries = getEntries(company, null, S.year, S.month);
+  let _kytdI=0,_kytdE=0; for(let m=1;m<=S.month;m++){ const t=getCompanyMonthTotals(company,S.year,m); _kytdI+=t.income; _kytdE+=t.expenses; }
+  const _katAt = sumEntries(db[company]?.entries||[]);
+  const kasaYtdCard = ytdPeriodCard(_kytdI,_kytdE,_katAt.income,_katAt.expenses);
+
+  const entryRows = entries.length ? entries.map(e=>`
+    <tr>
+      <td>${e.description||'—'}</td>
+      <td class="text-pos">+${fmt(e.income||0)}</td>
+      <td class="text-neg">-${fmt(e.expenses||0)}</td>
+      <td class="${resultClass((e.income||0)-(e.expenses||0))}">${fmt((e.income||0)-(e.expenses||0))}</td>
+      ${canWrite(company)?`<td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEditEntry('${company}','${e.id}')"><i class="fa fa-edit"></i></button>${canDeleteEntry(company)?` <button class="btn btn-danger btn-sm" onclick="deleteEntry('${company}','${e.id}')"><i class="fa fa-trash"></i></button>`:''}</td>`:''}
+    </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state" style="padding:30px"><i class="fa fa-inbox"></i><p>Няма записи</p></div></td></tr>`;
+
+  const monthRows = MONTHS.map((mn,i)=>{
+    const t=getCompanyMonthTotals(company,S.year,i+1);
+    const r=t.income-t.expenses;
+    return `<tr style="cursor:pointer;${i+1===S.month?'background:rgba(204,0,0,.06)':''}" onclick="S.month=${i+1};render()">
+      <td style="color:${i+1===S.month?'#c00':'#374151'}">${mn}</td>
+      <td class="text-pos">${t.income>0?'+'+fmt(t.income):'—'}</td>
+      <td class="text-neg">${t.expenses>0?'-'+fmt(t.expenses):'—'}</td>
+      <td class="${resultClass(r)}">${t.income||t.expenses?fmt(r):'—'}</td>
+      ${canWrite(company)?`<td style="white-space:nowrap;text-align:right"><button class="btn btn-primary btn-sm" style="padding:3px 8px" onclick="event.stopPropagation();S.month=${i+1};openModal('addKasaEntry',null,'${company}','${title}')"><i class="fa fa-plus"></i></button></td>`:'<td></td>'}
+    </tr>`;
+  }).join('');
+
+  const ytdData = MONTHS.map((mn,i)=>{
+    const t=getCompanyMonthTotals(company,S.year,i+1);
+    return {label:mn.slice(0,3),income:t.income,expenses:t.expenses};
+  });
+  const chartId = 'chart-'+company;
+
+  return `
+  <div class="section-hd">
+    <h2><i class="fa ${icon} text-red" style="margin-right:8px"></i>${title}</h2>
+    <p>Приходи, разходи и финансов резултат</p>
+  </div>
+
+  ${kasaYtdCard}
+  <div class="grid-stats">
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Приходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#22c55e">${fmtShort(mt.income)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Разходи — ${MONTHS[S.month-1]}</div><div style="font-size:24px;font-weight:800;color:#ef4444">${fmtShort(mt.expenses)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+    <div class="stat-card"><div style="font-size:11px;color:#6b7280;font-weight:700;text-transform:uppercase;margin-bottom:8px">Резултат</div><div style="font-size:24px;font-weight:800" class="${resultClass(result)}">${fmtShort(result)}<span style="font-size:12px;color:#6b7280"> €</span></div></div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span style="font-size:13px;font-weight:700;color:#1f2937">Записи — ${MONTHS[S.month-1]} ${S.year}</span>
+        ${canWrite(company)?`<button class="btn btn-primary btn-sm" onclick="openModal('addKasaEntry',null,'${company}','${title}')"><i class="fa fa-plus"></i> Добави</button>`:''}
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Описание</th><th>Приходи</th><th>Разходи</th><th>Резултат</th>${canWrite(company)?'<th></th>':''}</tr></thead>
+          <tbody>${entryRows}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:12px">По месеци — ${S.year}</div>
+      <div class="table-wrap" style="max-height:340px;overflow-y:auto">
+        <table class="tbl">
+          <thead><tr><th>Месец</th><th>Приходи</th><th>Разходи</th><th>Резултат</th><th></th></tr></thead>
+          <tbody>${monthRows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div style="font-size:13px;font-weight:700;color:#1f2937;margin-bottom:14px"><i class="fa fa-chart-area text-red" style="margin-right:7px"></i>Годишен тренд ${S.year}</div>
+    <div class="chart-wrap"><canvas id="${chartId}"></canvas></div>
+  </div>
+  <script type="app/data" id="${chartId}-data">${JSON.stringify(ytdData)}<\/script>`;
+}
+
+// =================== ПОТРЕБИТЕЛИ ===================
+function renderUsers(){
+  if(!isAdmin()) return noAccess();
+
+  const rows = db.users.map(u=>`
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div class="user-avatar" style="width:30px;height:30px;font-size:11px">${(u.name||u.email)[0].toUpperCase()}</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#1f2937">${u.name||'—'}</div>
+          <div style="font-size:11px;color:#6b7280">${u.email}</div>
+        </div>
+      </div></td>
+      <td><span class="badge ${u.role==='admin'?'badge-red2':'badge-blue'}">${u.role==='admin'?'Администратор':'Потребител'}</span></td>
+      <td style="font-size:12px;color:#6b7280;max-width:200px;white-space:normal;line-height:1.5">${companiesLabel(u.company)}</td>
+      <td><span class="badge ${u.confirmed?'badge-green':'badge-yellow'}">${u.confirmed?'Потвърден':'Чакащ'}</span></td>
+      <td>${new Date(u.createdAt).toLocaleDateString('bg-BG')}</td>
+      <td>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${!u.confirmed?`<button class="btn btn-success btn-sm" onclick="confirmUser('${u.id}')"><i class="fa fa-check"></i> Потвърди</button>`:''}
+          ${u.id!=='u_admin'?`<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')"><i class="fa fa-trash"></i></button>`:''}
+        </div>
+      </td>
+    </tr>`).join('');
+
+  return `
+  <div class="section-hd">
+    <h2>Управление на потребители</h2>
+    <p>Администриране на достъп и права</p>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;background:linear-gradient(135deg,#fefce8,#fff);border-color:#fbbf24">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:2px"><i class="fa fa-shield-halved" style="color:#f59e0b;margin-right:6px"></i>Резервно копие на данните</div>
+        <div style="font-size:12px;color:#78350f">Изтеглете пълен backup на всички финансови данни. Препоръчително — веднъж седмично.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm" style="background:#f59e0b;color:#fff;font-weight:700" onclick="exportBackup()">
+          <i class="fa fa-download"></i> Изтегли Backup (JSON)
+        </button>
+        <label class="btn btn-sm" style="background:#fff;border:1px solid #f59e0b;color:#92400e;cursor:pointer">
+          <i class="fa fa-upload"></i> Възстанови от Backup
+          <input type="file" accept=".json" style="display:none" onchange="importBackup(this)">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <span style="font-size:13px;font-weight:700;color:#1f2937">Всички потребители (${db.users.length})</span>
+      <button class="btn btn-primary btn-sm" onclick="openModal('addUser',null)"><i class="fa fa-user-plus"></i> Добави потребител</button>
+    </div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>Потребител</th><th>Роля</th><th>Фирма</th><th>Статус</th><th>Регистриран</th><th>Действия</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function exportBackup(){
+  const now = new Date();
+  const stamp = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const payload = JSON.stringify(db, null, 2);
+  const blob = new Blob([payload], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'finance-pro-backup-'+stamp+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importBackup(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(!confirm('ВНИМАНИЕ: Това ще замени ВСИЧКИ текущи данни с тези от backup файла. Сигурни ли сте?')) {
+    input.value=''; return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const restored = JSON.parse(e.target.result);
+      if(!restored.users || !restored.meta8) throw new Error('Невалиден backup файл');
+      db = _fixArrays(restored);
+      saveDB();
+      render();
+      alert('✅ Данните са възстановени успешно!');
+    } catch(err) {
+      alert('❌ Грешка при четене на файла: ' + err.message);
+    }
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+function noAccess(){
+  return `<div class="card"><div class="empty-state">
+    <i class="fa fa-lock" style="color:#c00"></i>
+    <h3 style="color:#1f2937;margin-bottom:8px">Достъпът е ограничен</h3>
+    <p>Нямате права за достъп до тази секция</p>
+  </div></div>`;
+}
+
+// =================== MODALS ===================
+function renderModal(){
+  const {modal, mdata} = S;
+  let content = '';
+
+  if(modal==='editEntry'){
+    const company = mdata.company;
+    const entry = (db[company]?.entries||[]).find(e=>e.id===mdata.entryId);
+    if(!entry){
+      content = `<div class="modal-hd"><span class="modal-title">Грешка</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div><p style="color:#6b7280;padding:10px 0">Записът не е намерен.</p>`;
+    } else {
+      let subObjSection = '';
+      if(['liderStroy','bso','bsoDzzd','investments'].includes(company) && entry.entityId){
+        const parentArr = company==='bso' ? db.bso.subcategories
+          : company==='liderStroy' ? db.liderStroy.objects
+          : company==='bsoDzzd' ? db.bsoDzzd.objects
+          : db.investments.objects;
+        const parent = (parentArr||[]).find(o=>o.id===entry.entityId);
+        const subObjs = parent?.subObjects||[];
+        if(subObjs.length>0){
+          const opts = subObjs.map(s=>`<option value="${s.id}" ${entry.subEntityId===s.id?'selected':''}>${s.name}</option>`).join('');
+          subObjSection = `<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${opts}</select></div>`;
+        }
+      }
+      let fieldsHtml;
+      if(company==='meta8'){
+        fieldsHtml = `
+        <div class="frow">
+          <div class="fgroup"><label class="lbl">Тонаж (т.)</label><input id="f-ton" type="number" step="0.01" min="0" class="input" value="${entry.tonnage||0}"></div>
+          <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" value="${entry.income||0}"></div>
+        </div>
+        <div class="frow">
+          <div class="fgroup"><label class="lbl">Разходи — Работници (€)</label><input id="f-ew" type="number" step="0.01" min="0" class="input" value="${entry.expWorkers||0}"></div>
+          <div class="fgroup"><label class="lbl">Разходи — Допълнителни (€)</label><input id="f-ea" type="number" step="0.01" min="0" class="input" value="${entry.expAdditional||0}"></div>
+        </div>`;
+      } else {
+        fieldsHtml = `
+        ${subObjSection}
+        <div class="frow">
+          <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" value="${entry.income||0}"></div>
+          <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" value="${entry.expenses||0}"></div>
+        </div>`;
+      }
+      content = `
+      <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на запис</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+      <form id="m-form">
+        <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..." value="${(entry.description||'').replace(/"/g,'&quot;')}"></div>
+        ${fieldsHtml}
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+        </div>
+      </form>`;
+    }
+  }
+  else if(modal==='addMeta8Entry'){
+    const prod = db.meta8.productions.find(p=>p.id===mdata.entityId);
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${prod?.name||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer;font-size:16px" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Период, продукт..."></div>
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Тонаж (т.)</label><input id="f-ton" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Разходи — Работници</label><input id="f-ew" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи — Допълнителни</label><input id="f-ea" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addProduction'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-industry text-red" style="margin-right:8px"></i>Ново производство</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование</label><input id="f-name" class="input" placeholder="Напр. Производство А" required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addLSObject'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-building text-red" style="margin-right:8px"></i>Нов обект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Обект X" required></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00" required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addLSSubObj'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование на подобекта</label><input id="f-name" class="input" placeholder="Напр. Блок А, Етаж 1..." required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='editLSObject'){
+    const obj = db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на обект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование</label><input id="f-name" type="text" class="input" value="${obj?.name||''}" required></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${obj?.budget||0}"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='editLSSubObj'){
+    const obj = db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    const sub = obj?.subObjects?.find(s=>s.id===mdata.subId);
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на подобект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование</label><input id="f-name" type="text" class="input" value="${sub?.name||''}" required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addLSEntry'){
+    const lsObj = db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    const lsSubObjs = lsObj?.subObjects||[];
+    const subObjOpts = lsSubObjs.map(s=>`<option value="${s.id}" ${S.selSubEntity===s.id?'selected':''}>${s.name}</option>`).join('');
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${lsObj?.name||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
+      ${lsSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${subObjOpts}</select></div>`:''}
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addBSOEntry'){
+    const bsoCatForEntry = db.bso.subcategories.find(s=>s.id===mdata.entityId);
+    const bsoSubObjs = bsoCatForEntry?.subObjects||[];
+    const bsoSubOpts = bsoSubObjs.map(s=>`<option value="${s.id}" ${S.selSubEntity===s.id?'selected':''}>${s.name}</option>`).join('');
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис${bsoCatForEntry?' — '+bsoCatForEntry.name:''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
+      ${bsoSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${bsoSubOpts}</select></div>`:''}
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addMetaPlanEntry'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — Мета План</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addBSOSubObj'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект — БСО</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование на подобекта</label><input id="f-name" class="input" placeholder="Напр. Блок А, Секция 1..." required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addBSODzzdObject'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-city text-red" style="margin-right:8px"></i>Нов обект — БСО - ДЗЗД</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Обект X" required></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00" required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addBSODzzdSubObj'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект — БСО - ДЗЗД</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование на подобекта</label><input id="f-name" class="input" placeholder="Напр. Блок А, Секция 1..." required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='editBSODzzdBudget'){
+    const dObj = (db.bsoDzzd.objects||[]).find(o=>o.id===mdata.entityId);
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет — БСО - ДЗЗД</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Обект: ${dObj?.name||''}</label></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${dObj?.budget||0}" required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addBSODzzdEntry'){
+    const dObj2 = (db.bsoDzzd.objects||[]).find(o=>o.id===mdata.entityId);
+    const dSubObjs = dObj2?.subObjects||[];
+    const dSubOpts = dSubObjs.map(s=>`<option value="${s.id}" ${S.selSubEntity===s.id?'selected':''}>${s.name}</option>`).join('');
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${dObj2?.name||'БСО - ДЗЗД'}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
+      ${dSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${dSubOpts}</select></div>`:''}
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addInvEntry'){
+    const invObj = db.investments.objects.find(o=>o.id===mdata.entityId);
+    const invSubObjs = invObj?.subObjects||[];
+    const subObjOpts = invSubObjs.map(s=>`<option value="${s.id}" ${S.selSubEntity===s.id?'selected':''}>${s.name}</option>`).join('');
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${invObj?.name||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
+      ${invSubObjs.length>0?`<div class="fgroup"><label class="lbl">Подобект (незадължително)</label><select id="f-subobj" class="input"><option value="">— Без подобект —</option>${subObjOpts}</select></div>`:''}
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addBSOObject'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-city text-red" style="margin-right:8px"></i>Нов обект — БСО</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Напр. Обект X" required></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='editBSOBudget'){
+    const bsoCat = db.bso.subcategories.find(s=>s.id===mdata.entityId);
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-edit text-red" style="margin-right:8px"></i>Редактиране на бюджет</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Обект: ${bsoCat?.name||''}</label></div>
+      <div class="fgroup"><label class="lbl">Бюджет (€)</label><input id="f-budget" type="number" step="0.01" min="0" class="input" value="${bsoCat?.budget||0}" required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addInvObject'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-coins text-red" style="margin-right:8px"></i>Нов инвестиционен обект</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование на обекта</label><input id="f-name" class="input" placeholder="Напр. Нова сграда" required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addInvSubObj'){
+    const invObj2 = db.investments.objects.find(o=>o.id===mdata.entityId);
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-layer-group text-red" style="margin-right:8px"></i>Нов подобект — ${invObj2?.name||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Наименование на подобекта</label><input id="f-name" class="input" placeholder="Напр. Блок А, Етаж 1..." required></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Добави</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addKasaEntry'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-plus text-red" style="margin-right:8px"></i>Нов запис — ${mdata.label||''}</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="fgroup"><label class="lbl">Описание</label><input id="f-desc" class="input" placeholder="Описание на записа..."></div>
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Приходи (€)</label><input id="f-inc" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+        <div class="fgroup"><label class="lbl">Разходи (€)</label><input id="f-exp" type="number" step="0.01" min="0" class="input" placeholder="0.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Запази</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+  else if(modal==='addUser'){
+    content = `
+    <div class="modal-hd"><span class="modal-title"><i class="fa fa-user-plus text-red" style="margin-right:8px"></i>Нов потребител</span><i class="fa fa-times" style="color:#9ca3af;cursor:pointer" onclick="closeModal()"></i></div>
+    <form id="m-form">
+      <div class="frow">
+        <div class="fgroup"><label class="lbl">Пълно ime</label><input id="f-name" class="input" placeholder="Иван Иванов" required></div>
+        <div class="fgroup"><label class="lbl">Роля</label><select id="f-role" class="input"><option value="user">Потребител</option><option value="admin">Администратор</option></select></div>
+      </div>
+      <div class="fgroup"><label class="lbl">Имейл</label><input id="f-email" type="email" class="input" placeholder="name@company.bg" required></div>
+      <div class="fgroup">
+        <label class="lbl">Парола</label>
+        <div style="position:relative">
+          <input type="password" id="f-pass" class="input" placeholder="Минимум 6 символа" required minlength="6" style="padding-right:40px">
+          <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer" onclick="togglePwd('f-pass',this)"></i>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Повтори парола</label>
+        <div style="position:relative">
+          <input type="password" id="f-pass2" class="input" placeholder="Повторете паролата" required style="padding-right:40px">
+          <i class="fa fa-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;cursor:pointer" onclick="togglePwd('f-pass2',this)"></i>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Достъп до фирми</label>
+        <div style="padding:10px 14px;background:#f9fafb;border:1px solid #d1d5db;border-radius:7px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
+          ${companyCheckboxes(['all'])}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center"><i class="fa fa-save"></i> Създай</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отказ</button>
+      </div>
+    </form>`;
+  }
+
+  return `<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">${content}</div></div>`;
+}
+
+// =================== CHARTS ===================
+function renderCharts(){
+  // Destroy existing
+  Object.values(S.charts||{}).forEach(c=>c.destroy&&c.destroy());
+  S.charts = {};
+
+  const chartDefs = [
+    {id:'chart-trend', dataId:'trend-data', type:'trend'},
+    {id:'chart-pie', dataId:'pie-data', type:'pie'},
+    {id:'chart-meta8', dataId:'meta8-trend', type:'trend'},
+    {id:'chart-metaplan', dataId:'metaplan-trend', type:'trend'},
+    {id:'chart-kasaVarna', dataId:'chart-kasaVarna-data', type:'trend'},
+    {id:'chart-kasaPavlikeni', dataId:'chart-kasaPavlikeni-data', type:'trend'},
+  ];
+
+  chartDefs.forEach(({id,dataId,type})=>{
+    const canvas = document.getElementById(id);
+    const dataEl = document.getElementById(dataId);
+    if(!canvas||!dataEl) return;
+    const data = JSON.parse(dataEl.textContent||'[]');
+    if(type==='trend') createTrendChart(id, data, canvas);
+    else if(type==='pie') createPieChart(id, data, canvas);
+  });
+}
+
+function createTrendChart(id, data, canvas){
+  const ctx = canvas.getContext('2d');
+  S.charts[id] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:data.map(d=>d.label),
+      datasets:[
+        {label:'Приходи',data:data.map(d=>d.income),backgroundColor:'rgba(34,197,94,.7)',borderColor:'#22c55e',borderWidth:1,borderRadius:4},
+        {label:'Разходи',data:data.map(d=>d.expenses),backgroundColor:'rgba(239,68,68,.7)',borderColor:'#ef4444',borderWidth:1,borderRadius:4},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#666',font:{size:11}}},tooltip:{backgroundColor:'#1a1a1a',titleColor:'#ddd',bodyColor:'#888',borderColor:'#2a2a2a',borderWidth:1}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#555',font:{size:11}}},
+        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#555',font:{size:11},callback:v=>fmtShort(v)}}
+      }
+    }
+  });
+}
+
+function createPieChart(id, data, canvas){
+  const filtered = data.filter(d=>d.income>0);
+  if(!filtered.length){
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#333';ctx.font='13px sans-serif';ctx.textAlign='center';
+    ctx.fillText('Няма данни за избрания период',canvas.width/2,canvas.height/2);
+    return;
+  }
+  const ctx = canvas.getContext('2d');
+  S.charts[id] = new Chart(ctx, {
+    type:'doughnut',
+    data:{
+      labels:filtered.map(d=>d.label),
+      datasets:[{data:filtered.map(d=>d.income),backgroundColor:filtered.map(d=>d.color),borderColor:'#111',borderWidth:2,hoverOffset:8}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{position:'right',labels:{color:'#666',font:{size:11},boxWidth:12,padding:12}},tooltip:{backgroundColor:'#1a1a1a',titleColor:'#ddd',bodyColor:'#888',borderColor:'#2a2a2a',borderWidth:1,callbacks:{label:ctx=>`${ctx.label}: ${fmtShort(ctx.raw)} €`}}}
+    }
+  });
+}
+
+// =================== ACTIONS ===================
+function openModal(type, entityId, company, label, subId){
+  S.modal = type;
+  S.mdata = {entityId, company, label, subId};
+  render();
+}
+
+function closeModal(){
+  S.modal = null;
+  S.mdata = {};
+  _pendingRender = false; // clear deferred flag — render() below covers it
+  render();
+}
+
+function openEditEntry(company, entryId){
+  S.modal = 'editEntry';
+  S.mdata = {company, entryId};
+  render();
+}
+
+function nav(view){
+  S.view = view;
+  S.selEntity = null;
+  S.selSubEntity = null;
+  S.sidebarOpen = false;
+  render();
+}
+
+function toggleSidebar(){ S.sidebarOpen=!S.sidebarOpen; render(); }
+function closeSidebar(){ S.sidebarOpen=false; render(); }
+
+function confirmUser(id){
+  const u=db.users.find(u=>u.id===id);
+  if(u){ u.confirmed=true; saveNode('users',db.users); notify('Потребителят е потвърден','ok'); render(); }
+}
+
+function deleteUser(id){
+  if(!confirm('Изтриване на потребителя?')) return;
+  db.users=db.users.filter(u=>u.id!==id); saveNode('users',db.users); notify('Потребителят е изтрит','ok'); render();
+}
+
+function deleteEntry(company, id){
+  if(!confirm('Изтриване на записа?')) return;
+  db[company].entries = db[company].entries.filter(e=>e.id!==id);
+  saveNode(company,db[company]); notify('Записът е изтрит','ok'); render();
+}
+
+function deleteLSObject(id){
+  if(!confirm('Изтриване на обекта и всички негови записи?')) return;
+  db.liderStroy.objects = db.liderStroy.objects.filter(o=>o.id!==id);
+  db.liderStroy.entries = db.liderStroy.entries.filter(e=>e.entityId!==id);
+  if(S.selEntity===id){ S.selEntity=null; S.selSubEntity=null; }
+  saveNode('liderStroy',db.liderStroy); notify('Обектът е изтрит','ok'); render();
+}
+
+function deleteLSSubObj(objId, subId){
+  if(!confirm('Изтриване на подобекта и всички негови записи?')) return;
+  const obj=db.liderStroy.objects.find(o=>o.id===objId);
+  if(obj) obj.subObjects=(obj.subObjects||[]).filter(s=>s.id!==subId);
+  db.liderStroy.entries=db.liderStroy.entries.filter(e=>!(e.entityId===objId&&e.subEntityId===subId));
+  if(S.selSubEntity===subId) S.selSubEntity=null;
+  saveNode('liderStroy',db.liderStroy); notify('Подобектът е изтрит','ok'); render();
+}
+
+function deleteBSOSubcat(id){
+  if(!confirm('Изтриване на обекта и всички негови записи?')) return;
+  db.bso.subcategories = db.bso.subcategories.filter(s=>s.id!==id);
+  db.bso.entries = db.bso.entries.filter(e=>e.entityId!==id);
+  if(S.selEntity===id){ S.selEntity=null; S.selSubEntity=null; }
+  saveNode('bso',db.bso); notify('Обектът е изтрит','ok'); render();
+}
+
+function deleteBSOSubObj(catId, subId){
+  if(!confirm('Изтриване на подобекта и всички негови записи?')) return;
+  const cat=db.bso.subcategories.find(s=>s.id===catId);
+  if(cat) cat.subObjects=(cat.subObjects||[]).filter(s=>s.id!==subId);
+  db.bso.entries=db.bso.entries.filter(e=>!(e.entityId===catId&&e.subEntityId===subId));
+  if(S.selSubEntity===subId) S.selSubEntity=null;
+  saveNode('bso',db.bso); notify('Подобектът е изтрит','ok'); render();
+}
+
+function deleteBSODzzdObject(id){
+  if(!confirm('Изтриване на обекта и всички негови записи?')) return;
+  db.bsoDzzd.objects = (db.bsoDzzd.objects||[]).filter(o=>o.id!==id);
+  db.bsoDzzd.entries = (db.bsoDzzd.entries||[]).filter(e=>e.entityId!==id);
+  if(S.selEntity===id){ S.selEntity=null; S.selSubEntity=null; }
+  saveNode('bsoDzzd',db.bsoDzzd); notify('Обектът е изтрит','ok'); render();
+}
+
+function deleteBSODzzdSubObj(objId, subId){
+  if(!confirm('Изтриване на подобекта и всички негови записи?')) return;
+  const obj=(db.bsoDzzd.objects||[]).find(o=>o.id===objId);
+  if(obj) obj.subObjects=(obj.subObjects||[]).filter(s=>s.id!==subId);
+  db.bsoDzzd.entries=(db.bsoDzzd.entries||[]).filter(e=>!(e.entityId===objId&&e.subEntityId===subId));
+  if(S.selSubEntity===subId) S.selSubEntity=null;
+  saveNode('bsoDzzd',db.bsoDzzd); notify('Подобектът е изтрит','ok'); render();
+}
+
+function deleteInvObject(id){
+  if(!confirm('Изтриване на обекта и всички негови записи?')) return;
+  db.investments.objects = db.investments.objects.filter(o=>o.id!==id);
+  db.investments.entries = db.investments.entries.filter(e=>e.entityId!==id);
+  if(S.selEntity===id){ S.selEntity=null; S.selSubEntity=null; }
+  saveNode('investments',db.investments); notify('Обектът е изтрит','ok'); render();
+}
+
+function deleteInvSubObj(objId, subId){
+  if(!confirm('Изтриване на подобекта и всички негови записи?')) return;
+  const obj=db.investments.objects.find(o=>o.id===objId);
+  if(obj) obj.subObjects=(obj.subObjects||[]).filter(s=>s.id!==subId);
+  db.investments.entries=db.investments.entries.filter(e=>!(e.entityId===objId&&e.subEntityId===subId));
+  if(S.selSubEntity===subId) S.selSubEntity=null;
+  saveNode('investments',db.investments); notify('Подобектът е изтрит','ok'); render();
+}
+
+// =================== EVENTS ===================
+function bindEvents(){
+  document.getElementById('login-form')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    const email=document.getElementById('l-email').value.trim();
+    const pass=document.getElementById('l-pass').value;
+    const r=login(email,pass);
+    if(r.ok){ S.view='dashboard'; render(); }
+    else notify(r.msg,'err');
+  });
+
+  document.getElementById('reg-form')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=document.getElementById('r-name').value.trim();
+    const email=document.getElementById('r-email').value.trim();
+    const pass=document.getElementById('r-pass').value;
+    const pass2=document.getElementById('r-pass2').value;
+    if(pass!==pass2){ notify('Паролите не съвпадат','err'); return; }
+    const companies=getSelectedCompanies();
+    if(companies.length===0){ notify('Изберете поне една фирма','err'); return; }
+    const r=register(email,pass,name,companies);
+    if(r.ok){ notify('Заявката е изпратена! Изчакайте потвърждение от администратор.','ok'); setTimeout(()=>{S.view='login';render();},2200); }
+    else notify(r.msg,'err');
+  });
+
+  document.getElementById('forgot-form')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    const email=document.getElementById('fp-email').value.trim();
+    const result=handleForgotPassword(email);
+    const div=document.getElementById('fp-result');
+    if(!div) return;
+    if(result.ok){
+      div.innerHTML=`
+        <div style="background:#f9fafb;border:1px solid #22c55e44;border-radius:8px;padding:14px">
+          <div style="font-size:12px;color:#22c55e;font-weight:700;margin-bottom:8px"><i class="fa fa-check-circle"></i> Линкът е генериран</div>
+          <p style="font-size:11px;color:#666;margin-bottom:10px">Тъй като приложението работи без сървър, копирайте линка по-долу и го изпратете на потребителя:</p>
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px;font-size:11px;font-family:monospace;color:#6b7280;word-break:break-all;margin-bottom:8px">${result.resetUrl}</div>
+          <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('${result.resetUrl}').then(()=>notify('Копирано!','ok'))"><i class="fa fa-copy"></i> Копирай линка</button>
+        </div>`;
+    } else {
+      div.innerHTML=`<div style="color:#ef4444;font-size:13px;padding:10px"><i class="fa fa-times-circle"></i> ${result.msg}</div>`;
+    }
+  });
+
+  document.getElementById('reset-form')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    const token=e.target.dataset.token;
+    const pass=document.getElementById('rp-pass').value;
+    const pass2=document.getElementById('rp-pass2').value;
+    if(pass!==pass2){ notify('Паролите не съвпадат','err'); return; }
+    if(pass.length<6){ notify('Паролата трябва да е поне 6 символа','err'); return; }
+    const result=doResetPassword(token,pass);
+    if(result.ok){
+      notify('Паролата е променена успешно!','ok');
+      setTimeout(()=>{ window.location.href=window.location.pathname; },2000);
+    } else {
+      notify(result.msg,'err');
+    }
+  });
+
+  document.getElementById('m-form')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    try {
+      handleModalSubmit();
+    } catch(err){
+      console.error('handleModalSubmit error:', err);
+      notify('Грешка при запазване: ' + err.message, 'err');
+    }
+  });
+}
+
+function handleModalSubmit(){
+  const {modal, mdata} = S;
+
+  if(modal==='editEntry'){
+    const company = mdata.company;
+    const entry = (db[company]?.entries||[]).find(e=>e.id===mdata.entryId);
+    if(!entry){ notify('Записът не е намерен','err'); return; }
+    entry.description = (document.getElementById('f-desc')?.value||'').trim();
+    if(company==='meta8'){
+      entry.tonnage      = parseFloat(document.getElementById('f-ton')?.value)||0;
+      entry.income       = parseFloat(document.getElementById('f-inc')?.value)||0;
+      entry.expWorkers   = parseFloat(document.getElementById('f-ew')?.value)||0;
+      entry.expAdditional= parseFloat(document.getElementById('f-ea')?.value)||0;
+      entry.expenses     = entry.expWorkers + entry.expAdditional;
+    } else {
+      const subObjEl = document.getElementById('f-subobj');
+      if(subObjEl) entry.subEntityId = subObjEl.value||null;
+      entry.income   = parseFloat(document.getElementById('f-inc')?.value)||0;
+      entry.expenses = parseFloat(document.getElementById('f-exp')?.value)||0;
+    }
+    saveNode(company,db[company]); closeModal(); notify('Записът е обновен','ok');
+  }
+  else if(modal==='addMeta8Entry'){
+    const entry = {
+      id:genId(), entityId:mdata.entityId, year:S.year, month:S.month,
+      description:document.getElementById('f-desc').value.trim(),
+      tonnage:parseFloat(document.getElementById('f-ton').value)||0,
+      income:parseFloat(document.getElementById('f-inc').value)||0,
+      expenses:0,
+      expWorkers:parseFloat(document.getElementById('f-ew').value)||0,
+      expAdditional:parseFloat(document.getElementById('f-ea').value)||0,
+      createdBy:session.email, createdAt:new Date().toISOString()
+    };
+    entry.expenses = entry.expWorkers + entry.expAdditional;
+    db.meta8.entries.push(entry);
+    saveNode('meta8',db.meta8); closeModal(); notify('Записът е запазен','ok');
+  }
+  else if(modal==='addProduction'){
+    const name=document.getElementById('f-name').value.trim();
+    if(!name) return;
+    const prod={id:genId(),name,createdAt:new Date().toISOString()};
+    db.meta8.productions.push(prod);
+    S.selEntity=prod.id;
+    saveNode('meta8',db.meta8); closeModal(); notify('Производството е добавено','ok');
+  }
+  else if(modal==='addLSObject'){
+    const name=document.getElementById('f-name').value.trim();
+    const budget=parseFloat(document.getElementById('f-budget').value)||0;
+    if(!name) return;
+    const obj={id:genId(),name,budget,subObjects:[]};
+    db.liderStroy.objects.push(obj);
+    S.selEntity=obj.id;
+    saveNode('liderStroy',db.liderStroy); closeModal(); notify('Обектът е добавен','ok');
+  }
+  else if(modal==='addLSSubObj'){
+    const name=document.getElementById('f-name').value.trim();
+    if(!name) return;
+    const obj=db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    if(!obj.subObjects) obj.subObjects=[];
+    const sub={id:genId(),name};
+    obj.subObjects.push(sub);
+    S.selSubEntity=sub.id;
+    saveNode('liderStroy',db.liderStroy); closeModal(); notify('Подобектът е добавен','ok');
+  }
+  else if(modal==='editLSObject'){
+    const obj=db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    if(obj){
+      const name=document.getElementById('f-name').value.trim();
+      if(!name) return;
+      obj.name=name;
+      obj.budget=parseFloat(document.getElementById('f-budget').value)||0;
+      saveNode('liderStroy',db.liderStroy); closeModal(); notify('Обектът е актуализиран','ok');
+    }
+  }
+  else if(modal==='editLSSubObj'){
+    const obj=db.liderStroy.objects.find(o=>o.id===mdata.entityId);
+    const sub=obj?.subObjects?.find(s=>s.id===mdata.subId);
+    if(sub){
+      const name=document.getElementById('f-name').value.trim();
+      if(!name) return;
+      sub.name=name;
+      saveNode('liderStroy',db.liderStroy); closeModal(); notify('Подобектът е актуализиран','ok');
+    }
+  }
+  else if(modal==='addLSEntry'){
+    const subObjEl = document.getElementById('f-subobj');
+    const entry = {
+      id:genId(), entityId:mdata.entityId,
+      subEntityId: subObjEl?.value || null,
+      year:S.year, month:S.month,
+      description:document.getElementById('f-desc').value.trim(),
+      income:parseFloat(document.getElementById('f-inc').value)||0,
+      expenses:parseFloat(document.getElementById('f-exp').value)||0,
+      createdBy:session.email, createdAt:new Date().toISOString()
+    };
+    db.liderStroy.entries.push(entry);
+    saveNode('liderStroy',db.liderStroy); closeModal(); notify('Записът е запазен','ok');
+  }
+  else if(modal==='addBSOEntry'){
+    const subObjEl = document.getElementById('f-subobj');
+    const entry = {
+      id:genId(), entityId:mdata.entityId||null,
+      subEntityId: subObjEl?.value || null,
+      year:S.year, month:S.month,
+      description:document.getElementById('f-desc').value.trim(),
+      income:parseFloat(document.getElementById('f-inc').value)||0,
+      expenses:parseFloat(document.getElementById('f-exp').value)||0,
+      createdBy:session.email, createdAt:new Date().toISOString()
+    };
+    db.bso.entries.push(entry);
+    saveNode('bso',db.bso); closeModal(); notify('Записът е запазен','ok');
+  }
+  else if(modal==='addMetaPlanEntry'||modal==='addKasaEntry'){
+    const compMap = {addMetaPlanEntry:'metaPlan',addKasaEntry:mdata.company};
+    const company = compMap[modal];
+    const entry = {
+      id:genId(), entityId:mdata.entityId||null, year:S.year, month:S.month,
+      description:document.getElementById('f-desc').value.trim(),
+      income:parseFloat(document.getElementById('f-inc').value)||0,
+      expenses:parseFloat(document.getElementById('f-exp').value)||0,
+      createdBy:session.email, createdAt:new Date().toISOString()
+    };
+    db[company].entries.push(entry);
+    saveNode(company,db[company]); closeModal(); notify('Записът е запазен','ok');
+  }
+  else if(modal==='addBSOSubObj'){
+    const name=document.getElementById('f-name').value.trim();
+    if(!name) return;
+    const cat=db.bso.subcategories.find(s=>s.id===mdata.entityId);
+    if(!cat.subObjects) cat.subObjects=[];
+    const sub={id:genId(),name};
+    cat.subObjects.push(sub);
+    S.selSubEntity=sub.id;
+    saveNode('bso',db.bso); closeModal(); notify('Подобектът е добавен','ok');
+  }
+  else if(modal==='addBSODzzdObject'){
+    const name=document.getElementById('f-name').value.trim();
+    const budget=parseFloat(document.getElementById('f-budget').value)||0;
+    if(!name) return;
+    if(!db.bsoDzzd.objects) db.bsoDzzd.objects=[];
+    const obj={id:genId(),name,budget,subObjects:[]};
+    db.bsoDzzd.objects.push(obj);
+    S.selEntity=obj.id;
+    S.selSubEntity=null;
+    saveNode('bsoDzzd',db.bsoDzzd); closeModal(); notify('Обектът е добавен','ok');
+  }
+  else if(modal==='addBSODzzdSubObj'){
+    const name=document.getElementById('f-name').value.trim();
+    if(!name) return;
+    const obj=(db.bsoDzzd.objects||[]).find(o=>o.id===mdata.entityId);
+    if(!obj) return;
+    if(!obj.subObjects) obj.subObjects=[];
+    const sub={id:genId(),name};
+    obj.subObjects.push(sub);
+    S.selSubEntity=sub.id;
+    saveNode('bsoDzzd',db.bsoDzzd); closeModal(); notify('Подобектът е добавен','ok');
+  }
+  else if(modal==='editBSODzzdBudget'){
+    const obj=(db.bsoDzzd.objects||[]).find(o=>o.id===mdata.entityId);
+    if(obj){ obj.budget=parseFloat(document.getElementById('f-budget').value)||0; saveNode('bsoDzzd',db.bsoDzzd); closeModal(); notify('Бюджетът е актуализиран','ok'); }
+  }
+  else if(modal==='addBSODzzdEntry'){
+    const subObjEl = document.getElementById('f-subobj');
+    const entry = {
+      id:genId(), entityId:mdata.entityId||null,
+      subEntityId: subObjEl?.value || null,
+      year:S.year, month:S.month,
+      description:document.getElementById('f-desc').value.trim(),
+      income:parseFloat(document.getElementById('f-inc').value)||0,
+      expenses:parseFloat(document.getElementById('f-exp').value)||0,
+      createdBy:session.email, createdAt:new Date().toISOString()
+    };
+    if(!db.bsoDzzd.entries) db.bsoDzzd.entries=[];
+    db.bsoDzzd.entries.push(entry);
+    saveNode('bsoDzzd',db.bsoDzzd); closeModal(); notify('Записът е запазен','ok');
+  }
+  else if(modal==='addInvEntry'){
+    const subObjEl = document.getElementById('f-subobj');
+    const entry = {
+      id:genId(), entityId:mdata.entityId||null,
+      subEntityId: subObjEl?.value || null,
+      year:S.year, month:S.month,
+      description:document.getElementById('f-desc').value.trim(),
+      income:parseFloat(document.getElementById('f-inc').value)||0,
+      expenses:parseFloat(document.getElementById('f-exp').value)||0,
+      createdBy:session.email, createdAt:new Date().toISOString()
+    };
+    db.investments.entries.push(entry);
+    saveNode('investments',db.investments); closeModal(); notify('Записът е запазен','ok');
+  }
+  else if(modal==='addBSOObject'){
+    const name=document.getElementById('f-name').value.trim();
+    const budget=parseFloat(document.getElementById('f-budget').value)||0;
+    if(!name) return;
+    const sub={id:genId(),name,budget};
+    db.bso.subcategories.push(sub);
+    S.selEntity=sub.id;
+    saveNode('bso',db.bso); closeModal(); notify('Обектът е добавен','ok');
+  }
+  else if(modal==='editBSOBudget'){
+    const cat=db.bso.subcategories.find(s=>s.id===mdata.entityId);
+    if(cat){ cat.budget=parseFloat(document.getElementById('f-budget').value)||0; saveNode('bso',db.bso); closeModal(); notify('Бюджетът е актуализиран','ok'); }
+  }
+  else if(modal==='addInvObject'){
+    const name=document.getElementById('f-name').value.trim();
+    if(!name) return;
+    const obj={id:genId(),name,subObjects:[]};
+    db.investments.objects.push(obj);
+    S.selEntity=obj.id;
+    S.selSubEntity=null;
+    saveNode('investments',db.investments); closeModal(); notify('Обектът е добавен','ok');
+  }
+  else if(modal==='addInvSubObj'){
+    const name=document.getElementById('f-name').value.trim();
+    if(!name) return;
+    const obj=db.investments.objects.find(o=>o.id===mdata.entityId);
+    if(!obj.subObjects) obj.subObjects=[];
+    const sub={id:genId(),name};
+    obj.subObjects.push(sub);
+    S.selSubEntity=sub.id;
+    saveNode('investments',db.investments); closeModal(); notify('Подобектът е добавен','ok');
+  }
+  else if(modal==='addUser'){
+    const name=document.getElementById('f-name').value.trim();
+    const email=document.getElementById('f-email').value.trim();
+    const pass=document.getElementById('f-pass').value;
+    const pass2=document.getElementById('f-pass2').value;
+    const role=document.getElementById('f-role').value;
+    if(pass!==pass2){ notify('Паролите не съвпадат','err'); return; }
+    if(pass.length<6){ notify('Паролата трябва да е поне 6 символа','err'); return; }
+    const companies=getSelectedCompanies();
+    if(companies.length===0){ notify('Изберете поне една фирма','err'); return; }
+    if(db.users.find(u=>u.email.toLowerCase()===email.toLowerCase())){ notify('Имейлът вече съществува','err'); return; }
+    db.users.push({id:genId(),email,password:pass,role,name,confirmed:true,company:companies,createdAt:new Date().toISOString()});
+    saveNode('users',db.users); closeModal(); notify('Потребителят е създаден','ok');
+  }
+}
+
+// =================== FORGOT / RESET PASSWORD ===================
+function handleForgotPassword(email){
+  const u=db.users.find(u=>u.email.toLowerCase()===email.toLowerCase());
+  if(!u) return {ok:false, msg:'Имейлът не е намерен в системата'};
+  if(!db.resetTokens) db.resetTokens=[];
+  // Remove old tokens for this user
+  db.resetTokens=db.resetTokens.filter(t=>t.userId!==u.id);
+  const token=genId()+genId()+genId();
+  const expiresAt=new Date(Date.now()+24*60*60*1000).toISOString();
+  db.resetTokens.push({token,userId:u.id,expiresAt});
+  saveNode('resetTokens',db.resetTokens);
+  const resetUrl=window.location.href.split('?')[0]+'?reset='+token;
+  return {ok:true, resetUrl, email:u.email};
+}
+
+function doResetPassword(token, newPass){
+  if(!db.resetTokens) return {ok:false,msg:'Невалиден токен'};
+  const rec=db.resetTokens.find(t=>t.token===token && new Date(t.expiresAt)>new Date());
+  if(!rec) return {ok:false,msg:'Линкът е изтекъл или вече е използван'};
+  const u=db.users.find(u=>u.id===rec.userId);
+  if(!u) return {ok:false,msg:'Потребителят не е намерен'};
+  u.password=newPass;
+  db.resetTokens=db.resetTokens.filter(t=>t.token!==token);
+  saveNodes({users:db.users, resetTokens:db.resetTokens});
+  return {ok:true};
+}
+
+// =================== INIT ===================
+// Fix any arrays in the localStorage cache now that _fixArrays is defined
+try { db = _fixArrays(db); } catch(_){}
+
+// Immediately remove any erroneously-seeded p_* productions
+if(db.meta8) db.meta8.productions = (db.meta8.productions||[]).filter(p=>!p.id.startsWith('p_'));
+
+// 1. Render immediately with cached/local data (no delay for user)
+render();
+// 2. Sign in to Firebase → load latest data → start live sync
+_fbSignIn()
+  .then(()=> initDB())
+  .then(()=>{ render(); startRealtimeSync(); })
+  .catch(e=>{ console.warn('Firebase startup failed:', e); render(); });
+</script>
+</body>
+</html>
