@@ -1,0 +1,78 @@
+name: Firebase Auto Backup
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'   # Всеки 4 часа (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
+  workflow_dispatch:          # Позволява ръчно стартиране от GitHub Actions UI
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Firebase auth token
+        id: firebase_auth
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${{ secrets.FIREBASE_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"email\":\"${{ secrets.FIREBASE_AUTH_EMAIL }}\",\"password\":\"${{ secrets.FIREBASE_AUTH_PASS }}\",\"returnSecureToken\":true}")
+          TOKEN=$(echo "$RESPONSE" | jq -r '.idToken')
+          if [ "$TOKEN" = "null" ] || [ -z "$TOKEN" ]; then
+            echo "ERROR: Firebase authentication failed"
+            echo "$RESPONSE" | jq .
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+          echo "Firebase auth: OK"
+
+      - name: Fetch data from Firebase
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%d_%H-%M")
+          mkdir -p backups
+
+          # Fetch data and remove passwords before saving (safe for any repo visibility)
+          curl -s \
+            "https://finance-pro-holding-default-rtdb.firebaseio.com/fph_v1.json?auth=${{ steps.firebase_auth.outputs.token }}" \
+            | jq 'if .users then .users = [.users[] | del(.password)] else . end' \
+            > "backups/backup-${TIMESTAMP}.json"
+
+          SIZE=$(wc -c < "backups/backup-${TIMESTAMP}.json")
+          echo "Backup saved: backup-${TIMESTAMP}.json (${SIZE} bytes)"
+
+          if [ "$SIZE" -lt 200 ]; then
+            echo "ERROR: Backup file too small — Firebase fetch likely failed"
+            cat "backups/backup-${TIMESTAMP}.json"
+            exit 1
+          fi
+
+      - name: Remove old backups (keep last 30 days = 180 files)
+        run: |
+          cd backups
+          COUNT=$(ls backup-*.json 2>/dev/null | wc -l)
+          if [ "$COUNT" -gt 180 ]; then
+            ls -t backup-*.json | tail -n +181 | xargs rm -f
+            echo "Removed old backups. Kept latest 180."
+          fi
+
+      - name: Commit and push backup
+        run: |
+          git config user.name "Firebase Backup Bot"
+          git config user.email "backup-bot@finance-pro-holding.bg"
+          git add backups/
+          if git diff --staged --quiet; then
+            echo "No changes — skipping commit"
+          else
+            git commit -m "backup: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+            echo "Backup committed and pushed successfully"
+          fi
