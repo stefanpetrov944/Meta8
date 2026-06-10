@@ -1,0 +1,356 @@
+{
+  "_ts": 1780061753993,
+  "bso": {
+    "subcategories": [
+      {
+        "budget": 0,
+        "id": "b1",
+        "name": "Индустриален парк"
+      },
+      {
+        "budget": 0,
+        "id": "b2",
+        "name": "Църква Свищов"
+      },
+      {
+        "budget": 0,
+        "id": "b3",
+        "name": "Парк Калето"
+      },
+      {
+        "budget": 0,
+        "id": "b4",
+        "name": "Лаборатория Индустриален парк Свищов"
+      },
+      {
+        "budget": 0,
+        "id": "b5",
+        "name": "Спортна зала Свищов"
+      },
+      {
+        "budget": 0,
+        "id": "b6",
+        "name": "Офис Свищов"
+      },
+      {
+        "budget": 0,
+        "id": "b7",
+        "name": "Плевен-Рубин Eco Collection"
+      },
+      {
+        "budget": 0,
+        "id": "b8",
+        "name": "Бяла Сметище"
+      },
+      {
+        "budget": 0,
+        "id": "b9",
+        "name": "Плевен Блок за Саниране #1"
+      },
+      {
+        "budget": 0,
+        "id": "b10",
+        "name": "Блок за Саниране #2"
+      }
+    ]
+  },
+  "investments": {
+    "objects": [
+      {
+        "id": "i1",
+        "name": "Радиозавод"
+      },
+      {
+        "id": "i2",
+        "name": "Администрация на радиозавод"
+      },
+      {
+        "id": "i3",
+        "name": "Магазини"
+      },
+      {
+        "id": "i4",
+        "name": "Офис над магазини"
+      },
+      {
+        "id": "i5",
+        "name": "Автомивка"
+      },
+      {
+        "id": "i6",
+        "name": "Спортни съоражения"
+      }
+    ]
+  },
+  "liderStroy": {
+    "entries": [
+      {
+        "createdAt": "2026-05-27T13:25:14.397Z",
+        "createdBy": "v.kolarova@liderstroy.bg",
+        "description": "АВАНС",
+        "entityId": "mpo396pldi2cj",
+        "expenses": 28794.14,
+        "id": "mpo3joyku3nky",
+        "income": 192580.48,
+        "month": 3,
+        "year": 2026
+      }
+    ],
+    "objects": [
+      {
+        "budget": 385160.95,
+        "id": "mpo396pldi2cj",
+        "name": "Абсолют плюс пропъртис ООД - Догово от 20.1.2026г/Разширение на съществуващ търговски обект в гр.Павликени"
+      }
+    ]
+  },
+  "meta8": {
+    "entries": [
+      {
+        "createdAt": "2026-05-27T09:41:39.592Z",
+        "createdBy": "admin@meta8.bg",
+        "description": "Test",
+        "entityId": "p1",
+        "expAdditional": 5,
+        "expWorkers": 2,
+        "expenses": 7,
+        "id": "mpnvk6144gu9i",
+        "income": 20,
+        "month": 5,
+        "tonnage": 1,
+        "year": 2026
+      },
+      {
+        "createdAt": "2026-05-27T10:19:34.893Z",
+        "createdBy": "s.georgieva@meta8.bg",
+        "description": "Маркрафт",
+        "entityId": "prod_met_konstr",
+        "expAdditional": 0,
+        "expWorkers": 0,
+        "expenses": 0,
+        "id": "mpnwwxnw9b6vh",
+        "income": 319717.98,
+        "month": 5,
+        "tonnage": 208.99,
+        "year": 2026
+      },
+      {
+        "createdAt": "2026-05-27T10:24:03.973Z",
+        "createdBy": "s.georgieva@meta8.bg",
+        "description": "ХАЙПРО",
+        "entityId": "prod_met_konstr",
+        "expAdditional": 0,
+        "expWorkers": 0,
+        "expenses": 0,
+        "id": "mpnx2pad29nve",
+        "income": 0,
+        "month": 5,
+        "tonnage": 6.98,
+        "year": 2026
+      },
+      {
+        "createdAt": "2026-05-27T11:11:36.783Z",
+        "createdBy": "s.georgieva@meta8.bg",
+        "description": "Маркрафт",
+        "entityId": "prod_met_konstr",
+        "expAdditional": 600,
+        "expWorkers": 5000,
+        "expenses": 5600,
+        "id": "mpnyruj29e4cq",
+        "income": 207816.7,
+        "month": 4,
+        "tonnage": 0,
+        "year": 2026
+      },
+      {
+        "createdAt": "2026-05-28T08:02:06.249Z",
+        "createdBy": "s.georgieva@meta8.bg",
+        "description": "Пана Варна",
+        "entityId": "prod_met_konstr",
+        "expAdditional": 5448.82,
+        "expWorkers": 3540,
+        "expenses": 8988.82,
+        "id": "mpp7fzmxr7t8o",
+        "income": 0,
+        "month": 5,
+        "tonnage": 4.6,
+        "year": 2026
+      }
+    ],
+    "productions": [
+      {
+        "createdAt": "2024-01-01T00:00:00Z",
+        "id": "p1",
+        "name": "Основно производство"
+      },
+      {
+        "id": "prod_armatura",
+        "name": "Арматурна заготовка"
+      },
+      {
+        "id": "prod_mrezi",
+        "name": "Мрежи"
+      },
+      {
+        "id": "prod_profili",
+        "name": "Профили за сухо строителство"
+      },
+      {
+        "id": "prod_usilv",
+        "name": "Усилващи профили"
+      },
+      {
+        "id": "prod_lamarina",
+        "name": "Ламарина"
+      },
+      {
+        "id": "prod_gvozdei",
+        "name": "Гвоздеи"
+      },
+      {
+        "id": "prod_fibri",
+        "name": "Фибри"
+      },
+      {
+        "id": "prod_tel",
+        "name": "Тел"
+      },
+      {
+        "id": "prod_uslugi",
+        "name": "Услуги"
+      },
+      {
+        "id": "prod_met_konstr",
+        "name": "Метални конструкции"
+      }
+    ]
+  },
+  "resetTokens": [
+    {
+      "expiresAt": "2026-05-29T05:28:13.398Z",
+      "token": "mpp1y3iua1b1ampp1y3iua45b3mpp1y3iuup863",
+      "userId": "u_office"
+    }
+  ],
+  "users": [
+    {
+      "company": "all",
+      "confirmed": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "email": "admin@meta8.bg",
+      "id": "u_admin",
+      "name": "Администратор",
+      "role": "admin"
+    },
+    {
+      "company": [
+        "liderStroy"
+      ],
+      "confirmed": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "email": "v.kolarova@liderstroy.bg",
+      "id": "u_kolarova",
+      "manageLiderStroy": true,
+      "manager": true,
+      "name": "В. Коларова",
+      "role": "user"
+    },
+    {
+      "company": [
+        "bso",
+        "bsoDzzd"
+      ],
+      "confirmed": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "email": "z.damyanova@bso-bg.com",
+      "id": "u_damyanova",
+      "manager": true,
+      "name": "З. Дамянова",
+      "role": "user"
+    },
+    {
+      "company": [
+        "investments",
+        "kasaVarna"
+      ],
+      "confirmed": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "email": "vgmeta8@abv.bg",
+      "id": "u_vgmeta8",
+      "manager": true,
+      "name": "VG Мета 8",
+      "role": "user"
+    },
+    {
+      "company": [
+        "kasaPavlikeni",
+        "meta8"
+      ],
+      "confirmed": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "email": "s.rusanova@meta8.bg",
+      "id": "u_rusanova",
+      "manager": true,
+      "meta8Prods": [
+        "мрежи",
+        "профили за сухо",
+        "усилващи",
+        "ламарина",
+        "гвоздеи",
+        "фибри",
+        "тел",
+        "услуги"
+      ],
+      "name": "С. Русанова",
+      "role": "user"
+    },
+    {
+      "company": [
+        "meta8"
+      ],
+      "confirmed": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "email": "office@meta8.bg",
+      "id": "u_office",
+      "manager": true,
+      "meta8Prods": [
+        "арматурн"
+      ],
+      "name": "Офис Мета 8",
+      "role": "user"
+    },
+    {
+      "company": [
+        "meta8"
+      ],
+      "confirmed": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "email": "s.georgieva@meta8.bg",
+      "id": "u_georgieva",
+      "manager": true,
+      "meta8Prods": [
+        "метални"
+      ],
+      "name": "С. Георгиева",
+      "role": "user"
+    },
+    {
+      "company": "all",
+      "confirmed": true,
+      "createdAt": "2025-01-01T00:00:00Z",
+      "email": "arh_ganchev@meta8.bg",
+      "id": "u_ganchev",
+      "name": "Арх. Ганчев",
+      "role": "admin"
+    },
+    {
+      "company": "all",
+      "confirmed": true,
+      "createdAt": "2025-01-01T00:00:00Z",
+      "email": "p.petrov@meta8.bg",
+      "id": "u_petrov",
+      "name": "П. Петров",
+      "role": "admin"
+    }
+  ]
+}
